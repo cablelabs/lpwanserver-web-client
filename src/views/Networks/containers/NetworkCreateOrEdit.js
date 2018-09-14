@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import PT from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { propOr, pathOr, lensPath, set, pick, pathEq, find } from 'ramda';
-import qs from 'query-string';
+import { parseQueryString } from '../../../utils/stringUtils'
 import { errorToText } from '../../../utils/errorUtils';
 import { arrayify } from '../../../utils/generalUtils';
 import sessionStore from "../../../stores/SessionStore";
@@ -87,7 +87,7 @@ class NetworkCreateOrEdit extends Component {
     // * returing from ouath attempt on a network create/update
     const { props } = this
     const { network, networkProtocols, isNew } = props
-    const queryParams = qs.parse(pathOr({}, [ 'location', 'search' ],  props));
+    const queryParams = parseQueryString(pathOr({}, [ 'location', 'search' ],  props));
     const oauthStatus = propOr('', 'oauthStatus', queryParams);
     const opts = { queryParams, network, networkProtocols }
     const { networkProtocolSet, networkProtocol, typeId } = isNew
