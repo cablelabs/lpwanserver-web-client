@@ -1,8 +1,8 @@
 import React from 'react';
 import PT from 'prop-types';
 import { withRouter } from 'react-router';
-import qs from 'query-string';
 import { propOr, pathOr } from 'ramda';
+import { parseQueryString } from '../utils/stringUtils'
 
 //
 // forces a ReMount of a component
@@ -20,8 +20,8 @@ class ReMount extends React.Component {
   };
 
   componentDidMount() {
-    const queryParams = qs.parse(pathOr({}, [ 'location', 'search' ], this.props));
-    const to = propOr('', 'to', queryParams);
+    const params = parseQueryString(pathOr({}, [ 'location', 'search' ], this.props))
+    const to = propOr('', 'to', params);
     to && this.props.history.push(to);
   }
 

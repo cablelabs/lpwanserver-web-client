@@ -13,7 +13,6 @@
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.2.0",
     "prop-types": "^15.6.0",
-    "query-string": "^6.1.0",
     "ramda": "^0.25.0",
     "ramda-adjunct": "^2.9.0",
     "react": "^15.6.2",
@@ -24,7 +23,6 @@
     "react-responsive-modal": "^3.2.0",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "^1.1.4",
     "react-select": "^1.0.0-rc.10",
     "react-spinners": "^0.2.6",
     "react-tooltip": "^3.6.1"
@@ -32,14 +30,17 @@
   "scripts": {
     "local": "env-cmd .env.local react-scripts start",
     "start": "react-scripts start",
-    "dev": "npm install && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "package": "node bin/package.js",
+    "clean": "node bin/clean.js"
   },
   "devDependencies": {
     "eslint": "^5.2.0",
     "eslint-plugin-babel": "^5.1.0",
-    "eslint-plugin-react": "^7.10.0"
+    "eslint-plugin-react": "^7.10.0",
+    "fs-extra": "^7.0.0",
+    "react-scripts": "^1.1.5"
   }
 }

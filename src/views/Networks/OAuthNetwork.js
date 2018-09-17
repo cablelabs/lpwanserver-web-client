@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { pathOr, propOr, isEmpty, pick, keys } from 'ramda';
-import qs from 'query-string';
-import { capitalize, removeUnderscores } from '../../utils/stringUtils';
+import { capitalize, removeUnderscores, parseQueryString } from '../../utils/stringUtils';
 import { dispatchError } from '../../utils/errorUtils';
 import networkStore from '../../stores/NetworkStore';
 import networkProtocolStore from '../../stores/NetworkProtocolStore';
@@ -42,7 +41,7 @@ class OAuthNetwork extends Component {
     const targetNetworkId = sessionStore.getSetting('oauthNetworkTarget');
     const oauthStartTime = Number(sessionStore.getSetting('oauthStartTime'));
 
-    const queryParams = qs.parse(pathOr({}, [ 'location', 'search' ], props));
+    const queryParams = parseQueryString(pathOr({}, [ 'location', 'search' ], props));
     const elapsedTime = Date.now() - oauthStartTime;
 
     sessionStore.removeSetting('oauthNetworkTarget');
