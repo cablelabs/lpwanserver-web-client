@@ -8,6 +8,9 @@ services:
     image: lpwanserver-web-client-dev
     environment:
       - NODE_ENV=development
+      - REACT_APP_REST_SERVER_URL=http://localhost:3200
+      - REACT_APP_PUBLIC_BASE_URL=http://localhost:3000
+      - REACT_APP_OAUTH_TIMEOUT=10
     volumes:
       - ../..:/app
     ports:

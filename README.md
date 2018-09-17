@@ -6,14 +6,27 @@ The web client is a React single page application.
 
 ### System software requirements
 
-The LPWAN development environment is based on Docker and Powershell.
+The LPWAN Server Web Client development environment is based on Docker and Node.
 
 - [Docker (and Docker Compose)](https://docs.docker.com)
-- [Powershell](https://docs.microsoft.com/en-us/powershell/scripting/PowerShell-Scripting?view=powershell-6)
+- [Node](https://nodejs.org)
 
-### Set script ownership and permissions
+### Start the development environment
 
-```
-sudo chown $USER bin/*
-sudo chmod 755 bin/*
-```
+`npm run dev`
+
+Starts docker-compose for file at `/docker/dev/docker-compose.yml`.
+App is available at `http://localhost:3000`.
+
+### Bin Scripts
+
+#### package.js
+`npm run package`
+
+The package script creates a docker image based on nginx.
+The nginx server is configured to serve the assets in the build directory as a single-page-application.
+
+#### clean.js
+`npm run clean`
+
+The clean script removes the build folder and all docker images created by this repo.
