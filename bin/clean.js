@@ -8,7 +8,6 @@ const atPath = (...args) => path.join(__dirname, ...args)
 
 const rcImage = `${component.registry}/${component.name}:${component.version}-${component.build}-rc`
 const latestImage = `${component.registry}/${component.name}:latest`
-const devImage = `${component.name}-dev`
 
 async function clean () {
   console.info('Remove build directory')
@@ -17,8 +16,6 @@ async function clean () {
   await exec(`docker rmi ${rcImage} --force`)
   console.info(`Forcefully removing latest image [${latestImage}]`)
   await exec(`docker rmi ${latestImage} --force`)
-  console.info(`Forcefully removing dev image [${devImage}]`)
-  await exec(`docker rmi ${devImage} --force`)
 }
 
 clean().catch(console.error)
