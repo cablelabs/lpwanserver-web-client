@@ -33,6 +33,14 @@ localhost:3200 is the default, listed in the `.env` file.
 To develop against a locally running LPWAN Server, clone the [lpwanserver](https://github.com/cablelabs/lpwanserver)
 repository and follow the README to start the development environment.
 
+### Build
+
+```
+// puts files in build folder
+npm run build
+
+```
+
 ### Bin Scripts
 
 #### package.js

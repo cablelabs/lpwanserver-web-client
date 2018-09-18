@@ -32,15 +32,20 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "test:browser": "BROWSER=chrome jest --config browser-tests/jest.conf.js",
     "eject": "react-scripts eject",
     "package": "node bin/package.js",
     "clean": "node bin/clean.js"
   },
   "devDependencies": {
+    "chromedriver": "^2.41.0",
     "eslint": "^5.2.0",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
     "fs-extra": "^7.0.0",
-    "react-scripts": "^1.1.5"
+    "geckodriver": "^1.12.2",
+    "jest": "^23.6.0",
+    "react-scripts": "^1.1.5",
+    "selenium-webdriver": "^3.6.0"
   }
 }
