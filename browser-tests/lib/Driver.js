@@ -26,8 +26,7 @@ module.exports = async function setupSeleniumDriver () {
 
   const driverProxy = new Proxy(driverExtension, {
     get: function(obj, prop) {
-      if (prop in obj) return obj[prop]
-      return seleniumDriver[prop]
+      return prop in obj ? obj[prop] : seleniumDriver[prop]
     }
   })
 

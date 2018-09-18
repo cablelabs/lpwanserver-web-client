@@ -1,7 +1,9 @@
 let { BROWSER } = process.env
 
 module.exports = async function globalSetup (config) {
-  if (!BROWSER) BROWSER = 'chrome'
+  if (!BROWSER) {
+    throw new Error('BROWSER environment variable must be either chrome or firefox.')
+  }
   if (BROWSER === 'chrome') importChrome()
   if (BROWSER === 'firefox') importFirefox()
 }
