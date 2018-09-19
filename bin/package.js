@@ -7,12 +7,15 @@ const atPath = (...args) => path.join(__dirname, ...args)
 
 const image = `${component.registry}/${component.name}:${component.version}-${component.build}-rc`
 const latestImage = `${component.registry}/${component.name}:latest`
+const browserTestImage = `${component.registry}/browser-test:latest`
 
 const cwd = atPath('..')
 
 async function package () {
   await exec(`docker build -f docker/Dockerfile -t ${image} -t ${latestImage} .`, { cwd })
   console.info('The container was successfully built.')
+  await exec(`docker build -f docker/Dockerfile.browsertest -t ${browserTestImage} .`, { cwd })
+  console.info('The browser test container was successfully built.')
 }
 
 package().catch(console.error)

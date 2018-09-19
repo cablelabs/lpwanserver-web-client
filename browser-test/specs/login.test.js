@@ -1,9 +1,10 @@
-const { By } = require('selenium-webdriver')
+const { By, until } = require('selenium-webdriver')
 const setupDriver = require('../lib/Driver')
 const Login = require('../pages/Login')
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 60 * 5
 
-const rootURL = 'http:localhost:3000'
+const rootURL = `http://${process.env.WEB_CLIENT_HOST}`
+console.log(rootURL)
 let driver, loginPage
 
 beforeAll(async () => {

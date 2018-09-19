@@ -20,8 +20,13 @@ class Driver {
   }
 }
 
+const { BROWSER, HUB_HOST, HUB_PORT } = process.env
+
 module.exports = async function setupSeleniumDriver () {
-  const seleniumDriver = await new Builder().forBrowser(process.env.BROWSER).build()
+  const seleniumDriver = await new Builder()
+    .forBrowser(BROWSER)
+    .usingServer(`http://${HUB_HOST}:${HUB_PORT}/wd/hub`)
+    .build()
   const driverExtension = new Driver(seleniumDriver)
 
   const driverProxy = new Proxy(driverExtension, {
@@ -32,6 +37,7 @@ module.exports = async function setupSeleniumDriver () {
 
   await seleniumDriver.manage().window().setPosition(0, 0)
   await seleniumDriver.manage().window().setSize(1280, 1024)
+  await seleniumDriver.sleep(5000)
 
   return driverProxy
 }
