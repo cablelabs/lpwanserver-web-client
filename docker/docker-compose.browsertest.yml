@@ -30,21 +30,25 @@ services:
     image: lpwanserver/browser-test
     depends_on:
       - lpwanserver
+      - chrome
     environment:
       - BROWSER=chrome
       - HUB_HOST=selenium_hub
       - HUB_PORT=4444
       - WEB_CLIENT_HOST=lpwanserver_web_client
+      - WEB_CLIENT_PORT=80
 
   browser_test_firefox:
     image: lpwanserver/browser-test
     depends_on:
       - lpwanserver
+      - firefox
     environment:
       - BROWSER=firefox
       - HUB_HOST=selenium_hub
       - HUB_PORT=4444
       - WEB_CLIENT_HOST=lpwanserver_web_client
+      - WEB_CLIENT_PORT=80
 
   lpwanserver:
     image: lpwanserver/lpwanserver
@@ -58,7 +62,7 @@ services:
       - 3200:3200
 
   lpwanserver_web_client:
-    image: lpwanserver/lpwanserver-web-client
+    image: lpwanserver/browser-test-ui-server
     ports:
       - 80:80
 

@@ -12,9 +12,10 @@ RUN npm install
 # copy all project
 COPY . .
 
-ENV BROWSER=chrome
+ENV BROWSER=
 ENV HUB_HOST=
 ENV HUB_PORT=
 ENV WEB_CLIENT_HOST=
+ENV WEB_CLIENT_PORT=
 
 CMD [ "npm", "run", "test:browser" ]

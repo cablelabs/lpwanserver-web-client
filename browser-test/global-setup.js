@@ -1,19 +1,16 @@
-let { BROWSER } = process.env
+let { BROWSER, HUB_HOST } = require('./config')
 
 module.exports = async function globalSetup (config) {
-  if (!BROWSER) {
-    throw new Error('BROWSER environment variable must be either chrome or firefox.')
-  }
   if (BROWSER === 'chrome') importChrome()
   if (BROWSER === 'firefox') importFirefox()
 }
 
 function importChrome () {
   require('selenium-webdriver/chrome')
-  require('chromedriver')
+  if (!HUB_HOST) require('chromedriver')
 }
 
 function importFirefox () {
   require('selenium-webdriver/firefox')
-  require('geckodriver')
+  if (!HUB_HOST) require('geckodriver')
 }
