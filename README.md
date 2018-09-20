@@ -11,11 +11,19 @@ The LPWAN Server Web Client development environment is based on Docker and Node.
 - [Docker (and Docker Compose)](https://docs.docker.com)
 - [Node](https://nodejs.org)
 
+
 ### Installation
 
 `npm install`
 
+
 ### Start the development environment
+
+#### LPWAN Server
+
+1. CD into the cloned [lpwanserver](https://github.com/cablelabs/lpwanserver) repo.
+2. Run `npm install && npm run package`.  This creates a docker image for lpwanserver.
+3. Run `docker-compose -f docker/docker-compose.yml up`.
 
 #### UI Server
 
@@ -28,10 +36,6 @@ You can set the lpwanserver URL with REACT_APP_REST_SERVER_URL.
 
 localhost:3200 is the default, listed in the `.env` file.
 
-#### LPWAN Server
-
-To develop against a locally running LPWAN Server, clone the [lpwanserver](https://github.com/cablelabs/lpwanserver)
-repository and follow the README to start the development environment.
 
 ### Build
 
@@ -41,16 +45,17 @@ npm run build
 
 ```
 
+
 ### Bin Scripts
 
-#### package.js
-`npm run package`
+#### package-browser-test.js
 
-The package script creates a docker image based on nginx.
-You must run `npm run build` before package in order to build the application.
-The nginx server is configured to serve the assets in the build directory as a single-page-application.
+`node ./bin/package-browser-test.js`
+
+See TESTING.md.
 
 #### clean.js
+
 `npm run clean`
 
 The clean script removes the build folder and all docker images created by this repo.

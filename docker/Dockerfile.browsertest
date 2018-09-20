@@ -1,0 +1,21 @@
+FROM node:10
+
+# set working directory
+WORKDIR /app
+
+# Copy project file
+COPY package*.json ./
+
+# install ALL node_modules
+RUN npm install
+
+# copy all project
+COPY . .
+
+ENV BROWSER=
+ENV HUB_HOST=
+ENV HUB_PORT=
+ENV WEB_CLIENT_HOST=
+ENV WEB_CLIENT_PORT=
+
+CMD [ "npm", "run", "test:browser" ]

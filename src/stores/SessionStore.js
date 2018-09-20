@@ -6,6 +6,7 @@ import companyStore from "./CompanyStore";
 import { dissocPath, lensPath, set as lensSet } from 'ramda';
 
 let rest_url = process.env.REACT_APP_REST_SERVER_URL;
+console.log('rest_url', rest_url)
 
 
 var loginErrorHandler = (error) => {
