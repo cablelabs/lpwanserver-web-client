@@ -33,7 +33,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "test:browser": "jest --config browser-test/jest.conf.js",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "package": "node bin/package.js"
   },
   "devDependencies": {
     "chromedriver": "^2.42.0",
