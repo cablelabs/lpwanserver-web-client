@@ -19,7 +19,6 @@ class UserStore extends EventEmitter {
     }
     async getUserMe () {
         const response = await this.fetch('me')
-        console.log('getUserMe', response)
         this.emit('get-user-me', response)
         return response
     }

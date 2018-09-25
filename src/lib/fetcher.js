@@ -32,7 +32,9 @@ export function fetchJsonFullResponse (url, opts) {
 }
 
 export function fetchJson (url, opts) {
-  return fetchJsonFullResponse(url, opts).then(function (x) { return x.json() })
+  return fetchJsonFullResponse(url, opts).then(function (x) {
+    return x.status === 204 ? x : x.json()
+  })
 }
 
 export function joinUrl (...urls) {
