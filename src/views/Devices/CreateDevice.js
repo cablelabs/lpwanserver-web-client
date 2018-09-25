@@ -36,7 +36,6 @@ class CreateDevice extends Component {
           let id = await deviceStore.createDevice( this.state.device );
           // Need to update the ID so the app links can get created
           let dev = this.state.device;
-          console.log( "ID", id );
           dev.id = id.id;
           this.setState( { device: dev }, async function() {
               try {

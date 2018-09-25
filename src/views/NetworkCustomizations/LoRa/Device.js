@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import deviceStore from "../../../stores/DeviceStore";
+import { assocPath } from 'ramda'
 
 // The LoRa device network settings data entry.
 //
@@ -11,13 +12,15 @@ class LoRaDeviceNetworkSettings extends Component {
         let initValue = {
             devEUI: "",
             appKey: "",
-            devAddr: "",
-            nwkSKey: "",
-            appSKey: "",
-            fCntUp: 0,
-            fCntDown: 0,
             skipFCntCheck: false,
             isABP: false,
+            deviceActivation: {
+                appSKey: "",
+                devAddr: "",
+                fCntUp: 0,
+                aFCntDown: 0,
+                nwkSEncKey: "",
+            }
         };
         this.state = {
             enabled: false,
@@ -32,11 +35,10 @@ class LoRaDeviceNetworkSettings extends Component {
 
         this.select = this.select.bind(this);
         this.deselect = this.deselect.bind(this);
-        this.onTextChange = this.onTextChange.bind(this);
+        this.onActivationChange = this.onActivationChange.bind(this);
         this.onSubmit = this.onSubmit.bind( this );
         this.isChanged = this.isChanged.bind( this );
         this.isEnabled = this.isEnabled.bind( this );
-        this.getMyLinkRecord = this.getMyLinkRecord.bind( this );
     }
 
     async getMyDeviceProfiles( appId, netId ) {
@@ -62,8 +64,7 @@ class LoRaDeviceNetworkSettings extends Component {
         // Skip trying to load new records
         if ( !props.parentRec ||
              ( !props.parentRec.id || 0 === props.parentRec.id ) ) {
-            this.setState( { enabled: false } );
-            return;
+            return { enabled: false }
         }
         try {
             const rec = await deviceStore.getDeviceNetworkType(props.parentRec.id, props.netRec.id)
@@ -103,25 +104,19 @@ class LoRaDeviceNetworkSettings extends Component {
         });
     }
 
-    onTextChange( field, event ) {
-        let v = this.state.value;
-        v[ field ] = event.target.value;
-        this.setState( { value: v } );
+    getEventValue ({ target }) {
+        switch (target.type) {
+            case 'number': return parseInt(target.value, 10)
+            case 'checkbox': return target.checked
+            default: return target.value
+        }
     }
 
     onActivationChange( field, e ) {
         e.preventDefault();
-
-        let v = this.state.value;
-
-        if (e.target.type === "number") {
-          v[field] = parseInt(e.target.value, 10);
-        } else if (e.target.type === "checkbox") {
-          v[field] = e.target.checked;
-        } else {
-          v[field] = e.target.value;
-        }
-        this.setState( { value: v } );
+        this.setState({
+            value: assocPath(field.split('.'), this.getEventValue(e), this.state.value)
+        })
     }
 
     onSelectionChange(field, e) {
@@ -218,11 +213,7 @@ class LoRaDeviceNetworkSettings extends Component {
        for( let i = 0; i < size; ++i ) {
            rnd += chars.charAt( Math.floor( Math.random() * chars.length ) );
        }
-
-       let value = this.state.value;
-       value[ field ] = rnd;
-
-       this.setState( { value: value } );
+       this.setState({ value: assocPath(field.split('.'), rnd, this.state.value) })
     }
 
     render() {
@@ -256,7 +247,7 @@ class LoRaDeviceNetworkSettings extends Component {
                            value={this.state.value.devEUI}
                            placeholder="0000000000000000"
                            pattern="[0-9a-fA-F]{16}"
-                           onChange={this.onTextChange.bind( this, 'devEUI' )} />
+                           onChange={this.onActivationChange.bind( this, 'devEUI' )} />
                     <p className="help-block">
                         A 16-hex-digit string used to identify the device
                         on LoRa networks.
@@ -267,39 +258,42 @@ class LoRaDeviceNetworkSettings extends Component {
                         <label className="control-label"
                                htmlFor="devAddr">Device Address</label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'devAddr', 8 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.devAddr', 8 )} className="btn btn-xs">generate</button>
                         <input className="form-control"
                                id="devAddr"
                                type="text"
                                placeholder="00000000"
                                pattern="[a-fA-F0-9]{8}"
                                required={this.state.isABP}
-                               value={this.state.value.devAddr || ''}
-                               onChange={this.onActivationChange.bind(this, 'devAddr')} />
+                               value={this.state.value.deviceActivation.devAddr || ''}
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.devAddr')} />
                     </div>
                     <div className="form-group">
                         <label className="control-label"
-                               htmlFor="nwkSKey">Network session key</label>
+                               htmlFor="nwkSEncKey">Network session key</label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'nwkSKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.nwkSEncKey', 32 )} className="btn btn-xs">generate</button>
                         <input className="form-control"
-                               id="nwkSKey"
+                               id="nwkSEncKey"
                                type="text"
                                placeholder="00000000000000000000000000000000"
                                pattern="[A-Fa-f0-9]{32}"
                                required={this.state.isABP}
-                               value={this.state.value.nwkSKey || ''}
-                               onChange={this.onActivationChange.bind(this, 'nwkSKey')} />
+                               value={this.state.value.deviceActivation.nwkSEncKey || ''}
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.nwkSEncKey')} />
                     </div>
                     <div className="form-group">
                         <label className="control-label"
                                htmlFor="appSKey">Application session key</label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'appSKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.appSKey', 32 )} className="btn btn-xs">generate</button>
                         <input className="form-control"
                                id="appSKey"
                                type="text" placeholder="00000000000000000000000000000000"
-                               pattern="[A-Fa-f0-9]{32}"  required={this.state.isABP} value={this.state.value.appSKey || ''}  onChange={this.onActivationChange.bind(this, 'appSKey')} />
+                               pattern="[A-Fa-f0-9]{32}"
+                               required={this.state.isABP}
+                               value={this.state.value.deviceActivation.appSKey || ''} 
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.appSKey')} />
                     </div>
                     <div className="form-group">
                         <label className="control-label"
@@ -309,19 +303,19 @@ class LoRaDeviceNetworkSettings extends Component {
                                type="number"
                                min="0"
                                required={this.state.isABP}
-                               value={this.state.value.fCntUp || 0}
-                               onChange={this.onActivationChange.bind(this, 'fCntUp')} />
+                               value={this.state.value.deviceActivation.fCntUp || 0}
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.fCntUp')} />
                     </div>
                     <div className="form-group">
                         <label className="control-label"
                                htmlFor="rx2DR">Downlink frame-counter</label>
                         <input className="form-control"
-                               id="fCntDown"
+                               id="aFCntDown"
                                type="number"
                                min="0"
                                required={this.state.isABP}
-                               value={this.state.value.fCntDown || 0}
-                               onChange={this.onActivationChange.bind(this, 'fCntDown')}
+                               value={this.state.value.deviceActivation.aFCntDown || 0}
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.aFCntDown')}
                              />
                     </div>
                     <div className="form-group">
@@ -360,7 +354,7 @@ class LoRaDeviceNetworkSettings extends Component {
                                name="appKey" placeholder="00000000000000000000000000000000"
                                value={this.state.value.appKey || ''}
                                pattern="[0-9a-fA-F]{32}"
-                               onChange={this.onTextChange.bind( this, 'appKey')} />
+                               onChange={this.onActivationChange.bind( this, 'appKey')} />
                         <p className="help-block">
                             A 32-hex-digit string used to identify the device
                             on LoRa networks.
