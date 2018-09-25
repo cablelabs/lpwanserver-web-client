@@ -1,5 +1,5 @@
 import sessionStore, {rest_url} from "./SessionStore";
-import {errorHandler, fetchJson, paginationQuery} from "./helpers";
+import {paginationQuery, fetchJson} from "./helpers";
 import {EventEmitter} from "events";
 import Collection from './collection'
 import flyd from 'flyd'
@@ -8,8 +8,7 @@ import { omit } from 'ramda'
 class NetworkStore extends EventEmitter {
   constructor () {
     super()
-    this.baseUrl = `${rest_url}/api/networks`
-
+    
     // state
     this.networks = new Collection()
     this.networkPage = flyd.stream({ totalCount: 0, records: [] })
@@ -21,79 +20,59 @@ class NetworkStore extends EventEmitter {
       'masterProtocol',
       (a,b) => b.networkProtocolId < a.networkProtocolId
     )
+    
+    // util
+    this.fetch = fetchJson(`${rest_url}/api/networks`, () => sessionStore.getHeader() )
   }
 
   // actions
   async getNetworks( pageSize, offset ) {
     const pgQuery = paginationQuery(pageSize, offset);
-    const url = `${this.baseUrl}${pgQuery ? '?' : ''}${pgQuery}`
-    try {
-      const response = await fetchJson(url, { headers: sessionStore.getHeader() })
-      if (!response) return
-      this.networkPage(response)
-      this.networks.insert(response.records)
-      return response
-    } catch (err) {
-      errorHandler(err)
-      throw err
-    }
+    const response = await this.fetch(`${pgQuery ? '?' : ''}${pgQuery}`)
+    if (!response) return
+    this.networkPage(response)
+    this.networks.insert(response.records)
+    return response
   }
+
   async getNetworkGroups() {
-    try {
-      const response = await fetchJson(`${this.baseUrl}/group`, {
-        headers: sessionStore.getHeader()
-      })
-      if (!response) return
-      response.records.forEach(record => {
-        this.networks.insert(record.networks.map(x => ({
-          ...x,
-          masterProtocol: record.masterProtocol
-        })))
-      })
-      this.groups.insert(response.records.map(x => omit(['networks'], x)))
-    } catch (e) {
-      errorHandler(e)
-      throw e
-    }
-  }
-  async createNetwork (rec) {
-    const response = await fetchJson(this.baseUrl, {
-      method: 'post',
-      headers: sessionStore.getHeader(),
-      body: JSON.stringify(rec)
+    const response = await  this.fetch('group')
+    if (!response) return
+    response.records.forEach(record => {
+      this.networks.insert(record.networks.map(x => ({
+        ...x,
+        masterProtocol: record.masterProtocol
+      })))
     })
+    this.groups.insert(response.records.map(x => omit(['networks'], x)))
+  }
+
+  async createNetwork (body) {
+    const response = await this.fetch('', { method: 'post', body })
     this.networks.insert(response)
     return response
   }
+
   async getNetwork (id) {
-    const response = await fetchJson(`${this.baseUrl}/${id}`, {
-      headers: sessionStore.getHeader()
-    })
+    const response = await this.fetch(id)
     this.networks.insert(response)
     return response
   }
-  async updateNetwork (rec) {
-    const response = await fetchJson(`${this.baseUrl}/${rec.id}`, {
-      method: 'put',
-      headers: sessionStore.getHeader(),
-      body: JSON.stringify(rec)
-    })
+
+  async updateNetwork (body) {
+    const response = await this.fetch(body.id, { method: 'put', body })
     this.networks.insert(response)
     return response
   }
+
   async deleteNetwork (id) {
-    await fetchJson(`${this.baseUrl}/${id}`, {
-      method: 'delete',
-      headers: sessionStore.getHeader(),
-    })
-    return
+    const response = await this.fetch(id, { method: 'delete' })
+    this.networks.remove(id)
+    return response
   }
+
   async pullNetwork (id) {
-    await fetchJson(`${this.baseUrl}/${id}/pull`, {
-      method: 'post',
-      headers: sessionStore.getHeader()
-    })
-    return
+    return this.fetch(`${id}/pull`, { method: 'post' })
   }
 }
 

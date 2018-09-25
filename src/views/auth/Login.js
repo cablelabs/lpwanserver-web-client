@@ -16,28 +16,26 @@ class Login extends Component {
       login: {},
     };
 
-
     this.onSubmit = this.onSubmit.bind(this);
   }
 
   componentWillMount() {
     sessionStore.logout(() => {});
+    sessionStore.once('session-data-loaded', () => {
+      this.props.history.push("/")
+    })
   }
 
   onChange(field, e) {
     let login = this.state.login;
     login[field] = e.target.value;
-    this.setState({
-      login: login,
-    });
+    this.setState({ login });
   }
 
   onSubmit(e) {
     e.preventDefault();
     ErrorStore.clear();
-    sessionStore.login(this.state.login, (token) => {
-      this.props.history.push("/");
-    });
+    sessionStore.login(this.state.login)
   }
 
   render() {

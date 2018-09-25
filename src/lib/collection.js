@@ -41,4 +41,7 @@ export default class Collection {
 	getAll () {
 		return this.records
 	}
+	remove (id) {
+		this.records(this.records().filter(x => x[this.idKey] !== id))
+	}
 }
