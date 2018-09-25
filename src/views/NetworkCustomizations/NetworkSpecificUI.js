@@ -21,7 +21,7 @@ class NetworkSpecificUI extends Component {
     // gets more complex.
     let selectionType = "checkbox";
     if ( "DeviceProfile" === props.dataName ) {
-            selectionType = "radio";
+        selectionType = "radio";
     }
 
     //props.dataName - "Company", "Application", "DeviceProfile", "Device"
@@ -190,36 +190,27 @@ class NetworkSpecificUI extends Component {
 
   // Called by framework before the UI displays.
   async componentWillMount() {
+      let nts
       // We need to know about all available networkTypes for this data type.
       switch ( this.props.dataName ) {
         case "Company":
             // Companies show all networkTypes possible
-            let nts = await networkTypeStore.getNetworkTypes(); this.populateNetworkTypes( nts );
+            nts = await networkTypeStore.getNetworkTypes(); this.populateNetworkTypes( nts );
             break;
         case "Application":
         case "DeviceProfile":
             // Applications and Device Profiles show all networkTypes enabled
             // to their company.
             let cnts = await companyStore.getAllCompanyNetworkTypes( this.props.referenceDataId );
-
             // Get the networkTypeRecords.
-            nts = [];
-            for( let i = 0; i < cnts.length; ++i ) {
-                let nt = await networkTypeStore.getNetworkType( cnts[ i ].networkTypeId );
-                nts.push( nt );
-            }
+            nts = await Promise.all(cnts.map(x => networkTypeStore.getNetworkType(x.networkTypeId)))
             this.populateNetworkTypes( nts );
             break;
         case "Device":
             // Devices show all networkTypes enabled to their application
             let ants = await applicationStore.getAllApplicationNetworkTypes( this.props.referenceDataId );
-
             // Get the networkTypeRecords.
-            nts = [];
-            for( let i = 0; i < ants.length; ++i ) {
-                let nt = await networkTypeStore.getNetworkType( ants[ i ].networkTypeId );
-                nts.push( nt );
-            }
+            nts = await Promise.all(ants.map(x => networkTypeStore.getNetworkType(x.networkTypeId)))
             this.populateNetworkTypes( nts );
             break;
         default:

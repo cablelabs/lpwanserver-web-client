@@ -32,17 +32,11 @@ export function fetchJsonFullResponse (url, opts) {
 }
 
 export function fetchJson (url, opts) {
-  return fetchJsonFullResponse(url, opts).then(function (x) { return x.json() })
+  return fetchJsonFullResponse(url, opts).then(function (x) {
+    return x.status === 204 ? x : x.json()
+  })
 }
 
-export const extendUrl = (baseUrl, fn) => (url, opts) => {
-  if (baseUrl) url = (baseUrl + url).replace(/([^:]\/)\/+/g, '$1')
-  return fn(url, opts)
-}
-
-export function Fetcher ({ baseUrl }) {
-  const fetcher = extendUrl(baseUrl, _fetch)
-  fetcher.jsonFullResponse = extendUrl(baseUrl, fetchJsonFullResponse)
-  fetcher.json = extendUrl(baseUrl, fetchJson)
-  return fetcher
+export function joinUrl (...urls) {
+  return urls.join('/').replace(/([^:]\/)\/+/g, '$1').replace('/?', '?')
 }

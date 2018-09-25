@@ -1,4 +1,5 @@
 import dispatcher from "../dispatcher";
+import { fetchJson as _fetchJson, joinUrl } from '../lib/fetcher'
 
 export function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
@@ -65,17 +66,25 @@ export function remoteErrorDisplay( returnedRec ) {
     }
 }
 
-export function fetchJson (url, opts) {
-  opts.headers.Accept = 'application/json'
-  opts.headers['Content-Type'] = 'application/json'
-  return fetch(url, opts)
-    .then(checkStatus)
-    .then(x => x.json())
-}
-
 export function paginationQuery (pageSize, offset) {
   let result = ''
   if (pageSize) result += `limit=${pageSize}${offset ? '&' : ''}`
   if (offset) result += `offset=${offset}`
   return result
+}
+
+export const fetchJson = (baseUrl, getAuthHeaders) => (url, opts = {}) => {
+    if (getAuthHeaders) {
+        opts = {
+            ...opts,
+            headers: {
+                ...getAuthHeaders(),
+                ...(opts.headers || {})
+            }
+        }
+    }
+    return _fetchJson(joinUrl(baseUrl, url), opts).catch(err => {
+        errorHandler(err)
+        throw err
+    })
 }

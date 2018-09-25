@@ -1,21 +1,16 @@
 import { EventEmitter } from "events";
-import { checkStatus } from "./helpers";
+import _fetch from '../lib/fetcher'
 import dispatcher from "../dispatcher";
-import userStore from "./UserStore";
-import companyStore from "./CompanyStore";
 import { dissocPath, lensPath, set as lensSet } from 'ramda';
 
-let rest_url = process.env.REACT_APP_REST_SERVER_URL;
-console.log('rest_url', rest_url)
+export const rest_url = process.env.REACT_APP_REST_SERVER_URL;
 
-
-var loginErrorHandler = (error) => {
+const loginErrorHandler = (error) => {
     dispatcher.dispatch({
         type: "CREATE_ERROR",
         error: error
     });
 };
-
 
 class SessionStore extends EventEmitter {
     constructor() {
@@ -84,55 +79,22 @@ class SessionStore extends EventEmitter {
     }
 
     getHeader() {
-        var token = this.getToken();
-        if ( token && ( token !== "") ) {
-            return {
-                "Authorization": "Bearer " + token,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            };
-        }
-        else {
-            return {};
-        }
+        const token = this.getToken()
+        return !token ? {} : { authorization: `Bearer ${token}`}
     }
 
-
-    login(login, callbackFunc) {
-        var me = this;
-        fetch( rest_url + "/api/sessions", {
-                method: "POST",
-                credentials: 'same-origin',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify( login ),
-        })
-        .then(checkStatus)
-        .then((response) => response.text())
-        .then((responseData) => {
-            this.setToken(responseData);
-            me.saveMeToStore();
-
-            userStore.getUserMe().then( ( u ) => {
-                me.user = u;
-                me.saveMeToStore();
-                companyStore.getCompany( u.companyId ).then( function( c ) {
-                    me.company = c;
-                    me.saveMeToStore();
-                    callbackFunc();
-                    me.emit("change");
-                })
-                .catch( function( err ) {
-                    console.log( "Failed to get user's company: " + err );
-                });
-            })
-            .catch( function( err ) {
-                console.log( "Failed to get user: " + err );
-            });
-        })
-        .catch(loginErrorHandler);
+    async login (body) {
+        try {
+            const headers = { 'content-type': 'application/json' }
+            const opts = { method: 'post', headers, body: JSON.stringify(body) }
+            const response = await _fetch(`${rest_url}/api/sessions`, opts).then(x => x.text())
+            this.setToken(response)
+            this.saveMeToStore()
+            this.emit('session-started')
+        } catch (err) {
+            loginErrorHandler(err)
+            throw err
+        }
     }
 
     saveMeToStore() {
@@ -187,8 +149,4 @@ class SessionStore extends EventEmitter {
 
 }
 
-
-const sessionStore = new SessionStore();
-
-export {rest_url};
-export default sessionStore;
+export default new SessionStore();

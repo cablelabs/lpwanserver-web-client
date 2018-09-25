@@ -1,73 +1,59 @@
 import sessionStore, {rest_url} from "./SessionStore";
-import {errorHandler, fetchJson} from "./helpers";
+import {fetchJson} from "./helpers";
 import {EventEmitter} from "events";
 import Collection from './collection'
 
 class NetworkProtocolStore extends EventEmitter {
   constructor () {
     super()
-    this.baseUrl = `${rest_url}/api/networkProtocols`
+
+    // state
     this.protocols = new Collection()
     this.protocolHandlers = new Collection()
+
+    //util
+    this.fetch = fetchJson(
+      `${rest_url}/api/networkProtocols`,
+      () => sessionStore.getHeader()
+    )
+    this.fetchHandlers = fetchJson(
+      `${rest_url}/api/networkProtocolHandlers`,
+      () => sessionStore.getHeader()
+    )
   }
   async getNetworkProtocolHandlers () {
-    const url = `${rest_url}/api/networkProtocolHandlers`
-    try {
-      const response = await fetchJson(url, {
-        headers: sessionStore.getHeader()
-      })
-      if (!response || !response.records) return []
-      this.protocolHandlers.insert(response.records)
-      return response
-    } catch (err) {
-      errorHandler(err)
-      throw err
-    }
+    const response = await this.fetchHandlers()
+    if (!response || !response.records) return []
+    this.protocolHandlers.insert(response.records)
+    return response
   }
   async getNetworkProtocols () {
-    try {
-      const response = await fetchJson(this.baseUrl, {
-        headers: sessionStore.getHeader()
-      })
-      if (!response || !response.records) return []
-      this.protocols.insert(response.records)
-      return response
-    } catch (err) {
-      errorHandler(err)
-      throw err
-    }
+    const response = await this.fetch()
+    if (!response || !response.records) return []
+    this.protocols.insert(response.records)
+    return response
   }
   async createNetworkProtocol (name, protocolHandler, networkTypeId) {
-    const rec = { name, protocolHandler, networkTypeId }
-    const response = await fetchJson(this.baseUrl, {
+    const response = await this.fetch('', {
       method: 'post',
-      headers: sessionStore.getHeader(),
-      body: JSON.stringify(rec)
+      body: { name, protocolHandler, networkTypeId }
     })
     this.protocols.insert(response)
     return response.id
   }
   async getNetworkProtocol (id) {
-    const response = await fetchJson(`${this.baseUrl}/${id}`, {
-      headers: sessionStore.getHeader()
-    })
+    const response = await this.fetch(id)
     this.protocols.insert(response)
     return response
   }
-  async updateNetworkProtocol (rec) {
-    const response = await fetchJson(`${this.baseUrl}/${rec.id}`, {
-      method: 'put',
-      headers: sessionStore.getHeader(),
-      body: JSON.stringify(rec)
-    })
+  async updateNetworkProtocol (body) {
+    const response = await this.fetch(body.id, { method: 'put', body })
     this.protocols.insert(response)
     return
   }
   async deleteNetworkProtocol (id) {
-    await fetchJson(`${this.baseUrl}/${id}`, {
-      method: 'delete',
-      headers: sessionStore.getHeader(),
-    })
+    await this.fetch(id, { method: 'delete' })
+    this.protocols.remove(id)
     return
   }
 }

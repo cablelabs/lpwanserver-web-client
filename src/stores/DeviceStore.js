@@ -1,443 +1,103 @@
 import {EventEmitter} from "events";
-import "whatwg-fetch";
 import sessionStore, {rest_url} from "./SessionStore";
 import applicationStore from "./ApplicationStore";
-import {checkStatus, errorHandler, remoteErrorDisplay} from "./helpers";
-
-//import networkTypeStore from "./NetworkTypeStore";
-
+import {remoteErrorDisplay, fetchJson, paginationQuery} from "./helpers";
 
 class DeviceStore extends EventEmitter {
+    constructor () {
+        super()
 
-      createDevice( device ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-
-              fetch( rest_url + "/api/devices/",
-                     {
-                         method: "POST",
-                         body: JSON.stringify(device),
-                         credentials: 'same-origin',
-                         headers: header,
-              })
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  resolve( responseData );
-              })
-              .catch( function ( err ) {
-                  errorHandler( err );
-                  reject( err );
-              });
-          });
-      }
-
-      getDevice( deviceID ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch( rest_url + "/api/devices/" + deviceID,
-                     {
-                         method: "GET",
-                         credentials: 'same-origin',
-                         headers: header,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json'
-              })
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  resolve( responseData );
-              })
-              .catch( function ( err ) {
-                  errorHandler( err );
-                  reject( err );
-              });
-          });
-      }
-
-      updateDevice( device ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch( rest_url + "/api/devices/" + device.id,
-                     {
-                         method: "PUT",
-                         body: JSON.stringify( device ),
-                         credentials: 'same-origin',
-                         headers: header,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json'
-              })
-              .then(checkStatus)
-              .then((response) => {
-                  resolve();
-              })
-              .catch( function ( err ) {
-                  errorHandler( err );
-                  reject( err );
-              });
-          });
-      }
-
-      deleteDevice( deviceId ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch( rest_url + "/api/devices/" + deviceId,
-                     {
-                         method: "DELETE",
-                         credentials: 'same-origin',
-                         headers: header,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json'
-              })
-              .then(checkStatus)
-              .then((response) => {
-                  resolve();
-              })
-              .catch( function ( err ) {
-                  errorHandler( err );
-                  reject( err );
-              });
-          });
-      }
-
-      getAll( pageSize, offset, applicationId ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              let options = "";
-              if( pageSize || offset || applicationId ) {
-                  options += "?";
-                  let needsAnd = false;
-                  if ( pageSize ) {
-                      options += "limit=" + pageSize;
-                      needsAnd = true;
-                  }
-                  if ( offset ) {
-                      if ( needsAnd ) {
-                          options += "&";
-                      }
-                      options += "offset=" + offset;
-                      needsAnd = true;
-                  }
-                  if ( applicationId ) {
-                      if ( needsAnd ) {
-                          options += "&";
-                      }
-                      options += "applicationId=" + applicationId;
-                      needsAnd = true;
-                  }
-              }
-
-              fetch( rest_url + "/api/devices" + options,
-                     {
-                         method: "GET",
-                         credentials: 'same-origin',
-                         headers: header,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json'
-              })
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  resolve( responseData );
-              })
-              .catch( function ( err ) {
-                  errorHandler( err );
-                  reject( err );
-              });
-          });
-      }
-
-      createDeviceProfile( name, desc, coid, netid, netSettings ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              let rec = { name: name,
-                          description: desc,
-                          networkTypeId: netid,
-                          companyId: coid,
-                          networkSettings: netSettings };
-        console.log( "Sending:", rec );
-              fetch(rest_url + "/api/deviceProfiles",
-                  {
-                      method: "POST",
-                      credentials: 'same-origin',
-                      headers: header,
-                      body: JSON.stringify( rec ),
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  // Should just be an id
-                  resolve( responseData.id );
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
-
-      getDeviceProfile( dpid ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch(rest_url + "/api/deviceProfiles/" + dpid,
-                  {
-                      method: "GET", credentials: 'same-origin', headers: header,
-                      'Accept': 'application/json', 'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  resolve( responseData );
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
-
-      updateDeviceProfile( updatedRec ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch(rest_url + "/api/deviceProfiles/" + updatedRec.id,
-                  {
-                      method: "PUT",
-                      credentials: 'same-origin',
-                      headers: header,
-                      body: JSON.stringify( updatedRec ),
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  // Should just return 204
-                  resolve();
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
-
-      deleteDeviceProfile( id ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch(rest_url + "/api/deviceProfiles/" + id,
-                  {
-                      method: "DELETE",
-                      credentials: 'same-origin',
-                      headers: header,
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  // Should just return 204
-                  resolve();
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
-
-      getAllDeviceProfiles( pageSize, offset, companyId ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              let options = "";
-              if( pageSize || offset || companyId ) {
-                  options += "?";
-                  let needsAnd = false;
-                  if ( pageSize ) {
-                      options += "limit=" + pageSize;
-                      needsAnd = true;
-                  }
-                  if ( offset ) {
-                      if ( needsAnd ) {
-                          options += "&";
-                      }
-                      options += "offset=" + offset;
-                      needsAnd = true;
-                  }
-                  if ( companyId ) {
-                      if ( needsAnd ) {
-                          options += "&";
-                      }
-                      options += "companyId=" + companyId;
-                      needsAnd = true;
-                  }
-              }
-              fetch( rest_url + "/api/deviceProfiles" + options,
-                     {
-                         method: "GET",
-                         credentials: 'same-origin',
-                         headers: header,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json'
-              })
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  resolve( responseData );
-              })
-              .catch( function ( err ) {
-                  errorHandler( err );
-                  reject( err );
-              });
-          });
-      }
-
-      getAllDeviceProfilesForAppAndNetType( appId, netId ) {
-          return new Promise( async function( resolve, reject ) {
-              let app = await applicationStore.getApplication( appId );
-              let header = sessionStore.getHeader();
-              fetch( rest_url + "/api/deviceProfiles?companyId=" + app.companyId + "&networkTypeId=" + netId,
-                     {
-                         method: "GET",
-                         credentials: 'same-origin',
-                         headers: header,
-                         'Accept': 'application/json',
-                         'Content-Type': 'application/json'
-              })
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  resolve( responseData );
-              })
-              .catch( function ( err ) {
-                  errorHandler( err );
-                  reject( err );
-              });
-          });
-      }
-
-      createDeviceNetworkType( devid, netid, devProId, netSettings ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              let rec = { deviceId: devid,
-                          networkTypeId: netid,
-                          deviceProfileId: devProId,
-                          networkSettings: netSettings };
-              fetch(rest_url + "/api/deviceNetworkTypeLinks",
-                  {
-                      method: "POST",
-                      credentials: 'same-origin',
-                      headers: header,
-                      body: JSON.stringify( rec ),
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  // Should just be an id
-                  resolve( responseData.id );
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
-
-      getDeviceNetworkType( devid, netid ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch(rest_url + "/api/deviceNetworkTypeLinks?deviceId=" + devid + "&networkTypeId=" + netid,
-                  {
-                      method: "GET", credentials: 'same-origin', headers: header,
-                      'Accept': 'application/json', 'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((response) => response.json())
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  // Must be no more than one record - netid and appid are a compound key.
-                  if ( responseData && responseData.records &&
-                       ( 1 === responseData.records.length ) ) {
-                      resolve( responseData.records[ 0 ] );
-                  }
-                  else {
-                      console.log( responseData );
-                      reject( 404 );
-                  }
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
-
-      updateDeviceNetworkType( updatedRec ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch(rest_url + "/api/deviceNetworkTypeLinks/" + updatedRec.id,
-                  {
-                      method: "PUT",
-                      credentials: 'same-origin',
-                      headers: header,
-                      body: JSON.stringify( updatedRec ),
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  // Should just return 204
-                  resolve();
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
-
-      deleteDeviceNetworkType( id ) {
-          return new Promise( function( resolve, reject ) {
-              let header = sessionStore.getHeader();
-              fetch(rest_url + "/api/deviceNetworkTypeLinks/" + id,
-                  {
-                      method: "DELETE",
-                      credentials: 'same-origin',
-                      headers: header,
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                  }
-              )
-              .then(checkStatus)
-              .then((responseData) => {
-                  // Handle potential for remote errors
-                  remoteErrorDisplay( responseData );
-                  // Should just return 204
-                  resolve();
-              })
-              .catch( function( err ) {
-                  reject( err );
-              });
-          });
-      }
+        //util
+        this.fetch = fetchJson(
+            `${rest_url}/api/devices`,
+            () => sessionStore.getHeader()
+        )
+        this.fetchDeviceProfile = fetchJson(
+            `${rest_url}/api/deviceProfiles`,
+            () => sessionStore.getHeader()
+        )
+        this.fetchDeviceNtwkTypeLink = fetchJson(
+            `${rest_url}/api/deviceNetworkTypeLinks`,
+            () => sessionStore.getHeader()
+        )
+    }
+    createDevice (body) {
+        return this.fetch('', { method: 'post', body })
+    }
+    getDevice (id) {
+        return this.fetch(id)
+    }
+    updateDevice (body) {
+        return this.fetch(body.id, { method: 'put', body })
+    }
+    deleteDevice (id) {
+        return this.fetch(id, { method: 'delete' })
+    }
+    getAll (pageSize, offset, applicationId) {
+        let query = paginationQuery(pageSize, offset)
+        if (applicationId) query += `${query ? '&' : '?'}applicationId=${applicationId}`
+        return this.fetch(`${query ? '?' : ''}${query}`)
+    }
+    async createDeviceProfile (name, description, companyId, networkTypeId, networkSettings) {
+        const body = { name, description, companyId, networkTypeId, networkSettings }
+        const response = await this.fetchDeviceProfile('', { method: 'post', body })
+        remoteErrorDisplay(response)
+        return response.id
+    }
+    async getDeviceProfile (id) {
+        const response = await this.fetchDeviceProfile(id)
+        remoteErrorDisplay(response)
+        return response
+    }
+    async updateDeviceProfile (body) {
+        const response = await this.fetchDeviceProfile(body.id, { method: 'put', body })
+        remoteErrorDisplay(response)
+        return response
+    }
+    async deleteDeviceProfile (id) {
+        const response = await this.fetchDeviceProfile(id, { method: 'delete' })
+        remoteErrorDisplay(response)
+        return response
+    }
+    async getAllDeviceProfiles (pageSize, offset, companyId) {
+        let query = paginationQuery(pageSize, offset)
+        if (companyId) query += `${query ? '&' : '?'}companyId=${companyId}`
+        const response = await this.fetchDeviceProfile(`${query ? '?' : ''}${query}`)
+        remoteErrorDisplay(response)
+        return response
+    }
+    async getAllDeviceProfilesForAppAndNetType (appId, netId) {
+        let app = await applicationStore.getApplication(appId)
+        const query = `?companyId=${app.companyId}&networkTypeId=${netId}`
+        const response = await this.fetchDeviceProfile(query)
+        remoteErrorDisplay(response)
+        return response
+    }
+    async createDeviceNetworkType (deviceId, networkTypeId, deviceProfileId, networkSettings) {
+        const body = { deviceId, networkTypeId, deviceProfileId, networkSettings }
+        const response = await this.fetchDeviceNtwkTypeLink('', { method: 'post', body })
+        remoteErrorDisplay(response)
+        return response
+    }
+    async getDeviceNetworkType (devId, netId) {
+        const query = `?deviceId=${devId}&networkTypeId=${netId}`
+        const response = await this.fetchDeviceNtwkTypeLink(query)
+        remoteErrorDisplay(response)
+        if (!(response && response.records && response.records.length)) {
+            throw new Error('Not Found')
+        }
+        return response.records[0]
+    }
+    async updateDeviceNetworkType (body) {
+        const response = await this.fetchDeviceNtwkTypeLink(body.id, { method: 'put', body })
+        remoteErrorDisplay(response)
+        return response
+    }
+    async deleteDeviceNetworkType (id) {
+        const response = await this.fetchDeviceNtwkTypeLink(id, { method: 'delete' })
+        remoteErrorDisplay(response)
+        return response
+    }
 }
 
 const deviceStore = new DeviceStore();

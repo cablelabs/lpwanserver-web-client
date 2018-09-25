@@ -27,8 +27,7 @@ class LoRaDeviceNetworkSettings extends Component {
             value: initValue,
             original: JSON.stringify( initValue ),
             rec: null,
-            deviceProfileList: this.getMyDeviceProfiles(
-                                props.referenceDataId, props.netRec.id ),
+            deviceProfileList: [],
         };
 
         this.select = this.select.bind(this);
@@ -38,68 +37,56 @@ class LoRaDeviceNetworkSettings extends Component {
         this.isChanged = this.isChanged.bind( this );
         this.isEnabled = this.isEnabled.bind( this );
         this.getMyLinkRecord = this.getMyLinkRecord.bind( this );
-        this.getMyDeviceProfiles = this.getMyDeviceProfiles.bind( this );
     }
 
-    getMyDeviceProfiles( appId, netId ) {
-        deviceStore.getAllDeviceProfilesForAppAndNetType( appId, netId )
-        .then( ( recs ) => {
-            if ( 0 === recs.records.length ) {
-                this.setState( { deviceProfileList: [ { id: 0, name: "(None Available)" } ] } );
-            }
-            else {
-                this.setState( { deviceProfileList: recs.records }, () => {
-                    this.setActivationFields( recs.records[ 0 ].id ) } );
-            }
-        })
-        .catch( ( err ) => {
+    async getMyDeviceProfiles( appId, netId ) {
+        try {
+            const { records } = await deviceStore.getAllDeviceProfilesForAppAndNetType(appId, netId)
+            if (!records.length) throw new Error('No records')
+            return records
+        } catch (err) {
             console.log( "Error getting device's possible deviceProfiles: " + err );
-
-            this.setState( { deviceProfileList: [ { id: 0, name: "(None Available)" } ] } );
-        });
+            return [{ id: 0, name: "(None Available)", networkSettings: {} }]
+        }
     }
 
-    componentDidMount() {
-        this.getMyLinkRecord( this.props );
+    async componentDidMount() {
+        const { props } = this
+        const deviceProfileList = await this.getMyDeviceProfiles(props.referenceDataId, props.netRec.id)
+        const linkRecord = await this.getMyLinkRecord(props);
+        this.setState({ ...linkRecord, deviceProfileList }, props.onChange)
+        this.setActivationFields(linkRecord.deviceProfileId || deviceProfileList[0].id)
     }
 
-    getMyLinkRecord( props ) {
+    async getMyLinkRecord(props) {
         // Skip trying to load new records
         if ( !props.parentRec ||
-             ( !props.parentRec.id ||
-               0 === props.parentRec.id ) ) {
+             ( !props.parentRec.id || 0 === props.parentRec.id ) ) {
             this.setState( { enabled: false } );
             return;
         }
-
-        deviceStore.getDeviceNetworkType( props.parentRec.id,
-                                          props.netRec.id )
-        .then( (rec) => {
-            if ( rec ) {
-                // Javascript libraries can get whiny with null.
-                if ( !rec.networkSettings ) {
-                    rec.networkSettings = undefined;
-                }
+        try {
+            const rec = await deviceStore.getDeviceNetworkType(props.parentRec.id, props.netRec.id)
+            if (!rec) throw new Error('No device network type')
+            // Javascript libraries can get whiny with null.
+            if ( !rec.networkSettings ) rec.networkSettings = undefined;
                 // We are saying we're enabled based on the database returned
                 // data.  Let the parent know that they shoud rerender so show
                 // that we are not enabled.  We do this from the setState
                 // callback to ensure our state is, in fact, properly set.
-                this.setState( { enabled: true,
-                                 wasEnabled: true,
-                                 value: rec.networkSettings,
-                                 original: JSON.stringify( rec.networkSettings ),
-                                 deviceProfileId: rec.deviceProfileId,
-                                 deviceProfileIdOrig: rec.deviceProfileId,
-                                 rec: rec }, () => this.props.onChange() );
-            }
-            else {
-                this.setState( { enabled: false, wasEnabled: false } );
-            }
-        })
-        .catch( (err) => {
+                return {
+                    rec,
+                    enabled: true,
+                    wasEnabled: true,
+                    value: rec.networkSettings,
+                    original: JSON.stringify( rec.networkSettings ),
+                    deviceProfileId: rec.deviceProfileId,
+                    deviceProfileIdOrig: rec.deviceProfileId
+                }
+        } catch (err) {
             console.log( "Failed to get deviceNetworkTypeLink:" + err );
-            this.setState( { enabled: false, wasEnabled: false } );
-        });
+            return { enabled: false, wasEnabled: false }
+        }
     }
 
     deselect() {
@@ -266,7 +253,8 @@ class LoRaDeviceNetworkSettings extends Component {
                     <input type="text"
                            className="form-control"
                            name="devEUI"
-                           value={this.state.value.devEUI} placeholder="0000000000000000"
+                           value={this.state.value.devEUI}
+                           placeholder="0000000000000000"
                            pattern="[0-9a-fA-F]{16}"
                            onChange={this.onTextChange.bind( this, 'devEUI' )} />
                     <p className="help-block">
@@ -346,7 +334,7 @@ class LoRaDeviceNetworkSettings extends Component {
                                 <input type="checkbox"
                                        name="skipFCntCheck"
                                        id="skipFCntCheck"
-                                checked={!!this.state.value.skipFCntCheck}
+                                       checked={!!this.state.value.skipFCntCheck}
                                        onChange={this.onActivationChange.bind(this, 'skipFCntCheck')}
                                      />
                                      Disable frame-counter validation
@@ -370,7 +358,7 @@ class LoRaDeviceNetworkSettings extends Component {
                         <input type="text"
                                className="form-control"
                                name="appKey" placeholder="00000000000000000000000000000000"
-                               value={this.state.value.appKey}
+                               value={this.state.value.appKey || ''}
                                pattern="[0-9a-fA-F]{32}"
                                onChange={this.onTextChange.bind( this, 'appKey')} />
                         <p className="help-block">
