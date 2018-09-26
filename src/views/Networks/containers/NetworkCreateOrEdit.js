@@ -234,7 +234,7 @@ class NetworkCreateOrEdit extends Component {
       const oauthUrl = pathOr('', ['metaData', 'oauthUrl'], networkProtocol);
       const authorized = pathOr(false, ['securityData', 'authorized'], updatedNetwork);
       const serverAuthMessage = pathOr('', ['securityData', 'message'], updatedNetwork);
-      const useBasicAuth = ['username', 'password'].every(x => (x in securityData))
+      const useBasicAuth = ['username', 'password'].every(x => securityData[x])
 
       this.setState({ networkId });
 
