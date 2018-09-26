@@ -234,11 +234,12 @@ class NetworkCreateOrEdit extends Component {
       const oauthUrl = pathOr('', ['metaData', 'oauthUrl'], networkProtocol);
       const authorized = pathOr(false, ['securityData', 'authorized'], updatedNetwork);
       const serverAuthMessage = pathOr('', ['securityData', 'message'], updatedNetwork);
+      const useBasicAuth = ['username', 'password'].every(x => (x in securityData))
 
       this.setState({ networkId });
 
       // go to oauth page if needed
-      if (oauthUrl && authNeeded) {
+      if (oauthUrl && authNeeded && !useBasicAuth) {
         const oauthRedirect = makeOauthRedirectUrl(networkProtocol, securityData);
         sessionStore.putSetting('oauthMode', isNew ? 'afterCreate' : 'afterUpdate');
         sessionStore.putSetting('oauthNetworkTarget', networkId);

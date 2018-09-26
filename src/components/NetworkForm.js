@@ -112,7 +112,7 @@ export default function NetworkForm(props) {
             description='The name of the remote IoT network.'
           />
 
-          <FormInput label='Network Base URL' name='baseUrl'  type='text' required
+          <FormInput label='Network Base URL' name='baseUrl'  type='url' required
             placeholder={`e.g. 'https://myapp.com:12345/delivery/'`}
             value={networkData.baseUrl || ''}
             onChange={e=>onChange(path, 'baseUrl', e)}

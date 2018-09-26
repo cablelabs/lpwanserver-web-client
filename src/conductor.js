@@ -14,4 +14,5 @@ companyStore.on('get-company', company => {
   sessionStore.company = company
   sessionStore.saveMeToStore()
   sessionStore.emit('session-data-loaded')
+  sessionStore.emit('change')
 })
