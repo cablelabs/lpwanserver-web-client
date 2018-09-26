@@ -74,6 +74,7 @@ class SessionStore extends EventEmitter {
         this.settings = {};
 
         this.clearMeFromStore();
+        this.emit('change')
 
         return;
     }
