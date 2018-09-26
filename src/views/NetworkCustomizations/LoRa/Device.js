@@ -62,8 +62,7 @@ class LoRaDeviceNetworkSettings extends Component {
         // Skip trying to load new records
         if ( !props.parentRec ||
              ( !props.parentRec.id || 0 === props.parentRec.id ) ) {
-            this.setState( { enabled: false } );
-            return;
+            return { enabled: false }
         }
         try {
             const rec = await deviceStore.getDeviceNetworkType(props.parentRec.id, props.netRec.id)
