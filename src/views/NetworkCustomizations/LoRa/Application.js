@@ -47,7 +47,6 @@ class LoRaApplicationNetworkSettings extends Component {
             return;
         }
 
-        console.log(props);
         applicationStore.getApplicationNetworkType( props.parentRec.id,
                                                     props.netRec.id )
         .then( (rec) => {

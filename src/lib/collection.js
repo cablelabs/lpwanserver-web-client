@@ -9,7 +9,7 @@ export default class Collection {
 	insert (xs) {
 		const { idKey } = this
 		if (!Array.isArray(xs)) xs = [xs]
-		let records = xs.reduce((acc, x) => {
+		let records = xs.filter(x => x).reduce((acc, x) => {
 			const idx = findIndex(y => y[idKey] === x[idKey], acc)
 			if (idx < 0) acc.push(x)
 			else acc.splice(idx, 1, x)

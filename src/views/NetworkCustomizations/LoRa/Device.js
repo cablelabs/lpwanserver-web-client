@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import deviceStore from "../../../stores/DeviceStore";
+import { assocPath, find, equals, mergeDeepRight, pathOr } from 'ramda'
 
 // The LoRa device network settings data entry.
 //
@@ -10,14 +11,12 @@ class LoRaDeviceNetworkSettings extends Component {
         super( props );
         let initValue = {
             devEUI: "",
-            appKey: "",
-            devAddr: "",
-            nwkSKey: "",
-            appSKey: "",
-            fCntUp: 0,
-            fCntDown: 0,
             skipFCntCheck: false,
-            isABP: false,
+            deviceActivation: {
+                devAddr: "",
+                fCntUp: 0,
+                aFCntDown: 0
+            }
         };
         this.state = {
             enabled: false,
@@ -25,21 +24,24 @@ class LoRaDeviceNetworkSettings extends Component {
             deviceProfileId: 0,
             deviceProfileIdOrig: 0,
             value: initValue,
-            original: JSON.stringify( initValue ),
+            original: initValue,
             rec: null,
             deviceProfileList: [],
         };
 
         this.select = this.select.bind(this);
         this.deselect = this.deselect.bind(this);
-        this.onTextChange = this.onTextChange.bind(this);
+        this.onActivationChange = this.onActivationChange.bind(this);
         this.onSubmit = this.onSubmit.bind( this );
         this.isChanged = this.isChanged.bind( this );
         this.isEnabled = this.isEnabled.bind( this );
-        this.getMyLinkRecord = this.getMyLinkRecord.bind( this );
     }
 
-    async getMyDeviceProfiles( appId, netId ) {
+    deviceProfile () {
+        return find(x => x.id === this.state.deviceProfileId, this.state.deviceProfileList)
+    }
+
+    async getDeviceProfiles( appId, netId ) {
         try {
             const { records } = await deviceStore.getAllDeviceProfilesForAppAndNetType(appId, netId)
             if (!records.length) throw new Error('No records')
@@ -52,40 +54,70 @@ class LoRaDeviceNetworkSettings extends Component {
 
     async componentDidMount() {
         const { props } = this
-        const deviceProfileList = await this.getMyDeviceProfiles(props.referenceDataId, props.netRec.id)
-        const linkRecord = await this.getMyLinkRecord(props);
+        const deviceProfileList = await this.getDeviceProfiles(props.referenceDataId, props.netRec.id)
+        const linkRecord = await this.getMyLinkRecord(props, deviceProfileList);
         this.setState({ ...linkRecord, deviceProfileList }, props.onChange)
-        this.setActivationFields(linkRecord.deviceProfileId || deviceProfileList[0].id)
     }
 
-    async getMyLinkRecord(props) {
+    async getMyLinkRecord(props, deviceProfileList) {
+        const defaultDeviceProfileId = pathOr(0, [0, 'id'], deviceProfileList)
         // Skip trying to load new records
         if ( !props.parentRec ||
              ( !props.parentRec.id || 0 === props.parentRec.id ) ) {
-            return { enabled: false }
+            return { enabled: false, deviceProfileId: defaultDeviceProfileId }
         }
         try {
             const rec = await deviceStore.getDeviceNetworkType(props.parentRec.id, props.netRec.id)
             if (!rec) throw new Error('No device network type')
             // Javascript libraries can get whiny with null.
-            if ( !rec.networkSettings ) rec.networkSettings = undefined;
-                // We are saying we're enabled based on the database returned
-                // data.  Let the parent know that they shoud rerender so show
-                // that we are not enabled.  We do this from the setState
-                // callback to ensure our state is, in fact, properly set.
-                return {
-                    rec,
-                    enabled: true,
-                    wasEnabled: true,
-                    value: rec.networkSettings,
-                    original: JSON.stringify( rec.networkSettings ),
-                    deviceProfileId: rec.deviceProfileId,
-                    deviceProfileIdOrig: rec.deviceProfileId
-                }
+            if ( !rec.networkSettings ) rec.networkSettings = {};
+            // We are saying we're enabled based on the database returned
+            // data.  Let the parent know that they shoud rerender so show
+            // that we are not enabled.  We do this from the setState
+            // callback to ensure our state is, in fact, properly set.
+            const deviceProfile = find(x => x.id === rec.deviceProfileId, deviceProfileList)
+            const deviceActivation = this.getDeviceActivation(deviceProfile, rec.networkSettings.deviceActivation, true)
+            const value = mergeDeepRight(rec.networkSettings, { deviceActivation })
+            const deviceProfileId = deviceProfile ? deviceProfile.id : defaultDeviceProfileId
+            return {
+                rec,
+                value,
+                original: value,
+                enabled: true,
+                wasEnabled: true,
+                deviceProfileId,
+                deviceProfileIdOrig: rec.deviceProfileId
+            }
         } catch (err) {
             console.log( "Failed to get deviceNetworkTypeLink:" + err );
             return { enabled: false, wasEnabled: false }
         }
+    }
+
+    getDeviceActivation (deviceProfile, data = {}, toClientSchema) {
+        const { supportsJoin, macVersion: mac } = deviceProfile.networkSettings
+        const result = {}
+        if (supportsJoin && mac >= '1.0.0' && mac <= '1.02.0')   {
+            result.appKey = data.appKey
+        } else if (supportsJoin && mac >= '1.1.0' && mac < '1.2.0') {
+            result.appKey = data.appKey
+            result.nwkKey = data.nwkKey
+        } else if (!supportsJoin && mac >= '1.0.0' && mac <= '1.02.0') {
+            result.appSKey = data.appSKey
+            if (toClientSchema) {
+                result.nwkSKey = data.sNwkSIntKey
+            } else {
+                result.nwkSEncKey = data.nwkSKey
+                result.sNwkSIntKey = data.nwkSKey
+                result.fNwkSIntKey = data.nwkSKey
+            }
+        } else if (!supportsJoin && mac >= '1.1.0' && mac < '1.2.0') {
+            result.appSKey = data.appSKey
+            result.nwkSEncKey = data.nwkSEncKey
+            result.sNwkSIntKey = data.sNwkSIntKey
+            result.fNwkSIntKey = data.fNwkSIntKey
+        }
+        return result
     }
 
     deselect() {
@@ -102,108 +134,73 @@ class LoRaDeviceNetworkSettings extends Component {
         });
     }
 
-    onTextChange( field, event ) {
-        let v = this.state.value;
-        v[ field ] = event.target.value;
-        this.setState( { value: v } );
+    getEventValue ({ target }) {
+        switch (target.type) {
+            case 'number': return parseInt(target.value, 10)
+            case 'checkbox': return target.checked
+            default: return target.value
+        }
     }
 
     onActivationChange( field, e ) {
         e.preventDefault();
-
-        let v = this.state.value;
-
-        if (e.target.type === "number") {
-          v[field] = parseInt(e.target.value, 10);
-        } else if (e.target.type === "checkbox") {
-          v[field] = e.target.checked;
-        } else {
-          v[field] = e.target.value;
-        }
-        this.setState( { value: v } );
+        this.setState({
+            value: assocPath(field.split('.'), this.getEventValue(e), this.state.value)
+        })
     }
 
     onSelectionChange(field, e) {
-        this.setActivationFields( parseInt(e.target.value, 10) );
-    }
-
-    setActivationFields( id ) {
-        // If the deviceProfile does ABP, enable activation fields, and make
-        // required.  Otherwise, make not required.
-        let dpList = this.state.deviceProfileList;
-        let index = 0;
-        for ( ; index < dpList.length; ++index ) {
-            if ( dpList[ index ].id === id ) {
-                break;
-            }
-        }
-        if ( dpList[ index ].networkSettings.supportsJoin ) {
-            // Supports join, so if last was ABP, disable it.
-            if ( this.state.isABP ) {
-                this.setState( { isABP: false } );
-            }
-        }
-        else {
-            // Does not support join.  If last was not ABP, enable it.
-            if ( !this.state.isABP ) {
-                this.setState( { isABP: true } );
-            }
-        }
-
-        this.setState({deviceProfileId: id});
+        this.setState({ [field]: parseInt(e.target.value, 10) })
     }
 
     // Not an onSubmit for the framework, but called from the parent component
     // when the submit happens.  Do what needs to be done for this networkType.
-    onSubmit = async function( e ) {
-        var ret = this.props.netRec.name + " is unchanged.";
-        // Did anything change?
-        // Type is enabled...
+    onSubmit = async function () {
+        const { props, state } = this
         try {
-            if ( this.state.enabled ) {
-                // ... but we had no old record: CREATE
-                if ( null == this.state.oldValue ) {
-                    await deviceStore.createDeviceNetworkType(
-                                    this.props.parentRec.id,
-                                    this.props.netRec.id,
-                                    this.state.deviceProfileId,
-                                    this.state.value );
-                    ret = this.props.netRec.name + " device created.";
-                }
-                // ...and we had an old record with a data change: UPDATE
-                else if ( ( JSON.stringify( this.state.value ) !== this.state.original ) ||
-                          ( this.state.deviceProfileId !== this.state.deviceProfileIdOrig ) ) {
-                    var updRec = {
-                        id: this.state.rec.id,
-                        networkSettings: this.state.value,
-                        deviceProfileId: this.state.deviceProfileId,
-                    };
-                    await deviceStore.updateDeviceNetworkType( updRec );
-                    ret = this.props.netRec.name + " device updated.";
+            // Not enabled and record exists
+            if (!state.enabled && state.rec) {
+                await deviceStore.deleteDeviceNetworkType(state.rec.id)
+                return props.netRec.name + " device deleted."
+            }
+            // Not Enabled and no record exists
+            if (!state.enabled) return props.netRec.name + " is unchanged."
+            // Enabled and no record exists
+            const networkSettings = {
+                ...state.value,
+                deviceActivation: {
+                    ...state.value.deviceActivation,
+                    ...this.getDeviceActivation(this.deviceProfile(), state.value.deviceActivation, false)
                 }
             }
-            // Type is NOT enabled AND we had a record: DELETE
-            else if ( null != this.state.rec ) {
-                await deviceStore.deleteDeviceNetworkType( this.state.rec.id );
-                ret = this.props.netRec.name + " device deleted.";
+            if (!state.rec) {
+                await deviceStore.createDeviceNetworkType(
+                    props.parentRec.id,
+                    props.netRec.id,
+                    state.deviceProfileId,
+                    networkSettings
+                )
+                return props.netRec.name + " device created."
+            // Enabled and record exists
+            } else if (!equals(state.value, state.original)) {
+                var updRec = {
+                    id: state.rec.id,
+                    networkSettings,
+                    deviceProfileId: state.deviceProfileId,
+                }
+                await deviceStore.updateDeviceNetworkType(updRec)
+                return props.netRec.name + " device updated."
             }
+        } catch (err) {
+            return props.netRec.name + " error: " + err
         }
-        catch ( err ) {
-            ret = this.props.netRec.name + " error: " + err;
-        }
-
-        return ret;
     }
 
     isChanged() {
-        if ( ( this.state.enabled !== this.state.wasEnabled ) ||
-             ( JSON.stringify( this.state.value ) !== this.state.original ) ||
-             ( this.state.deviceProfileId !== this.state.deviceProfileIdOrig ) ) {
-                 return true;
-        }
-        else {
-            return false;
-        }
+        const { state } = this
+        return (state.enabled !== state.wasEnabled) ||
+            (!equals(state.value, state.original)) ||
+            (state.deviceProfileId !== state.deviceProfileIdOrig)
     }
 
     isEnabled() {
@@ -217,88 +214,143 @@ class LoRaDeviceNetworkSettings extends Component {
        for( let i = 0; i < size; ++i ) {
            rnd += chars.charAt( Math.floor( Math.random() * chars.length ) );
        }
-
-       let value = this.state.value;
-       value[ field ] = rnd;
-
-       this.setState( { value: value } );
+       this.setState({ value: assocPath(field.split('.'), rnd, this.state.value) })
     }
 
     render() {
-        if ( null == this.state.deviceProfileList ) {
+        const { state } = this
+        if ( null == state.deviceProfileList ) {
             return ( <div></div> );
         }
-        return (
-            <div className={this.state.enabled === true ? "" : "hidden" } >
+        const deviceProfile = this.deviceProfile() || {}
+        let { supportsJoin, macVersion: mac } = deviceProfile.networkSettings || {}
+        const isABP = !supportsJoin
+        mac = mac || '0.0.0'
+        return !!state.enabled && (
+            <div>
                 <div className="form-group">
                   <label className="control-label" htmlFor="deviceProfileId">Device Profile</label>
                   <select className="form-control"
                           id="deviceProfileId"
                           required
-                          value={this.state.deviceProfileId}
+                          value={state.deviceProfileId}
                           onChange={this.onSelectionChange.bind(this, 'deviceProfileId')}>
-                    {this.state.deviceProfileList.map( devpro => <option value={devpro.id} key={"typeSelector" + devpro.id }>{devpro.name}</option>)}
+                    {state.deviceProfileList.map(x => <option value={x.id} key={"typeSelector" + x.id }>{x.name}</option>)}
                   </select>
                   <p className="help-block">
                     Specifies the Device Profile that defines the communications settings this device will use.
                   </p>
                 </div>
                 <div className="form-group">
-                    <label className="control-label"
-                           htmlFor="devEUI">
-                        The Device EUI identifying the device on a LoRa
-                        network
+                    <label className="control-label" htmlFor="devEUI">
+                        The Device EUI identifying the device on a LoRa network
                     </label>
                     <input type="text"
                            className="form-control"
                            name="devEUI"
-                           value={this.state.value.devEUI}
+                           value={state.value.devEUI}
                            placeholder="0000000000000000"
                            pattern="[0-9a-fA-F]{16}"
-                           onChange={this.onTextChange.bind( this, 'devEUI' )} />
+                           onChange={this.onActivationChange.bind( this, 'devEUI' )} />
                     <p className="help-block">
                         A 16-hex-digit string used to identify the device
                         on LoRa networks.
                     </p>
                 </div>
-                <div className={this.state.isABP ? "" : "hidden" } >
+                {isABP &&
+                <div>
                     <div className="form-group">
                         <label className="control-label"
                                htmlFor="devAddr">Device Address</label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'devAddr', 8 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.devAddr', 8 )} className="btn btn-xs">generate</button>
                         <input className="form-control"
                                id="devAddr"
                                type="text"
                                placeholder="00000000"
                                pattern="[a-fA-F0-9]{8}"
-                               required={this.state.isABP}
-                               value={this.state.value.devAddr || ''}
-                               onChange={this.onActivationChange.bind(this, 'devAddr')} />
+                               required={isABP}
+                               value={state.value.deviceActivation.devAddr || ''}
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.devAddr')} />
                     </div>
+                    { mac >= '1.0.0' && mac <= '1.02.0' &&
                     <div className="form-group">
-                        <label className="control-label"
-                               htmlFor="nwkSKey">Network session key</label>
+                        <label className="control-label" htmlFor="nwkSKey">
+                        Network session key
+                        </label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'nwkSKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.nwkSKey', 32 )} className="btn btn-xs">generate</button>
                         <input className="form-control"
-                               id="nwkSKey"
-                               type="text"
-                               placeholder="00000000000000000000000000000000"
-                               pattern="[A-Fa-f0-9]{32}"
-                               required={this.state.isABP}
-                               value={this.state.value.nwkSKey || ''}
-                               onChange={this.onActivationChange.bind(this, 'nwkSKey')} />
+                            id="nwkSKey"
+                            type="text"
+                            placeholder="00000000000000000000000000000000"
+                            pattern="[A-Fa-f0-9]{32}"
+                            required={isABP}
+                            value={state.value.deviceActivation.nwkSKey || ''}
+                            onChange={this.onActivationChange.bind(this, 'deviceActivation.nwkSKey')} />
                     </div>
+                    }
+                    { mac >= '1.1.0' && mac <= '1.2.0' && 
+                    <div>
+                        <div className="form-group">
+                            <label className="control-label" htmlFor="nwkSEncKey">
+                            Network session encryption key
+                            </label>
+                            &emsp;
+                            <button onClick={this.getRandom.bind(this, 'deviceActivation.nwkSEncKey', 32 )} className="btn btn-xs">generate</button>
+                            <input className="form-control"
+                                id="nwkSEncKey"
+                                type="text"
+                                placeholder="00000000000000000000000000000000"
+                                pattern="[A-Fa-f0-9]{32}"
+                                required={isABP}
+                                value={state.value.deviceActivation.nwkSEncKey || ''}
+                                onChange={this.onActivationChange.bind(this, 'deviceActivation.nwkSEncKey')} />
+                        </div>
+                        <div className="form-group">
+                            <label className="control-label" htmlFor="sNwkSIntKey">
+                                Service network session integrity key
+                            </label>
+                            &emsp;
+                            <button onClick={this.getRandom.bind(this, 'deviceActivation.sNwkSIntKey', 32 )} className="btn btn-xs">generate</button>
+                            <input className="form-control"
+                                    id="sNwkSIntKey"
+                                    type="text"
+                                    placeholder="00000000000000000000000000000000"
+                                    pattern="[A-Fa-f0-9]{32}"
+                                    required={isABP}
+                                    value={state.value.deviceActivation.sNwkSIntKey || ''}
+                                    onChange={this.onActivationChange.bind(this, 'deviceActivation.sNwkSIntKey')} />
+                        </div>
+                        <div className="form-group">
+                            <label className="control-label" htmlFor="fNwkSIntKey">
+                                Forwarding network session integrity key
+                            </label>
+                            &emsp;
+                            <button onClick={this.getRandom.bind(this, 'deviceActivation.fNwkSIntKey', 32 )} className="btn btn-xs">generate</button>
+                            <input className="form-control"
+                                id="fNwkSIntKey"
+                                type="text"
+                                placeholder="00000000000000000000000000000000"
+                                pattern="[A-Fa-f0-9]{32}"
+                                required={isABP}
+                                value={state.value.deviceActivation.fNwkSIntKey || ''}
+                                onChange={this.onActivationChange.bind(this, 'deviceActivation.fNwkSIntKey')} />
+                        </div>
+                    </div>
+                    }
                     <div className="form-group">
                         <label className="control-label"
                                htmlFor="appSKey">Application session key</label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'appSKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.appSKey', 32 )} className="btn btn-xs">generate</button>
                         <input className="form-control"
                                id="appSKey"
                                type="text" placeholder="00000000000000000000000000000000"
-                               pattern="[A-Fa-f0-9]{32}"  required={this.state.isABP} value={this.state.value.appSKey || ''}  onChange={this.onActivationChange.bind(this, 'appSKey')} />
+                               pattern="[A-Fa-f0-9]{32}"
+                               required={isABP}
+                               value={state.value.deviceActivation.appSKey || ''} 
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.appSKey')} />
                     </div>
                     <div className="form-group">
                         <label className="control-label"
@@ -307,20 +359,20 @@ class LoRaDeviceNetworkSettings extends Component {
                                id="fCntUp"
                                type="number"
                                min="0"
-                               required={this.state.isABP}
-                               value={this.state.value.fCntUp || 0}
-                               onChange={this.onActivationChange.bind(this, 'fCntUp')} />
+                               required={isABP}
+                               value={state.value.deviceActivation.fCntUp || 0}
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.fCntUp')} />
                     </div>
                     <div className="form-group">
                         <label className="control-label"
                                htmlFor="rx2DR">Downlink frame-counter</label>
                         <input className="form-control"
-                               id="fCntDown"
+                               id="aFCntDown"
                                type="number"
                                min="0"
-                               required={this.state.isABP}
-                               value={this.state.value.fCntDown || 0}
-                               onChange={this.onActivationChange.bind(this, 'fCntDown')}
+                               required={isABP}
+                               value={state.value.deviceActivation.aFCntDown || 0}
+                               onChange={this.onActivationChange.bind(this, 'deviceActivation.aFCntDown')}
                              />
                     </div>
                     <div className="form-group">
@@ -333,7 +385,7 @@ class LoRaDeviceNetworkSettings extends Component {
                                 <input type="checkbox"
                                        name="skipFCntCheck"
                                        id="skipFCntCheck"
-                                       checked={!!this.state.value.skipFCntCheck}
+                                       checked={!!state.value.skipFCntCheck}
                                        onChange={this.onActivationChange.bind(this, 'skipFCntCheck')}
                                      />
                                      Disable frame-counter validation
@@ -346,26 +398,45 @@ class LoRaDeviceNetworkSettings extends Component {
                         </p>
                     </div>
                 </div>
-                <div className={!this.state.isABP ? "" : "hidden" } >
+                }
+                {!isABP &&
+                <div>
                     <div className="form-group">
                         <label className="control-label"
                                htmlFor="appKey">
                             The Application Encryption Key for this device.
                         </label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'appKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.appKey', 32 )} className="btn btn-xs">generate</button>
                         <input type="text"
                                className="form-control"
                                name="appKey" placeholder="00000000000000000000000000000000"
-                               value={this.state.value.appKey || ''}
+                               value={state.value.deviceActivation.appKey || ''}
                                pattern="[0-9a-fA-F]{32}"
-                               onChange={this.onTextChange.bind( this, 'appKey')} />
+                               onChange={this.onActivationChange.bind( this, 'deviceActivation.appKey')} />
                         <p className="help-block">
                             A 32-hex-digit string used to identify the device
                             on LoRa networks.
                         </p>
                     </div>
+                    { mac >= '1.1.0' && mac <= '1.2.0' && 
+                    <div className="form-group">
+                        <label className="control-label" htmlFor="nwkKey">
+                        Network session key
+                        </label>
+                        &emsp;
+                        <button onClick={this.getRandom.bind(this, 'deviceActivation.nwkKey', 32 )} className="btn btn-xs">generate</button>
+                        <input className="form-control"
+                            id="nwkKey"
+                            type="text"
+                            placeholder="00000000000000000000000000000000"
+                            pattern="[A-Fa-f0-9]{32}"
+                            value={state.value.deviceActivation.nwkKey || ''}
+                            onChange={this.onActivationChange.bind(this, 'deviceActivation.nwkKey')} />
+                    </div>
+                    }
                 </div>
+                }
             </div>
         );
       }
