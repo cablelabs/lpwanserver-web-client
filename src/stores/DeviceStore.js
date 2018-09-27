@@ -89,6 +89,7 @@ class DeviceStore extends EventEmitter {
         return response.records[0]
     }
     async updateDeviceNetworkType (body) {
+        return Promise.resolve({ ...body, id: 5 })
         const response = await this.fetchDeviceNtwkTypeLink(body.id, { method: 'put', body })
         remoteErrorDisplay(response)
         return response

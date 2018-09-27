@@ -41,10 +41,10 @@ class CreateDevice extends Component {
               try {
                   // Handle the network-specific data.
                   if ( me.networkSpecificComps.onSubmit ) {
-                      await me.networkSpecificComps.onSubmit();
+                    await me.networkSpecificComps.onSubmit();
                   }
                   else {
-                      console.log("No data to update!" );
+                    console.log("No data to update!" );
                   }
                   me.props.history.push('/applications/' + me.props.match.params.applicationID );
               }
