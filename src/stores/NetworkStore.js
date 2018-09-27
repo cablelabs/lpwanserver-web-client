@@ -1,7 +1,7 @@
 import sessionStore, {rest_url} from "./SessionStore";
 import {paginationQuery, fetchJson} from "./helpers";
 import {EventEmitter} from "events";
-import Collection from './collection'
+import Collection from '../lib/collection'
 import flyd from 'flyd'
 import { omit } from 'ramda'
 

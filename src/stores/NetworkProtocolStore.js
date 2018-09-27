@@ -1,7 +1,7 @@
 import sessionStore, {rest_url} from "./SessionStore";
 import {fetchJson} from "./helpers";
 import {EventEmitter} from "events";
-import Collection from './collection'
+import Collection from '../lib/collection'
 
 class NetworkProtocolStore extends EventEmitter {
   constructor () {
