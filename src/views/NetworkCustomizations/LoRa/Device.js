@@ -9,15 +9,11 @@ import { assocPath, find, equals, mergeDeepRight, pathOr } from 'ramda'
 class LoRaDeviceNetworkSettings extends Component {
     constructor( props ) {
         super( props );
+
+        // initial state
         let initValue = {
             devEUI: '',
-            appKey: '',
-            skipFCntCheck: false,
-            deviceActivation: {
-                devAddr: '',
-                fCntUp: 0,
-                aFCntDown: 0
-            }
+            skipFCntCheck: false
         };
         this.state = {
             enabled: false,
@@ -42,7 +38,7 @@ class LoRaDeviceNetworkSettings extends Component {
         return find(x => x.id === this.state.deviceProfileId, this.state.deviceProfileList)
     }
 
-    async getDeviceProfiles( appId, netId ) {
+    async getDeviceProfiles(appId, netId) {
         try {
             const { records } = await deviceStore.getAllDeviceProfilesForAppAndNetType(appId, netId)
             if (!records.length) throw new Error('No records')
@@ -54,18 +50,28 @@ class LoRaDeviceNetworkSettings extends Component {
     }
 
     async componentDidMount() {
-        const { props } = this
+        const { props, state } = this
         const deviceProfileList = await this.getDeviceProfiles(props.referenceDataId, props.netRec.id)
-        const linkRecord = await this.getMyLinkRecord(props, deviceProfileList);
-        this.setState({ ...linkRecord, deviceProfileList }, props.onChange)
+        let { rec, ...rest } = await this.getLinkRecordState(props, deviceProfileList);
+        const deviceProfile = find(x => x.id === rest.deviceProfileId, deviceProfileList)
+        const networkSettings = rec ? rec.networkSettings : {}
+        const valueExt = this.getDeviceKeysOrActivation(deviceProfile, networkSettings, true)
+        this.setState(
+            {
+              ...rest,
+              rec,
+              value: mergeDeepRight(rest.value || state.value, valueExt),
+              deviceProfileList
+            },
+            props.onChange
+        )
     }
 
-    async getMyLinkRecord(props, deviceProfileList) {
-        const defaultDeviceProfileId = pathOr(0, [0, 'id'], deviceProfileList)
+    async getLinkRecordState(props, deviceProfileList) {
+        const deviceProfileId = pathOr(0, [0, 'id'], deviceProfileList)
         // Skip trying to load new records
-        if ( !props.parentRec ||
-             ( !props.parentRec.id || 0 === props.parentRec.id ) ) {
-            return { enabled: false, deviceProfileId: defaultDeviceProfileId }
+        if (!props.parentRec || (!props.parentRec.id || 0 === props.parentRec.id)) {
+            return { deviceProfileId }
         }
         try {
             const rec = await deviceStore.getDeviceNetworkType(props.parentRec.id, props.netRec.id)
@@ -76,46 +82,63 @@ class LoRaDeviceNetworkSettings extends Component {
             // data.  Let the parent know that they shoud rerender so show
             // that we are not enabled.  We do this from the setState
             // callback to ensure our state is, in fact, properly set.
-            const deviceProfile = find(x => x.id === rec.deviceProfileId, deviceProfileList)
-            const deviceActivation = this.getDeviceActivation(deviceProfile, rec.networkSettings.deviceActivation, true)
-            const value = mergeDeepRight(rec.networkSettings, { deviceActivation })
-            const deviceProfileId = deviceProfile ? deviceProfile.id : defaultDeviceProfileId
             return {
                 rec,
-                value,
-                original: value,
+                value: rec.networkSettings,
+                original: rec.networkSettings,
                 enabled: true,
                 wasEnabled: true,
-                deviceProfileId,
+                deviceProfileId: rec.deviceProfileId || deviceProfileId,
                 deviceProfileIdOrig: rec.deviceProfileId
             }
         } catch (err) {
             console.log( "Failed to get deviceNetworkTypeLink:" + err );
-            return { enabled: false, wasEnabled: false }
+            return { deviceProfileId }
         }
     }
 
-    getDeviceActivation (deviceProfile, data = {}, toClientSchema) {
-        const { supportsJoin, macVersion: mac } = deviceProfile.networkSettings
+    getDeviceKeys (mac, { deviceKeys = {}, devEUI = '' }) {
         const result = {}
-        if (supportsJoin && mac >= '1.1.0' && mac < '1.2.0') {
-            result.nwkKey = data.nwkKey
-        } else if (!supportsJoin && mac >= '1.0.0' && mac <= '1.02.0') {
-            result.appSKey = data.appSKey
-            if (toClientSchema) {
-                result.nwkSKey = data.sNwkSIntKey
-            } else {
-                result.nwkSEncKey = data.nwkSKey
-                result.sNwkSIntKey = data.nwkSKey
-                result.fNwkSIntKey = data.nwkSKey
-            }
-        } else if (!supportsJoin && mac >= '1.1.0' && mac < '1.2.0') {
-            result.appSKey = data.appSKey
-            result.nwkSEncKey = data.nwkSEncKey
-            result.sNwkSIntKey = data.sNwkSIntKey
-            result.fNwkSIntKey = data.fNwkSIntKey
+        if (mac >= '1.0.0' && mac <= '1.02.0')   {
+            result.appKey = deviceKeys.appKey
+        } else if (mac >= '1.1.0' && mac < '1.2.0') {
+            result.appKey = deviceKeys.appKey
+            result.nwkKey = deviceKeys.nwkKey
         }
+        result.devEUI = devEUI
         return result
+    }
+
+    getDeviceActivation (mac, { deviceActivation = {}, devEUI = '' }, toClientSchema) {
+        const result = {}
+        const copy = (key, defaultVal = '', srcKey) => {
+            result[key] = deviceActivation[srcKey || key] || defaultVal
+        }
+        const copyKeys = (xs, defaultVal) => { xs.forEach(x => copy(x, defaultVal)) }
+        if (mac >= '1.0.0' && mac <= '1.02.0') {
+            copy('appSKey')
+            if (toClientSchema) {
+                copy('nwkSKey', '', 'sNwkSIntKey')
+            } else {
+                copy('nwkSEncKey', '', 'nwkSKey')
+                copy('sNwkSIntKey', '', 'nwkSKey')
+                copy('fNwkSIntKey', '', 'nwkSKey')
+            }
+        } else if (mac >= '1.1.0' && mac < '1.2.0') {
+            copyKeys(['appSKey', 'nwkSEncKey', 'sNwkSIntKey', 'fNwkSIntKey'])
+        }
+        copy('devAddr')
+        copyKeys(['fCntUp', 'aFCntDown'], 0)
+        result.devEUI = devEUI
+        return result
+    }
+
+    getDeviceKeysOrActivation (deviceProfile, ntwkSettings = {}, toClientSchema) {
+        const { supportsJoin, macVersion: mac } = deviceProfile.networkSettings
+        if (supportsJoin) {
+            return { deviceKeys: this.getDeviceKeys(mac, ntwkSettings) }
+        }
+        return { deviceActivation: this.getDeviceActivation(mac, ntwkSettings, toClientSchema) }
     }
 
     deselect() {
@@ -166,10 +189,7 @@ class LoRaDeviceNetworkSettings extends Component {
             // Enabled and no record exists
             const networkSettings = {
                 ...state.value,
-                deviceActivation: {
-                    ...state.value.deviceActivation,
-                    ...this.getDeviceActivation(this.deviceProfile(), state.value.deviceActivation, false)
-                }
+                ...this.getDeviceKeysOrActivation(this.deviceProfile(), state.value, false)
             }
             if (!state.rec) {
                 await deviceStore.createDeviceNetworkType(
@@ -217,13 +237,11 @@ class LoRaDeviceNetworkSettings extends Component {
 
     render() {
         const { state } = this
-        if ( null == state.deviceProfileList ) {
-            return ( <div></div> );
-        }
         const deviceProfile = this.deviceProfile() || {}
         let { supportsJoin, macVersion: mac } = deviceProfile.networkSettings || {}
         const isABP = !supportsJoin
         mac = mac || '0.0.0'
+
         return !!state.enabled && (
             <div>
                 <div className="form-group">
@@ -404,16 +422,15 @@ class LoRaDeviceNetworkSettings extends Component {
                             The Application Encryption Key for this device.
                         </label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'appKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceKeys.appKey', 32 )} className="btn btn-xs">generate</button>
                         <input type="text"
                                className="form-control"
                                name="appKey" placeholder="00000000000000000000000000000000"
-                               value={state.value.appKey || ''}
+                               value={state.value.deviceKeys.appKey || ''}
                                pattern="[0-9a-fA-F]{32}"
-                               onChange={this.onActivationChange.bind( this, 'appKey')} />
+                               onChange={this.onActivationChange.bind( this, 'deviceKeys.appKey')} />
                         <p className="help-block">
-                            A 32-hex-digit string used to identify the device
-                            on LoRa networks.
+                            A 32-hex-digit string used to identify the device on LoRa networks.
                         </p>
                     </div>
                     { mac >= '1.1.0' && mac <= '1.2.0' && 
@@ -422,14 +439,14 @@ class LoRaDeviceNetworkSettings extends Component {
                         Network session key
                         </label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'deviceActivation.nwkKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'deviceKeys.nwkKey', 32 )} className="btn btn-xs">generate</button>
                         <input className="form-control"
                             id="nwkKey"
                             type="text"
                             placeholder="00000000000000000000000000000000"
                             pattern="[A-Fa-f0-9]{32}"
-                            value={state.value.deviceActivation.nwkKey || ''}
-                            onChange={this.onActivationChange.bind(this, 'deviceActivation.nwkKey')} />
+                            value={state.value.deviceKeys.nwkKey || ''}
+                            onChange={this.onActivationChange.bind(this, 'deviceKeys.nwkKey')} />
                     </div>
                     }
                 </div>
