@@ -10,10 +10,11 @@ class LoRaDeviceNetworkSettings extends Component {
     constructor( props ) {
         super( props );
         let initValue = {
-            devEUI: "",
+            devEUI: '',
+            appKey: '',
             skipFCntCheck: false,
             deviceActivation: {
-                devAddr: "",
+                devAddr: '',
                 fCntUp: 0,
                 aFCntDown: 0
             }
@@ -97,10 +98,7 @@ class LoRaDeviceNetworkSettings extends Component {
     getDeviceActivation (deviceProfile, data = {}, toClientSchema) {
         const { supportsJoin, macVersion: mac } = deviceProfile.networkSettings
         const result = {}
-        if (supportsJoin && mac >= '1.0.0' && mac <= '1.02.0')   {
-            result.appKey = data.appKey
-        } else if (supportsJoin && mac >= '1.1.0' && mac < '1.2.0') {
-            result.appKey = data.appKey
+        if (supportsJoin && mac >= '1.1.0' && mac < '1.2.0') {
             result.nwkKey = data.nwkKey
         } else if (!supportsJoin && mac >= '1.0.0' && mac <= '1.02.0') {
             result.appSKey = data.appSKey
@@ -402,18 +400,17 @@ class LoRaDeviceNetworkSettings extends Component {
                 {!isABP &&
                 <div>
                     <div className="form-group">
-                        <label className="control-label"
-                               htmlFor="appKey">
+                        <label className="control-label" htmlFor="appKey">
                             The Application Encryption Key for this device.
                         </label>
                         &emsp;
-                        <button onClick={this.getRandom.bind(this, 'deviceActivation.appKey', 32 )} className="btn btn-xs">generate</button>
+                        <button onClick={this.getRandom.bind(this, 'appKey', 32 )} className="btn btn-xs">generate</button>
                         <input type="text"
                                className="form-control"
                                name="appKey" placeholder="00000000000000000000000000000000"
-                               value={state.value.deviceActivation.appKey || ''}
+                               value={state.value.appKey || ''}
                                pattern="[0-9a-fA-F]{32}"
-                               onChange={this.onActivationChange.bind( this, 'deviceActivation.appKey')} />
+                               onChange={this.onActivationChange.bind( this, 'appKey')} />
                         <p className="help-block">
                             A 32-hex-digit string used to identify the device
                             on LoRa networks.
