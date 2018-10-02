@@ -1,12 +1,14 @@
 import React, {Component} from "react";
-import {Link, withRouter} from 'react-router-dom';
-
+import {withRouter} from 'react-router-dom';
 import sessionStore from "../../stores/SessionStore";
 import ErrorStore from "../../stores/ErrorStore";
 import NetworkSpecificUI from "../NetworkCustomizations/NetworkSpecificUI";
 import PropTypes from 'prop-types';
-import companyStore from "../../stores/CompanyStore";
-import Select from 'react-select';
+import BreadCrumbs from '../../components/BreadCrumbs';
+
+const breadCrumbs = [
+  { to: `/?tab=deviceProfiles`, text: 'Home' }
+];
 
 class CreateDeviceProfile extends Component {
     static contextTypes = {
@@ -70,40 +72,13 @@ class CreateDeviceProfile extends Component {
         }
 
         sessionStore.on("change", this.sessionWatch);
-
-        // Admin?  Needs company list.
-        let companies = {};
-        let filterList = [];
-        if (this.state.isAdmin) {
-            let recs;
-            try {
-                let cos = await companyStore.getAll();
-                recs = cos.records;
-            }
-            catch (err) {
-                console.log("Error getting company selection list:" + err);
-                recs = [];
-            }
-            for (let i = 0; i < recs.length; ++i) {
-                let rec = recs[i];
-                companies[rec.id] = rec;
-                filterList.push({label: rec.name, value: rec.id});
-            }
-        }
-        this.setState({
-            companies: companies,
-            filterList: filterList
-        });
-
     };
 
     onChange(field, e) {
         let deviceProfile = this.state.deviceProfile;
         console.log(field);
         console.log(e);
-        if (field === "companyId") {
-            deviceProfile[field] = e.value;
-        } else if ((e.target.type === "number") || (e.target.type === "select-one")) {
+        if ((e.target.type === "number") || (e.target.type === "select-one")) {
             deviceProfile[field] = parseInt(e.target.value, 10);
         } else if (e.target.type === "checkbox") {
             deviceProfile[field] = e.target.checked;
@@ -118,26 +93,13 @@ class CreateDeviceProfile extends Component {
 
         return (
           <div>
-              <ol className="breadcrumb">
-                  <li><Link to={`/`}>Home</Link></li>
-                  <li><Link to={`/applications`}>Create Device Profile</Link></li>
-              </ol>
+              <BreadCrumbs trail={breadCrumbs} destination="Create Device Profile" />
               <div className="panel panel-default">
                   <div className="panel-heading">
                       <h3 className="panel-title panel-title-buttons">Create Device Profile</h3>
                   </div>
                   <form onSubmit={this.onSubmit}>
                       <div className="panel-body">
-                          <div className={`panel-body clearfix ${this.state.isGlobalAdmin ? '' : 'hidden'}`}>
-                              <div className="form-group">
-                                  <label className="control-label" htmlFor="companyId">Company</label>
-                                  <Select
-                                    value={this.state.deviceProfile.companyId}
-                                    options={this.state.filterList}
-                                    onChange={this.onChange.bind(this, 'companyId')}
-                                    placeholder="Select Company"/>
-                              </div>
-                          </div>
                           <div className="form-group">
                               <label className="control-label" htmlFor="name">Device Profile Name</label>
                               <input className="form-control" id="name" type="text"

@@ -110,7 +110,7 @@ class ApplicationForm extends Component {
           console.log( "Error updating application" , err );
       }
 
-      me.props.history.push('/applications');
+      me.props.history.push('/?tab=applications');
   }
 
   componentWillReceiveProps(nextProps) {
@@ -153,8 +153,8 @@ class ApplicationForm extends Component {
     //eslint-disable-next-line
     if (confirm("Are you sure you want to delete this application?")) {
       applicationStore.deleteApplication(this.state.application.id )
-      .then((responseData) => {
-          this.props.history.push('/applications');
+      .then(() => {
+          this.props.history.push('/?tab=applications');
       })
       .catch( ( err ) => {
           console.log( "Error deleting application", err );

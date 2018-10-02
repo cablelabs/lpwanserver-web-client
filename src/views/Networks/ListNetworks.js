@@ -6,8 +6,7 @@ import NetworkType from './containers/NetworkType';
 import networkStore from "../../stores/NetworkStore";
 
 const breadCrumbs = [
-  { to: `/`, text: 'Home' },
-  { to: `/admin/networks`, text: 'Networks' },
+  { to: `/`, text: 'Home' }
 ];
 
 export default class ListNetworks extends React.Component {
@@ -17,7 +16,7 @@ export default class ListNetworks extends React.Component {
   render () {
     return(
       <div>
-        <BreadCrumbs trail={breadCrumbs}/>
+        <BreadCrumbs trail={breadCrumbs} destination="Networks" />
         <FetchNetworkTypes
           render={ networkTypes =>
             isNotArray(networkTypes) ?

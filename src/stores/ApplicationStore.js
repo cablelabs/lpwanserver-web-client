@@ -1,10 +1,14 @@
 import {EventEmitter} from "events";
 import sessionStore, {rest_url} from "./SessionStore";
 import {remoteErrorDisplay, fetchJson, paginationQuery} from "./helpers";
+import Collection from '../lib/collection'
 
 class ApplicationStore extends EventEmitter {
     constructor () {
         super()
+
+        // state
+        this.applications = new Collection()
 
         // util
         this.fetch = fetchJson(
@@ -19,8 +23,10 @@ class ApplicationStore extends EventEmitter {
     createApplication (body) {
         return this.fetch('', { method: 'post', body })
     }
-    getApplication (id) {
-        return this.fetch(id)
+    async getApplication (id) {
+        const response = await this.fetch(id)
+        this.applications.insert(response)
+        return response
     }
     updateApplication (body) {
         return this.fetch(body.id, { method: 'put', body })
@@ -28,9 +34,8 @@ class ApplicationStore extends EventEmitter {
     deleteApplication (id) {
         return this.fetch(id, { method: 'delete' })
     }
-    getAll (pageSize, offset, companyId) {
+    getAll (pageSize, offset) {
         let query = paginationQuery(pageSize, offset)
-        if (companyId) query += `${query ? '&' : '?'}companyId=${companyId}`
         return this.fetch(`${query ? '?' : ''}${query}`)
     }
     async startApplication (id) {

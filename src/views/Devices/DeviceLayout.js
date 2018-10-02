@@ -1,13 +1,10 @@
 import React, {Component} from "react";
-import {/*Route,*/ Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
-
-
 import sessionStore from "../../stores/SessionStore";
 import deviceStore from "../../stores/DeviceStore";
 import applicationStore from "../../stores/ApplicationStore";
 import DeviceForm from "../../components/DeviceForm";
-
+import BreadCrumbs from '../../components/BreadCrumbs';
 
 class DeviceLayout extends Component {
   static contextTypes = {
@@ -55,18 +52,18 @@ class DeviceLayout extends Component {
   }
 
   render() {
-      let page = 1;
-      if (this.props.history.location.state !== undefined)
-        page = this.props.history.location.state.page;
-      return (
-      <div>
-        <ol className="breadcrumb">
-          <li><Link to={`/`}>Home</Link></li>
-          <li><Link to={`/Applications`}>Applications</Link></li>
-          <li><Link to={`/Applications/${this.state.application.id}`}>{this.state.application.name}</Link></li>
-          <li className="active">{this.state.device.name}</li>
+    const { state, props } = this
+    let page = 1;
+    if (props.history.location.state !== undefined)
+      page = props.history.location.state.page;
+    const breadCrumbs = [
+      { to: `/?tab=applications`, text: 'Home' },
+      { to: `/applications/${state.application.id}`, text: state.application.name }
+    ];
 
-        </ol>
+    return (
+      <div>
+        <BreadCrumbs trail={breadCrumbs} destination={state.device.name} />
         <div className="panel-body">
           <DeviceForm device={this.state.device} onSubmit={this.onSubmit} update={true} page={page}/>
         </div>

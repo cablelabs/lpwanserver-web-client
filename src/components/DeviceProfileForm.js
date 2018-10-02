@@ -77,7 +77,7 @@ class DeviceProfileForm extends Component {
               console.log("No data to update!" );
           }
 
-          me.props.history.push('/applications');
+          me.props.history.push('/');
       }
       catch( err ) {
           console.log( "Error updating deviceProfile" , err );
@@ -101,7 +101,7 @@ class DeviceProfileForm extends Component {
     if (confirm("Are you sure you want to delete this device profile?")) {
       deviceStore.deleteDeviceProfile(this.state.deviceProfile.id )
       .then((responseData) => {
-          this.props.history.push('/applications');
+          this.props.history.push('/');
       })
       .catch( ( err ) => {
           console.log( "Error deleting device profile", err );

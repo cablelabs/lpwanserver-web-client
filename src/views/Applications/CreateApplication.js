@@ -1,14 +1,17 @@
 import React, {Component} from "react";
-import {Link, withRouter} from 'react-router-dom';
-import Select from 'react-select';
-
+import {withRouter} from 'react-router-dom';
 import sessionStore from "../../stores/SessionStore";
 import applicationStore from "../../stores/ApplicationStore";
 import reportingProtocolStore from "../../stores/ReportingProtocolStore";
 import ErrorStore from "../../stores/ErrorStore";
 import NetworkSpecificUI from "../NetworkCustomizations/NetworkSpecificUI";
 import PropTypes from 'prop-types';
-import companyStore from "../../stores/CompanyStore";
+import BreadCrumbs from '../../components/BreadCrumbs';
+
+const breadCrumbs = [
+  { to: `/?tab=applications`, text: 'Home' }
+];
+
 
 class CreateApplication extends Component {
     static contextTypes = {
@@ -26,9 +29,6 @@ class CreateApplication extends Component {
             },
             isGlobalAdmin: isGlobalAdmin,
             isAdmin: isAdmin,
-            filterCompanySearch: "",
-            filterCompany: isGlobalAdmin ?
-              undefined : sessionStore.getUser().companyId,
             filterList: undefined,
             reportingProtocols: [],
         };
@@ -63,7 +63,7 @@ class CreateApplication extends Component {
                 else {
                     console.log("No data to update!");
                 }
-                me.props.history.push('/applications');
+                me.props.history.push('/?tab=applications');
             });
         }
         catch (err) {
@@ -95,30 +95,6 @@ class CreateApplication extends Component {
         }
 
         sessionStore.on("change", this.sessionWatch);
-
-        // Admin?  Needs company list.
-        var companies = {};
-        var filterList = [];
-        if (this.state.isAdmin) {
-            let recs;
-            try {
-                let cos = await companyStore.getAll();
-                recs = cos.records;
-            }
-            catch (err) {
-                console.log("Error getting company selection list:" + err);
-                recs = [];
-            }
-            for (let i = 0; i < recs.length; ++i) {
-                let rec = recs[i];
-                companies[rec.id] = rec;
-                filterList.push({label: rec.name, value: rec.id});
-            }
-        }
-        this.setState({
-            companies: companies,
-            filterList: filterList
-        });
         console.log("Finished mounting component");
 
     };
@@ -127,9 +103,7 @@ class CreateApplication extends Component {
     onChange(field, e) {
         let application = this.state.application;
 
-        if (field === "companyId") {
-            application[field] = e.value;
-        } else if ((e.target.type === "number") || (e.target.type === "select-one")) {
+        if ((e.target.type === "number") || (e.target.type === "select-one")) {
             application[field] = parseInt(e.target.value, 10);
         } else if (e.target.type === "checkbox") {
             application[field] = e.target.checked;
@@ -144,26 +118,13 @@ class CreateApplication extends Component {
 
         return (
           <div>
-              <ol className="breadcrumb">
-                  <li><Link to={`/`}>Home</Link></li>
-                  <li><Link to={`/Applications`}>Create Application</Link></li>
-              </ol>
+              <BreadCrumbs trail={breadCrumbs} destination="Create Application" />
               <div className="panel panel-default">
                   <div className="panel-heading">
                       <h3 className="panel-title panel-title-buttons">Create Application</h3>
                   </div>
                   <form onSubmit={this.onSubmit}>
                       <div className="panel-body">
-                          <div className={`panel-body clearfix ${this.state.isGlobalAdmin ? '' : 'hidden'}`}>
-                                  <div className="form-group">
-                                      <label className="control-label" htmlFor="companyId">Company</label>
-                                      <Select
-                                              value={this.state.application.companyId}
-                                              options={this.state.filterList}
-                                              onChange={this.onChange.bind(this, 'companyId')}
-                                              placeholder="Select Company"/>
-                                  </div>
-                          </div>
                           <div className="form-group">
                               <label className="control-label" htmlFor="name">Application Name</label>
                               <input className="form-control" id="name" type="text"

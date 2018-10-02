@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import {Link, withRouter} from 'react-router-dom';
-
+import {withRouter} from 'react-router-dom';
+import BreadCrumbs from '../../components/BreadCrumbs';
 import reportingProtocolStore from "../../stores/ReportingProtocolStore";
 import PropTypes from 'prop-types';
 
@@ -65,13 +65,14 @@ class CreateReportingProtocol extends Component {
   }
 
   render() {
+    const breadCrumbs = [
+      { to: `/`, text: 'Home' },
+      { to: '/admin/reportingProtocols', text: 'Reporting Protocols' }
+    ];
+
     return (
       <div>
-        <ol className="breadcrumb">
-          <li><Link to={`/`}>Home</Link></li>
-          <li><Link to={`/admin/reportingProtocols`}>Reporting Protocols</Link></li>
-          <li className="active">Create Reporting Protocol</li>
-        </ol>
+        <BreadCrumbs trail={breadCrumbs} destination="Create Reporting Protocol" />
         <div className="panel panel-default">
           <div className="panel-heading">
             <h3 className="panel-title panel-title-buttons">Create Reporting Protocol</h3>

@@ -101,7 +101,7 @@ class CreateNetworkProtocol extends Component {
               <input className="form-control"
                      id="name"
                      type="text"
-                     placeholder="e.g. 'LoRa Open Source'"
+                     placeholder="e.g. 'LoRa Server'"
                      required
                      value={this.state.networkProtocol.name || ''}
                      onChange={this.onChange.bind(this, 'name')}/>

@@ -59,9 +59,8 @@ class DeviceStore extends EventEmitter {
         remoteErrorDisplay(response)
         return response
     }
-    async getAllDeviceProfiles (pageSize, offset, companyId) {
+    async getAllDeviceProfiles (pageSize, offset) {
         let query = paginationQuery(pageSize, offset)
-        if (companyId) query += `${query ? '&' : '?'}companyId=${companyId}`
         const response = await this.fetchDeviceProfile(`${query ? '?' : ''}${query}`)
         remoteErrorDisplay(response)
         return response
