@@ -73,7 +73,7 @@ class Navbar extends Component {
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav navbar-right">
 
-                <li className={this.state.isGlobalAdmin === true ? "" : "hidden"}><a href="/admin/companies">Companies</a></li>
+                <li className={this.state.isGlobalAdmin === true ? "" : "hidden"}><a href="/?tab=applications">Applications</a></li>
                 <li className={this.state.isGlobalAdmin === true ? "" : "hidden"}><a href="/admin/networks">Networks</a></li>
                 <li className={this.state.isGlobalAdmin === true ? "" : "hidden"}><a href="/admin/reportingProtocols">Application Reporting Protocols</a></li>
                 <li className={"dropdown " + (typeof(this.state.user.username) === "undefined" ? "hidden" : "") + (this.state.userDropdownOpen ? "open" : "")}>

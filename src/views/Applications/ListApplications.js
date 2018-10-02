@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import Select from 'react-select';
-
 import Pagination from "../../components/Pagination";
 import applicationStore from "../../stores/ApplicationStore";
-import companyStore from "../../stores/CompanyStore";
 import networkTypeStore from "../../stores/NetworkTypeStore";
 import reportingProtocolStore from "../../stores/ReportingProtocolStore";
 import sessionStore from "../../stores/SessionStore";
 import userStore from "../../stores/UserStore";
 import deviceStore from "../../stores/DeviceStore";
+import { parse as qs_parse } from 'qs'
 
 
 class ApplicationRow extends Component {
@@ -45,7 +43,6 @@ class ApplicationRow extends Component {
                 </button>
             </div>
         </td>
-        <td className={`${this.props.isGlobalAdmin ? '' : 'hidden'}`}>{this.props.application.companyName}</td>
       </tr>
     );
   }
@@ -62,7 +59,6 @@ class UserRow extends Component {
         <td>{email}</td>
         <td>{verified}</td>
         <td>{this.props.user.role}</td>
-        <td className={`${this.props.isGlobalAdmin ? '' : 'hidden'}`}>{this.props.user.companyName}</td>
       </tr>
     );
   }
@@ -74,7 +70,6 @@ class DeviceProfileRow extends Component {
     return (
       <tr>
         <td><Link to={`/deviceProfile/${this.props.deviceProfile.id}`}>{this.props.deviceProfile.name}</Link></td>
-        <td className={`${this.props.isGlobalAdmin ? '' : 'hidden'}`}>{this.props.deviceProfile.companyName}</td>
       </tr>
     );
   }
@@ -88,13 +83,12 @@ class ListApplications extends Component {
 
       this.state = {
           pageSize: 20,
-          activeTab: "application",
+          activeTab: "applications",
           networkTypesMap: {},
           reportingProtocolsMap: {},
           applications: [],
           users: [],
           deviceProfiles: [],
-          companies: {},
           organization: {},
           isGlobalAdmin: isGlobalAdmin,
           isAdmin: isAdmin,
@@ -104,9 +98,6 @@ class ListApplications extends Component {
           userPages: 1,
           dpPageNumber: 1,
           dpPages: 1,
-          filterCompanySearch: "",
-          filterCompany: isGlobalAdmin ?
-                            undefined : sessionStore.getUser().companyId,
           filterList: undefined,
           reloadCount: 0,
       };
@@ -123,7 +114,6 @@ class ListApplications extends Component {
     this.setState({
       activeTab: e.target.getAttribute('aria-controls'),
     });
-
   }
 
   sessionWatch() {
@@ -133,7 +123,6 @@ class ListApplications extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
     this.updatePage(nextProps);
   }
 
@@ -141,37 +130,24 @@ class ListApplications extends Component {
       this.sessionWatch();
   }
 
-  componentDidMount = async function(props) {
+  componentDidMount = async function() {
+      let { history, location: { search } } = this.props
+
       // Check for a user, and redirect to login if none is set.
       let user = sessionStore.getUser();
       if ( !user || !user.id || ( user.id === 0 ) ) {
-          this.props.history.push("/login");
+          history.push("/login");
           return;
       }
 
-      sessionStore.on("change", this.sessionWatch );
-
-      // Admin?  Needs company list.
-      var companies = {};
-      var filterList = [];
-      if ( this.state.isAdmin ) {
-          let recs;
-          try {
-              let cos = await companyStore.getAll();
-              recs = cos.records;
-          }
-          catch( err ) {
-              console.log( "Error getting company selection list:" + err );
-              recs = [];
-          }
-          for( let i = 0; i < recs.length; ++i ) {
-              let rec = recs[ i ];
-              companies[ rec.id ] = rec;
-              filterList.push( { label: rec.name, value: rec.id } );
-          }
+      // check for active tab setting in location search
+      if (search[0] === '?') search = search.slice(1)
+      const query = qs_parse(search)
+      if (query.tab) {
+        this.setState({ activeTab: query.tab }, () => history.replace('/'))
       }
-      this.setState( { companies: companies,
-                       filterList: filterList } );
+
+      sessionStore.on("change", this.sessionWatch );
 
       try {
           let networkTypes = await networkTypeStore.getNetworkTypes();
@@ -201,19 +177,15 @@ class ListApplications extends Component {
   }
 
   reloadBasedOnFilter = async function( ) {
+    const { state } = this
     try {
         let apps = await applicationStore.getAll(
-                                this.state.pageSize,
-                                (this.state.appPage - 1) * this.state.pageSize,
-                                this.state.filterCompany );
-        if ( this.state.isGlobalAdmin ) {
-            apps.records.forEach( app => {
-                app.companyName = this.state.companies[ app.companyId ].name;
-            });
-        }
+            state.pageSize,
+            (state.appPage - 1) * state.pageSize
+        )
         this.setState({
             applications: apps.records,
-            appPages: Math.ceil(apps.totalCount / this.state.pageSize),
+            appPages: Math.ceil(apps.totalCount / state.pageSize),
         });
     }
     catch( err ) {
@@ -222,19 +194,15 @@ class ListApplications extends Component {
     window.scrollTo(0, 0);
 
     try {
-        if ( this.state.isAdmin ) {
+        if ( state.isAdmin ) {
             let userret = await userStore.getAll(
-                                this.state.pageSize,
-                                (this.state.userPage - 1) * this.state.pageSize,
-                                this.state.filterCompany )
+                state.pageSize,
+                (state.userPage - 1) * state.pageSize
+            )
             let users = userret.records;
-            for ( let i = 0; i < users.length; ++i ) {
-                let u = users[ i ];
-                u.companyName = this.state.companies[ u.companyId ].name;
-            }
             this.setState({
                 users: users,
-                userPages: Math.ceil( userret.totalCount / this.state.pageSize),
+                userPages: Math.ceil( userret.totalCount / state.pageSize),
             });
             window.scrollTo(0, 0);
         }
@@ -245,18 +213,13 @@ class ListApplications extends Component {
 
     try {
         let devsret = await deviceStore.getAllDeviceProfiles(
-                                this.state.pageSize,
-                                (this.state.dpPage - 1) * this.state.pageSize,
-                                this.state.filterCompany );
+            state.pageSize,
+            (state.dpPage - 1) * state.pageSize
+        )
         let deviceProfiles = devsret.records;
-        if ( this.state.isGlobalAdmin ) {
-            deviceProfiles.forEach( dp => {
-                dp.companyName = this.state.companies[ dp.companyId ].name;
-            });
-        }
         this.setState({
             deviceProfiles: deviceProfiles,
-            dpPages: Math.ceil( devsret.totalCount / this.state.pageSize),
+            dpPages: Math.ceil( devsret.totalCount / state.pageSize),
         });
         window.scrollTo(0, 0);
     }
@@ -267,17 +230,6 @@ class ListApplications extends Component {
 
   componentWillUnmount() {
       sessionStore.removeListener("change", this.sessionWatch );
-  }
-
-  applyFilter( e, v ) {
-      let value;
-      if ( v && null != v ) {
-          value = v.value;
-      }
-
-      // The callback forces the applications and users to be reloaded
-      // based on the filter AFTER the filter is reset.
-      this.setState( { filterCompany: value }, this.reloadBasedOnFilter );
   }
 
   reload(i) {
@@ -316,7 +268,7 @@ class ListApplications extends Component {
 
           <div className={`panel-heading clearfix `}>
 
-            <div className={`btn-group pull-right ${this.state.activeTab === "application" ? '' : 'hidden'}`}>
+            <div className={`btn-group pull-right ${this.state.activeTab === "applications" ? '' : 'hidden'}`}>
               <Link to={`/create/application`}>
                 <button type="button" className="btn btn-default btn-sm">Create Application</button>
               </Link>
@@ -335,8 +287,8 @@ class ListApplications extends Component {
             </div>
 
             <ul className="nav nav-tabs">
-              <li role="presentation" className={(this.state.activeTab === "application" ? 'active' : '')}><a
-                onClick={this.changeTab} href="#application" aria-controls="application">Applications</a></li>
+              <li role="presentation" className={(this.state.activeTab === "applications" ? 'active' : '')}><a
+                onClick={this.changeTab} href="#applications" aria-controls="applications">Applications</a></li>
               <li role="presentation" className={(this.state.activeTab === "users" ? 'active' : '') + ((sessionStore.isAdmin()) ? '' : ' hidden' ) }><a
                 onClick={this.changeTab} href="#users" aria-controls="users">Users</a></li>
               <li role="presentation" className={(this.state.activeTab === "deviceProfiles" ? 'active' : '')}><a
@@ -344,20 +296,7 @@ class ListApplications extends Component {
             </ul>
           </div>
 
-          <div className={`panel-body clearfix ${this.state.isGlobalAdmin ? '' : 'hidden'}`}>
-              <form onSubmit={this.applyFilter.bind(this)}>
-                  <div className="form-group">
-                      <Select
-                          value={this.state.filterCompany}
-                          options={this.state.filterList}
-                          onChange={this.applyFilter.bind( this, "filter" )}
-                          placeholder="Filter list by company..." />
-                  </div>
-              </form>
-
-          </div>
-
-          <div className={`panel-body clearfix ${this.state.activeTab === "application" ? '' : 'hidden'}`}>
+          <div className={`panel-body clearfix ${this.state.activeTab === "applications" ? '' : 'hidden'}`}>
             <table className="table table-hover">
               <thead>
               <tr>
@@ -366,7 +305,6 @@ class ListApplications extends Component {
                 <th className="col-md-3">To URL</th>
                 <th className="col-md-1">Running?</th>
                 <th className="col-md-1">Start/Stop</th>
-                <th className={`col-md-3 ${this.state.isGlobalAdmin ? '' : 'hidden'}`}>Company</th>
               </tr>
               </thead>
               <tbody>
@@ -386,7 +324,6 @@ class ListApplications extends Component {
                 <th className="col-md-3">Email</th>
                 <th className="col-md-2">Verified Email</th>
                 <th className="col-md-1">Role</th>
-                <th className={`col-md-3 ${this.state.isGlobalAdmin ? '' : 'hidden'}`}>Company</th>
               </tr>
               </thead>
               <tbody>
@@ -403,7 +340,6 @@ class ListApplications extends Component {
               <thead>
               <tr>
                 <th className="col-md-6">Device Profile Name</th>
-                <th className={`col-md-3 ${this.state.isGlobalAdmin ? '' : 'hidden'}`}>Company</th>
               </tr>
               </thead>
               <tbody>

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-
 import reportingProtocolStore from "../../stores/ReportingProtocolStore";
 import SessionStore from "../../stores/SessionStore";
+import BreadCrumbs from '../../components/BreadCrumbs';
 
 class ReportingProtocolRow extends Component {
   render() {
@@ -52,7 +52,6 @@ class ListReportingProtocols extends Component {
   updatePage(props) {
     reportingProtocolStore.getReportingProtocols()
     .then( reportingProtocols => {
-        console.log( "Got reportingProtocols", reportingProtocols );
         this.setState({reportingProtocols: reportingProtocols});
         window.scrollTo(0, 0);
     });
@@ -64,12 +63,13 @@ class ListReportingProtocols extends Component {
         <ReportingProtocolRow key={reportingProtocol.id}
                               reportingProtocol={reportingProtocol} />);
 
+    const breadCrumbs = [
+      { to: `/`, text: 'Home' }
+    ];
+
     return (
       <div>
-        <ol className="breadcrumb">
-          <li><Link to={`/`}>Home</Link></li>
-            <li><Link to={`/admin/reportingProtocols`}>Reporting Protocols</Link></li>
-        </ol>
+        <BreadCrumbs trail={breadCrumbs} destination="Reporting Protocols" />
 
         <div className="panel panel-default">
 

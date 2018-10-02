@@ -9,9 +9,8 @@ class UserStore extends EventEmitter {
         // util
         this.fetch = fetchJson(`${rest_url}/api/users`, () => sessionStore.getHeader())
     }
-    getAll (pageSize, offset, companyId) {
+    getAll (pageSize, offset) {
         let query = paginationQuery(pageSize, offset)
-        if (companyId) query += `${query ? '&' : '?'}companyId=${companyId}`
         return this.fetch(`${query ? '?' : ''}${query}`)
     }
     getUser (id) {

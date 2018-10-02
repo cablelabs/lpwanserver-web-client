@@ -1,11 +1,13 @@
 import React, {Component} from "react";
-import {/*Route,*/ Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
-
-
 import sessionStore from "../../stores/SessionStore";
 import applicationStore from "../../stores/ApplicationStore";
 import ApplicationForm from "../../components/ApplicationForm";
+import BreadCrumbs from '../../components/BreadCrumbs';
+
+const breadCrumbs = [
+  { to: `/?tab=applications`, text: 'Home' }
+];
 
 
 class ApplicationLayout extends Component {
@@ -57,11 +59,7 @@ class ApplicationLayout extends Component {
       page = this.props.history.location.state.page;
     return (
       <div>
-        <ol className="breadcrumb">
-          <li><Link to={`/`}>Home</Link></li>
-          <li><Link to={`/applications`}>Applications</Link></li>
-          <li className="active">{this.state.application.name}</li>
-        </ol>
+        <BreadCrumbs trail={breadCrumbs} destination={this.state.application.name} />
         <div className="panel-body">
           <ApplicationForm application={this.state.application} onSubmit={this.onSubmit} update={true} page={page}/>
         </div>

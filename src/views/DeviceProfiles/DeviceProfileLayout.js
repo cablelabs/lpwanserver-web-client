@@ -59,9 +59,7 @@ console.log( "Device profile layout render" );
     return (
       <div>
         <ol className="breadcrumb">
-          <li><Link to={`/`}>Home</Link></li>
-          <li><Link to={`/applications`}>Applications</Link></li>
-          <li><Link to={`/applications`}>Device Profiles</Link></li>
+          <li><Link to={`/?tab=deviceProfiles`}>Home</Link></li>
           <li className="active">{this.state.deviceProfile.name}</li>
         </ol>
         <div className="panel-body">

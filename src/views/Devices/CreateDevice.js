@@ -1,11 +1,13 @@
 import React, {Component} from "react";
-import {Link, withRouter} from 'react-router-dom';
-
-
+import {withRouter} from 'react-router-dom';
 import deviceStore from "../../stores/DeviceStore";
 import ErrorStore from "../../stores/ErrorStore";
+import applicationStore from '../../stores/ApplicationStore'
 import NetworkSpecificUI from "../NetworkCustomizations/NetworkSpecificUI";
 import PropTypes from 'prop-types';
+import BreadCrumbs from '../../components/BreadCrumbs';
+import connect from '../../utils/connectStore'
+import {compose} from 'ramda'
 
 class CreateDevice extends Component {
   static contextTypes = {
@@ -26,6 +28,11 @@ class CreateDevice extends Component {
     this.networkSpecificComps = {};
 
     this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentDidMount () {
+      const { application, match } = this.props
+      if (!application) applicationStore.getApplication(match.params.applicationID)
   }
 
   onSubmit = async function(e) {
@@ -72,17 +79,14 @@ class CreateDevice extends Component {
   }
 
   render() {
-      let me = this;
+    const { props, state } = this
+    const breadCrumbs = [
+        { to: `/?tab=applications`, text: 'Home' },
+        { to: `/applications/${props.application.id}`, text: props.application.name }
+    ];
     return (
         <div>
-            <ol className="breadcrumb">
-                <li><Link to={`/`}>Home</Link></li>
-                <li><Link to={`/Applications`}>Applications</Link></li>
-                <li><Link
-                        to={`/Applications/${this.props.match.params.applicationID}`}>{this.props.match.params.applicationID}</Link>
-                </li>
-                <li className="active">Create Device</li>
-            </ol>
+            <BreadCrumbs trail={breadCrumbs} destination="Create Device" />
             <div className="panel panel-default">
                 <div className="panel-heading">
                     <h3 className="panel-title panel-title-buttons">Create Device</h3>
@@ -123,10 +127,10 @@ class CreateDevice extends Component {
                         </div>
 
                         <NetworkSpecificUI
-                            ref={ (comp) => { me.networkSpecificComps = comp; }}
+                            ref={ (comp) => { this.networkSpecificComps = comp; }}
                             dataName="Device"
-                            referenceDataId={me.state.device.applicationId}
-                            dataRec={me.state.device} />
+                            referenceDataId={state.device.applicationId}
+                            dataRec={state.device} />
 
                         <hr/>
                         <div className="btn-toolbar pull-right">
@@ -140,4 +144,15 @@ class CreateDevice extends Component {
   }
 }
 
-export default withRouter(CreateDevice);
+export default compose(
+    withRouter,
+    connect({
+        state: {
+            application: {
+                stream: props =>
+                    applicationStore.applications.findOne(props.match.params.applicationID),
+                map: val => val || {}
+            }
+        }
+    })
+)(CreateDevice)

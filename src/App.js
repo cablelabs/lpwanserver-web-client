@@ -14,9 +14,6 @@ import CreateDevice from "./views/Devices/CreateDevice";
 import Errors from "./components/Errors";
 import ReMount from "./components/ReMount";
 import CreateUser from "./views/auth/CreateUser";
-import ListCompanies from "./views/Companies/ListCompanies";
-import CompanyLayout from "./views/Companies/CompanyLayout";
-import CreateCompany from "./views/Companies/CreateCompany";
 import ListNetworkTypes from "./views/NetworkTypes/ListNetworkTypes";
 import NetworkTypeLayout from "./views/NetworkTypes/NetworkTypeLayout";
 import CreateNetworkType from "./views/NetworkTypes/CreateNetworkType";
@@ -70,9 +67,6 @@ class Layout extends Component {
             <Route exact path="/create/user" component={CreateUser}/>
             <Route exact path="/create/application/:applicationID/device" component={CreateDevice}/>
             <Route exact path="/applications/:applicationID/devices/:deviceID" component={DeviceLayout}/>
-            <Route exact path="/admin/company/:companyID" component={CompanyLayout}/>
-            <Route exact path="/admin/companies" component={ListCompanies}/>
-            <Route exact path="/admin/company" component={CreateCompany}/>
             <Route exact path="/admin/networkType/:networkTypeID" component={NetworkTypeLayout}/>
             <Route exact path="/admin/networkTypes" component={ListNetworkTypes}/>
             <Route exact path="/admin/networkType" component={CreateNetworkType}/>
