@@ -1,16 +1,9 @@
 import { EventEmitter } from "events";
-import _fetch from '../lib/fetcher'
-import dispatcher from "../dispatcher";
+import dispatcher, { dispatch } from "../dispatcher";
 import { dissocPath, lensPath, set as lensSet } from 'ramda';
+import { authenticate } from '../services/lpwanserver'
 
-export const rest_url = process.env.REACT_APP_REST_SERVER_URL;
-
-const loginErrorHandler = (error) => {
-    dispatcher.dispatch({
-        type: "CREATE_ERROR",
-        error: error
-    });
-};
+export const rest_url = process.env.REACT_APP_REST_SERVER_URL
 
 class SessionStore extends EventEmitter {
     constructor() {
@@ -48,7 +41,6 @@ class SessionStore extends EventEmitter {
       const user = JSON.parse( sessionStorage.getItem( "user" ));
       user && sessionStorage.setItem( "user",
         JSON.stringify( dissocPath(["settings", key], user )));
-
     }
 
     isAdmin() {
@@ -84,17 +76,18 @@ class SessionStore extends EventEmitter {
         return !token ? {} : { authorization: `Bearer ${token}`}
     }
 
-    async login (body) {
+    async login (credentials) {
         try {
-            const headers = { 'content-type': 'application/json' }
-            const opts = { method: 'post', headers, body: JSON.stringify(body) }
-            const response = await _fetch(`${rest_url}/api/sessions`, opts).then(x => x.text())
-            this.setToken(response)
+            const token = await authenticate(credentials)
+            this.setToken(token)
             this.saveMeToStore()
             this.emit('session-started')
         } catch (err) {
-            loginErrorHandler(err)
-            throw err
+            const msg = err.status === 401
+              ? 'Username or password is incorrect.'
+              : err.message
+            dispatch({ type: "CREATE_ERROR", error: new Error(msg) });
+            console.error(err)
         }
     }
 
@@ -147,7 +140,13 @@ class SessionStore extends EventEmitter {
         sessionStorage.removeItem( "user" );
     }
 
-
+    handleActions (action) {
+        switch (action.type) {
+            case 'AUTHENTICATION_FAILED': return this.logout()
+        }
+    }
 }
 
-export default new SessionStore();
+const sessionStore = new SessionStore();
+dispatcher.register(sessionStore.handleActions.bind(sessionStore))
+export default sessionStore

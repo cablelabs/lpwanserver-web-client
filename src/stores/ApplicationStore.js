@@ -2,6 +2,7 @@ import {EventEmitter} from "events";
 import sessionStore, {rest_url} from "./SessionStore";
 import {remoteErrorDisplay, fetchJson, paginationQuery} from "./helpers";
 import Collection from '../lib/collection'
+import dispatcher, { dispatch } from "../dispatcher";
 
 class ApplicationStore extends EventEmitter {
     constructor () {
@@ -77,8 +78,13 @@ class ApplicationStore extends EventEmitter {
         const response = await this.fetchNtwkTypeLinks(`?applicationId=${appId}`)
         return response.records
     }
+    handleActions (action) {
+        switch (action.type) {
+            
+        }
+    }
 }
 
 const applicationStore = new ApplicationStore();
-
+dispatcher.register(applicationStore.handleActions.bind(applicationStore))
 export default applicationStore;
