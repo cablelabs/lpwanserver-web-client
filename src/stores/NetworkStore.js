@@ -4,7 +4,7 @@ import {EventEmitter} from "events";
 import Collection from '../lib/collection'
 import flyd from 'flyd'
 import { omit } from 'ramda'
-import dispatcher, { dispatch } from "../dispatcher";
+import dispatcher from "../dispatcher";
 
 class NetworkStore extends EventEmitter {
   constructor () {
@@ -77,7 +77,7 @@ class NetworkStore extends EventEmitter {
   }
   handleActions (action) {
     switch (action.type) {
-        
+        default: return
     }
   }
 }

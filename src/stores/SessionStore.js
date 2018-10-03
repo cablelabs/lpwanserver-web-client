@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import dispatcher, { dispatch } from "../dispatcher";
 import { dissocPath, lensPath, set as lensSet } from 'ramda';
-import { authenticate } from '../services/lpwanserver'
+import _fetch from '../lib/fetcher'
 
 export const rest_url = process.env.REACT_APP_REST_SERVER_URL
 
@@ -67,6 +67,7 @@ class SessionStore extends EventEmitter {
 
         this.clearMeFromStore();
         this.emit('change')
+        dispatch({ type: 'LOGOUT' })
 
         return;
     }
@@ -76,9 +77,11 @@ class SessionStore extends EventEmitter {
         return !token ? {} : { authorization: `Bearer ${token}`}
     }
 
-    async login (credentials) {
+    async login (body) {
         try {
-            const token = await authenticate(credentials)
+            const headers = { 'content-type': 'application/json' }
+            const opts = { method: 'post', headers, body: JSON.stringify(body) }
+            const token = await _fetch(`${rest_url}/api/sessions`, opts).then(x => x.text())
             this.setToken(token)
             this.saveMeToStore()
             this.emit('session-started')
@@ -143,6 +146,7 @@ class SessionStore extends EventEmitter {
     handleActions (action) {
         switch (action.type) {
             case 'AUTHENTICATION_FAILED': return this.logout()
+            default: return
         }
     }
 }

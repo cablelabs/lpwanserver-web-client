@@ -1,7 +1,7 @@
 import sessionStore, {rest_url} from "./SessionStore";
 import {fetchJson} from "./helpers";
 import {EventEmitter} from "events";
-import dispatcher, { dispatch } from "../dispatcher";
+import dispatcher from "../dispatcher";
 
 class NetworkProviderStore extends EventEmitter {
     constructor () {
@@ -28,7 +28,7 @@ class NetworkProviderStore extends EventEmitter {
     }
     handleActions (action) {
         switch (action.type) {
-            
+            default: return
         }
     }
 }

@@ -2,7 +2,7 @@ import sessionStore, {rest_url} from "./SessionStore";
 import {fetchJson} from "./helpers";
 import {EventEmitter} from "events";
 import Collection from '../lib/collection'
-import dispatcher, { dispatch } from "../dispatcher";
+import dispatcher from "../dispatcher";
 
 class NetworkProtocolStore extends EventEmitter {
   constructor () {
@@ -59,9 +59,9 @@ class NetworkProtocolStore extends EventEmitter {
   }
   handleActions (action) {
     switch (action.type) {
-        
+        default: return
     }
-}
+  }
 }
 
 const networkProtocolStore = new NetworkProtocolStore();

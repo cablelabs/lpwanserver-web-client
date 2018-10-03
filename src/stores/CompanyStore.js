@@ -3,7 +3,7 @@ import {EventEmitter} from "events";
 import {remoteErrorDisplay, fetchJson, paginationQuery} from "./helpers";
 import userStore from "./UserStore";
 import { pick } from 'ramda'
-import dispatcher, { dispatch } from "../dispatcher";
+import dispatcher from "../dispatcher";
 
 class CompanyStore extends EventEmitter {
     constructor () {
@@ -78,7 +78,7 @@ class CompanyStore extends EventEmitter {
     }
     handleActions (action) {
         switch (action.type) {
-            
+            default: return
         }
     }
 }

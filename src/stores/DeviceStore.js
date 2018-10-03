@@ -2,7 +2,7 @@ import {EventEmitter} from "events";
 import sessionStore, {rest_url} from "./SessionStore";
 import applicationStore from "./ApplicationStore";
 import {remoteErrorDisplay, fetchJson, paginationQuery} from "./helpers";
-import dispatcher, { dispatch } from "../dispatcher";
+import dispatcher from "../dispatcher";
 
 class DeviceStore extends EventEmitter {
     constructor () {
@@ -100,7 +100,7 @@ class DeviceStore extends EventEmitter {
     }
     handleActions (action) {
         switch (action.type) {
-            
+            default: return
         }
     }
 }
