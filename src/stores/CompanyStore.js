@@ -3,7 +3,7 @@ import {EventEmitter} from "events";
 import {remoteErrorDisplay, fetchJson, paginationQuery} from "./helpers";
 import userStore from "./UserStore";
 import { pick } from 'ramda'
-
+import dispatcher from "../dispatcher";
 
 class CompanyStore extends EventEmitter {
     constructor () {
@@ -76,9 +76,14 @@ class CompanyStore extends EventEmitter {
         const response = await this.fetchNtwkTypeLinks(`?companyId=${coId}`)
         return response.records
     }
+    handleActions (action) {
+        switch (action.type) {
+            default: return
+        }
+    }
 }
 
 
 const companyStore = new CompanyStore();
-
+dispatcher.register(companyStore.handleActions.bind(companyStore))
 export default companyStore;

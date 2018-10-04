@@ -58,5 +58,4 @@ class ErrorStore extends EventEmitter {
 
 const errorStore = new ErrorStore();
 dispatcher.register(errorStore.handleActions.bind(errorStore));
-
 export default errorStore;

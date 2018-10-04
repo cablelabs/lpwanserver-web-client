@@ -2,6 +2,7 @@ import {EventEmitter} from "events";
 import sessionStore, {rest_url} from "./SessionStore";
 import applicationStore from "./ApplicationStore";
 import {remoteErrorDisplay, fetchJson, paginationQuery} from "./helpers";
+import dispatcher from "../dispatcher";
 
 class DeviceStore extends EventEmitter {
     constructor () {
@@ -97,8 +98,13 @@ class DeviceStore extends EventEmitter {
         remoteErrorDisplay(response)
         return response
     }
+    handleActions (action) {
+        switch (action.type) {
+            default: return
+        }
+    }
 }
 
 const deviceStore = new DeviceStore();
-
+dispatcher.register(deviceStore.handleActions.bind(deviceStore))
 export default deviceStore;

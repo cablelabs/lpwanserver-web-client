@@ -1,6 +1,7 @@
 import sessionStore, {rest_url} from "./SessionStore";
 import {fetchJson} from "./helpers";
 import {EventEmitter} from "events";
+import dispatcher from "../dispatcher";
 
 class NetworkProviderStore extends EventEmitter {
     constructor () {
@@ -25,8 +26,13 @@ class NetworkProviderStore extends EventEmitter {
     deleteNetworkProvider (id) {
         return this.fetch(id, { method: 'delete' })
     }
+    handleActions (action) {
+        switch (action.type) {
+            default: return
+        }
+    }
 }
 
 const networkProviderStore = new NetworkProviderStore();
-
+dispatcher.register(networkProviderStore.handleActions.bind(networkProviderStore))
 export default networkProviderStore;

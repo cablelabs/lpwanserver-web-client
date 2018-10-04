@@ -22,6 +22,7 @@ class Navbar extends Component {
     this.userToggleDropdown = this.userToggleDropdown.bind(this);
     this.networkToggleDropdown = this.networkToggleDropdown.bind(this);
     this.handleActions = this.handleActions.bind(this);
+    this.logout = this.logout.bind(this)
   }
 
   userToggleDropdown() {
@@ -63,6 +64,10 @@ class Navbar extends Component {
     dispatcher.register(this.handleActions);
   }
 
+  logout () {
+    sessionStore.logout()
+  }
+
   render() {
     return (
       <nav className="navbar navbar-default navbar-fixed-top">
@@ -80,7 +85,7 @@ class Navbar extends Component {
                   <a onClick={this.userToggleDropdown} className="dropdown-toggle">{this.state.user.username} <span className="caret" /></a>
                   <ul className="dropdown-menu" onClick={this.userToggleDropdown}>
                     <li><a href={`users/${this.state.user.id}`}>Change Profile</a></li>
-                    <li><a href="/login">Logout</a></li>
+                    <li><a href="" onClick={this.logout}>Logout</a></li>
                   </ul>
                 </li>
 

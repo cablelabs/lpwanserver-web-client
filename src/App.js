@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Navbar from "./components/Navbar";
 
 import dispatcher from "./dispatcher";
-import {Route} from 'react-router-dom';
+import {Route, withRouter} from 'react-router-dom';
 
 import Login from "./views/auth/Login";
 import ApplicationLayout from "./views/Applications/ApplicationLayout";
@@ -39,6 +39,11 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/base16-light.css';
 
 class Layout extends Component {
+  constructor (...args) {
+    super(...args)
+
+    dispatcher.register(this.handleActions.bind(this))
+  }
   onClick() {
     dispatcher.dispatch({
       type: "BODY_CLICK",
@@ -46,7 +51,14 @@ class Layout extends Component {
   }
 
   componentDidMount() {
-      ErrorStore.clear();
+    ErrorStore.clear();
+  }
+
+  handleActions (action) {
+    switch (action.type) {
+      case 'LOGOUT': return this.props.history.push('/login')
+      default: return
+    }
   }
 
   render() {
@@ -92,4 +104,4 @@ class Layout extends Component {
   }
 }
 
-export default Layout;
+export default withRouter(Layout)

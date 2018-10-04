@@ -1,6 +1,7 @@
 import {EventEmitter} from "events";
 import sessionStore, {rest_url} from "./SessionStore";
 import {fetchJson, paginationQuery} from "./helpers";
+import dispatcher from "../dispatcher";
 
 class UserStore extends EventEmitter {
     constructor () {
@@ -42,9 +43,14 @@ class UserStore extends EventEmitter {
         const users = await this.fetch(`?companyId=${companyId}`)
         return Promise.all(users.map(x => this.deleteUser(x.id)))
     }
+    handleActions (action) {
+        switch (action.type) {
+            default: return
+        }
+    }
 }
 
 
 const userStore = new UserStore();
-
+dispatcher.register(userStore.handleActions.bind(userStore))
 export default userStore;

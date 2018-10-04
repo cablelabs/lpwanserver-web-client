@@ -1,6 +1,7 @@
 import sessionStore, {rest_url} from "./SessionStore";
 import {fetchJson} from "./helpers";
 import {EventEmitter} from "events";
+import dispatcher from "../dispatcher";
 
 class ReportingProtocolStore extends EventEmitter {
     constructor () {
@@ -36,8 +37,13 @@ class ReportingProtocolStore extends EventEmitter {
     deleteReportingProtocol (id) {
         return this.fetch(id, { method: 'delete' })
     }
+    handleActions (action) {
+        switch (action.type) {
+            default: return
+        }
+    }
 }
 
 const reportingProtocolStore = new ReportingProtocolStore();
-
+dispatcher.register(reportingProtocolStore.handleActions.bind(reportingProtocolStore))
 export default reportingProtocolStore;

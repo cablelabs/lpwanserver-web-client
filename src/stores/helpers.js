@@ -1,4 +1,4 @@
-import dispatcher from "../dispatcher";
+import { dispatch } from "../dispatcher";
 import { fetchJson as _fetchJson, joinUrl } from '../lib/fetcher'
 
 export function checkStatus(response) {
@@ -14,30 +14,35 @@ export function errorHandler(error) {
     return;
   }
 
+  if (error.status && error.status === 401) {
+    dispatch({ type: 'AUTHENTICATION_FAILED', error })
+    return
+  }
+
   if ( error.text ) {
       error.text().then( (text) => {
           error.moreInfo = text;
 
-          dispatcher.dispatch({
+          dispatch({
               type: "CREATE_ERROR",
               error: error
           });
       })
       .catch( (err) => {
-          dispatcher.dispatch({
+          dispatch({
               type: "CREATE_ERROR",
               error: error
           });
       });
   }
   else if ( error.toString ) {
-      dispatcher.dispatch({
+      dispatch({
           type: "CREATE_ERROR",
           error: error.toString()
       });
   }
   else {
-      dispatcher.dispatch({
+      dispatch({
           type: "CREATE_ERROR",
           error: error
       });
@@ -58,7 +63,7 @@ export function remoteErrorDisplay( returnedRec ) {
         }
 
         if ( hasErrors ) {
-            dispatcher.dispatch( {
+            dispatch( {
                 type: "CREATE_ERROR",
                 error: returnedRec.remoteAccessLogs,
             });
