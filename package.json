@@ -32,7 +32,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "test:browser": "jest --config browser-test/jest.conf.js",
+    "test:browser": "jest --config e2e/jest.conf.js",
     "eject": "react-scripts eject",
     "package": "node bin/package.js"
   },

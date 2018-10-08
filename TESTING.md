@@ -1,16 +1,16 @@
 # Testing
 
-## Browser Tests
+## E2E Tests (aka automated browser tests)
 
-### Develop Browser Tests
+
+## Develop
 
 This method is for quick iteration on tests using local browser drivers for Selenium.
 
 #### LPWAN Server
 
 1. CD into the cloned [lpwanserver](https://github.com/cablelabs/lpwanserver) repo.
-2. Run `npm install && npm run package`.  This creates a docker image for lpwanserver.
-3. Run `docker-compose -f docker/docker-compose.yml up`.
+2. Start the LPWAN Server demo script. `/bin/demo`
 
 #### LPWAN Server Web Client
 
@@ -19,7 +19,7 @@ This method is for quick iteration on tests using local browser drivers for Sele
 3. Open a new terminal tab and run `BROWSER=chrome npm run test:browser`
 
 
-### Run Browser Tests in Selenium Grid
+### Run in Selenium Grid
 
 This method is for running browser tests in the cloud.
 

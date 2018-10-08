@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+read -p "Is it OK to run 'docker system prune --force'?  You will lose all container data. (y/n)  " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  docker system prune --force
+fi
+
+sudo rm -rf ./e2e/data
+sudo cp -r ./e2e/data_baseline ./e2e/data
+
+# Run docker-compose with development configuration
+docker-compose -f ./docker/docker-compose.e2e-local.yml up

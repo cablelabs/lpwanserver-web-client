@@ -37,13 +37,13 @@ ConfirmationDialog.defaultProps = {
 //******************************************************************************
 
 export default function ConfirmationDialog(props) {
-  const { open, title, subTitle, text, textClass, confButtons } = props;
+  const { open, title, subTitle, text, textClass, confButtons, type } = props;
 
   const messages = isNonEmptyArray(arrayify(text)) ? arrayify(text) : null;
 
   return (
     <Modal center open={open} onClose={noop} showCloseIcon={false}>
-      <div className='w-350'>
+      <div className='w-350' data-is={type}>
         <div className='fs-lg lh-compress'>{title}</div>
         <div className='fs-xs lh-compress txt-color-lite'>{subTitle}</div>
         { messages && <div className='brd-horiz mrg-v-15 pad-t-15 pad-b-10'>
@@ -54,9 +54,12 @@ export default function ConfirmationDialog(props) {
          </div>
         }
         <div className='flex-row jc-fe'> {confButtons.map((btn,i)=>
-          <button className={`btn btn-sm ${i>0?'mrg-l-10':''} ${btn.className}`}
-            onClick={btn.onClick} key={i}>
-              {btn.label}
+          <button
+            className={`btn btn-sm ${i>0?'mrg-l-10':''} ${btn.className}`}
+            onClick={btn.onClick} key={i}
+            data-do="confirm"
+          >
+            {btn.label}
           </button> )}
         </div>
       </div>
