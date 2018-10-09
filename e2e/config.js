@@ -5,7 +5,11 @@ const CONFIG_DEFAULTS = {
   WEB_CLIENT_HOST: 'localhost',
   WEB_CLIENT_PORT: '3000',
   HUB_HOST: null,
-  HUB_PORT: null
+  HUB_PORT: null,
+  LORA_SERVER_HOST: 'localhost',
+  LORA_SERVER_PORT: '8080',
+  LORA_SERVER_V1_HOST: 'localhost',
+  LORA_SERVER_V1_PORT: '8081'
 }
 
 module.exports = merge(

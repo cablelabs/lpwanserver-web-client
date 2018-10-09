@@ -1,11 +1,11 @@
 const { until, By } = require('selenium-webdriver')
 
-function getRootUrl (config) {
-  let PORT = config.WEB_CLIENT_PORT
+function getUrl (service, config) {
+  let PORT = config[`${service}_PORT`]
   PORT = !PORT || PORT == '80' ? '' :`:${PORT}`
-  return `http://${config.WEB_CLIENT_HOST}${PORT}`
+  return `http://${config[`${service}_HOST`]}${PORT}`
 }
 
 module.exports = {
-  getRootUrl
+  getUrl
 }
