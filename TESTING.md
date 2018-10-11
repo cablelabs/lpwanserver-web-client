@@ -16,7 +16,7 @@ This method is for quick iteration on tests using local browser drivers for Sele
 
 1. Open a new terminal tab and CD into this web client repo.
 2. Run `npm install && npm start`.  This starts the development server on port 3000.
-3. Open a new terminal tab and run `BROWSER=chrome npm run test:browser`
+3. Open a new terminal tab and run `BROWSER=chrome npm run test:e2e`
 
 
 ### Run in Selenium Grid
@@ -28,3 +28,7 @@ This method is for running browser tests in the cloud.
 
 This needs furthur iteration or a script to determine when tests have finished running
 and to get their exit status.
+
+
+### Debug tests running in Selenium Grid
+

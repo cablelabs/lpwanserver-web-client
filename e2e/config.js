@@ -6,10 +6,13 @@ const CONFIG_DEFAULTS = {
   WEB_CLIENT_PORT: '3000',
   HUB_HOST: null,
   HUB_PORT: null,
+  LORA_SERVER_PROTOCOL: 'https',
   LORA_SERVER_HOST: 'localhost',
   LORA_SERVER_PORT: '8080',
+  LORA_SERVER_V1_PROTOCOL: 'https',
   LORA_SERVER_V1_HOST: 'localhost',
-  LORA_SERVER_V1_PORT: '8081'
+  LORA_SERVER_V1_PORT: '8081',
+  SIZE: { width: 1280, height: 1024 }
 }
 
 module.exports = merge(

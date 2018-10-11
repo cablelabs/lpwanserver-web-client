@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+docker system prune --force
+rm -rf ./e2e/data
+cp -r ./e2e/data_baseline ./e2e/data
+
+node ./bin/package-e2e.js
+
+# Run docker-compose with development configuration
+docker-compose -f ./docker/docker-compose.e2e.yml up

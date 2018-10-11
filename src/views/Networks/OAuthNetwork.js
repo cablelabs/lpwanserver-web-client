@@ -34,9 +34,8 @@ class OAuthNetwork extends Component {
     router: PropTypes.object.isRequired
   };
 
-  constructor(props) {
-    super(props);
-
+  async componentDidMount () {
+    const { props } = this
     const oauthMode = sessionStore.getSetting('oauthMode');
     const targetNetworkId = sessionStore.getSetting('oauthNetworkTarget');
     const oauthStartTime = Number(sessionStore.getSetting('oauthStartTime'));
@@ -55,47 +54,38 @@ class OAuthNetwork extends Component {
       return props.history.push(`${networkPath}&oauthStatus=fail&oauthError=${errMsg}`);
     }
 
-    fetchNetworkInfo(targetNetworkId)
-    .then(({ network, networkProtocol }) => {
+    try {
+      const { network, networkProtocol } = await fetchNetworkInfo(targetNetworkId)
 
       // lets see if we any errors were reported from oauth page
       const errorParamList = pathOr([], [ 'metaData', 'oauthResponseUrlErrorParams' ], networkProtocol);
       const errorParams =  pick(errorParamList, queryParams);
 
-      // Oauth succeeded
-      if (isEmpty(errorParams)) {
-
-
-
-        // send oauth info to server
-        updateNetworkWithOauthInfo(network, networkProtocol, queryParams)
-
-        // Network was succesfully updated
-        .then(() => {
-          props.history.push(`${networkPath}&oauthStatus=success`);
-        })
-
-        // Oauth worked, but server was not able to update/create network
-        .catch(() => {
-          const errorMsg = 'Server was not able to create/update the network';
-          props.history.push(`${networkPath}&oauthStatus=success&serverError=${errorMsg}`);
-        });
-      }
-
-      // Oauth failed
-      else {
+      if (!isEmpty(errorParams)) {
+        // Oauth failed
         const errMsg = keys(errorParams).reduce((emsg, ekey, i) => `${emsg} ${removeUnderscores(capitalize(errorParams[ekey]))}.`,'');
         props.history.push(`${networkPath}&oauthStatus=fail&oauthError=${encodeURIComponent(errMsg)}`);
+        return
       }
-    })
-
-    // Failed to fetch network and/or networkProtocol, can't continue oauth.
-    // Report the error and go to network list
-    .catch(e=>{
+  
+      // Oauth succeeded, send oauth info to server
+      try {
+        await updateNetworkWithOauthInfo(network, networkProtocol, queryParams)
+        // Network was succesfully updated
+        props.history.push(`${networkPath}&oauthStatus=success`);
+      } catch (e) {
+        console.error(e)
+        // Oauth worked, but server was not able to update/create network
+        const errorMsg = 'Server was not able to create/update the network';
+        props.history.push(`${networkPath}&oauthStatus=success&serverError=${errorMsg}`);
+      }
+    } catch (e) {
+      // Failed to fetch network and/or networkProtocol, can't continue oauth.
+      // Report the error and go to network list
       const errMsg = e && e.message ? e.message : e;
       dispatchError(`Authorizaiton failed, LPWAN network errer. ${errMsg}`);
       props.history.push('/admin/networks');
-    });
+    }
   }
 
   // We just store the OAuth code and redirect - nothing to render.

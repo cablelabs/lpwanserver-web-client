@@ -29,8 +29,6 @@ function NetworkProtocolView (props) {
   const createQueryParams = `?networkTypeId=${networkTypeId}&masterProtocol=${masterProtocol}`;
   const brdTop = first ? 'brd-top':'';
 
-  console.log(networkProtocol)
-
   return (
     <div className={`pad-v-10 brd-bot ${brdTop}`} data-is="networkProtocol" data-name={name}>
       <div className='flex-row jc-sb'>

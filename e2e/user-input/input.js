@@ -3,6 +3,11 @@ const login = {
   password: 'password'
 }
 
+const loraServerLogin = {
+  username: 'admin',
+  password: 'admin'
+}
+
 const createLoraNetworkV1 = {
   networkProtocolVersion: '1.0',
   name: 'My LoRa V1',
@@ -21,6 +26,7 @@ const createLoraNetworkV2 = {
 
 module.exports = {
   login,
+  loraServerLogin,
   createLoraNetworkV1,
   createLoraNetworkV2
 }

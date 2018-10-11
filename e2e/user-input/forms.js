@@ -9,6 +9,17 @@ const login = [
   }
 ]
 
+const loraServerLogin = [
+  {
+    selector: '#username',
+    property: 'username'
+  },
+  {
+    selector: '#password',
+    property: 'password'
+  }
+]
+
 const createLoraNetwork = [
   {
     selector: '#networkProtocolVersion>option[value="{{value}}"]',
@@ -35,5 +46,6 @@ const createLoraNetwork = [
 
 module.exports = {
   login,
-  createLoraNetwork
+  createLoraNetwork,
+  loraServerLogin
 }
