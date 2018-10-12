@@ -16,7 +16,7 @@ class DeviceRow extends Component {
 
   render() {
     return (
-      <tr>
+      <tr data-is="device" data-name={this.props.device.name}>
         <td><Link
           to={`/applications/${this.props.appID}/devices/${this.props.device.id}`}>{this.props.device.name}</Link></td>
         <td>{this.props.device.deviceModel}</td>

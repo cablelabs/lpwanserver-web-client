@@ -29,7 +29,7 @@ class ApplicationRow extends Component {
 
   render() {
     return (
-      <tr>
+      <tr data-is="application" data-name={this.props.application.name}>
         <td><Link to={`/applications/${this.props.application.id}`}>{this.props.application.name}</Link></td>
         <td>{this.props.reportingProtocolsMap[this.props.application.reportingProtocolId]}</td>
         <td>{this.props.application.baseUrl}</td>
@@ -297,7 +297,7 @@ class ListApplications extends Component {
           </div>
 
           <div className={`panel-body clearfix ${this.state.activeTab === "applications" ? '' : 'hidden'}`}>
-            <table className="table table-hover">
+            <table className="table table-hover" data-is="application-list">
               <thead>
               <tr>
                 <th className="col-md-3">Name</th>

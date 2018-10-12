@@ -30,11 +30,11 @@ function NetworkProtocolView (props) {
   const brdTop = first ? 'brd-top':'';
 
   return (
-    <div className={`pad-v-10 brd-bot ${brdTop}`}>
+    <div className={`pad-v-10 brd-bot ${brdTop}`} data-is="networkProtocol" data-name={name}>
       <div className='flex-row jc-sb'>
         <div className='fs-lg w-min-200'>{name}</div>
         {/* !isNonEmptyArray(networks) && <div>{`No ${name} Netowrks`}</div> - address alignemnt issue*/ }
-        <Link to={`/admin/network${createQueryParams}`}>
+        <Link to={`/admin/network${createQueryParams}`} data-to="createNetwork">
           <button type="button" className="btn btn-default btn-sm">Create</button>
         </Link>
       </div>

@@ -333,6 +333,7 @@ class NetworkCreateOrEdit extends Component {
         subTitle={`You are authorized with ${networkProtocolName}, and will now be able to add applications and devices`}
         text={this.state.authSuccessMessages||[]} textClass='txt-color-alt'
         confButtons={[{ label: 'OK', className: 'btn-primary', onClick: this.gotoListPage }]}
+        type="networkAuthorizationSuccess"
       />
 
       <ConfirmationDialog
