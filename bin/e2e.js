@@ -7,6 +7,8 @@ const component =require('../component.json')
 const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
 
+const removeData = () => execSync('rm -rf ./e2e/data', opts)
+
 function buildTestImages () {
   const browserTestImage = `${component.registry}/browser-test:latest`
   const uiServerImage = `${component.registry}/browser-test-ui-server:latest`
@@ -21,7 +23,7 @@ function buildTestImages () {
 
 function prepData () {
   execSync('docker system prune --force', opts)
-  execSync('rm -rf ./e2e/data', opts)
+  removeData()
   execSync('cp -r ./e2e/data_baseline ./e2e/data', opts)
 }
 
@@ -50,6 +52,7 @@ function runTest () {
 
   function endTest (code) {
     exitCode = code
+    removeData()
     test.kill()
   }
 
