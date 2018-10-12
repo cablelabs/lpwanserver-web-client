@@ -6,6 +6,11 @@ const component =require('../component.json')
 
 const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
+const BROWSER_TOTAL = 1
+
+if (!BROWSER_TOTAL) {
+  throw new Error('Please set BROWSER_TOTAL environment variable')
+}
 
 const removeData = () => execSync('rm -rf ./e2e/data', opts)
 
@@ -29,7 +34,6 @@ function prepData () {
 
 function watchTest (endTest) {
   const EXIT_CODE_RE = /browser_test.+exited with code ([0,1])/
-  const BROWSER_TOTAL = 1
   let browserCount = 0
 
   return data => {
@@ -74,6 +78,6 @@ function runTest () {
   process.on('uncaughtException', handleError)
 }
 
-buildTestImages()
+// buildTestImages()
 prepData()
 runTest()
