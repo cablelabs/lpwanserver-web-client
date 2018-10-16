@@ -1,0 +1,16 @@
+language: node_js
+
+sudo: required
+
+node_js:
+  - "node"
+
+services:
+  - docker
+
+before_install:
+  - git clone git@github.com:cablelabs/lpwanserver.git
+  - sudo node lpwanserver/bin/package.js
+
+script:
+  - sudo node bin/e2e.js
