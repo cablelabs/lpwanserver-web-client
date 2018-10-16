@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 const path = require('path')
 const { spawnSync, execSync, spawn } = require('child_process')
 const component =require('../component.json')
@@ -78,6 +77,6 @@ function runTest () {
   process.on('uncaughtException', handleError)
 }
 
-// buildTestImages()
+buildTestImages()
 prepData()
 runTest()
