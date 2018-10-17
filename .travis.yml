@@ -9,4 +9,4 @@ services:
   - docker
 
 script:
-  - sudo node bin/e2e.js
+  - ./bin/e2e.js
