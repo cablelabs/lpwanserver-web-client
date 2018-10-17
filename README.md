@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cablelabs/lpwanserver-web-client.svg?branch=master)](https://travis-ci.org/cablelabs/lpwanserver-web-client)
+
 # LPWAN Server Web Client
 
 The LPWAN Server Web Client is a web application
