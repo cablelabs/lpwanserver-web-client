@@ -10,3 +10,7 @@ services:
 
 script:
   - ./bin/e2e.js
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push lpwanserver/lpwanserver-web-client
