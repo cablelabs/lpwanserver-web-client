@@ -13,6 +13,8 @@ const opts = {
   timeout: 2000
 }
 
+console.log("***URL***", opts.url)
+
 beforeAll(async () => {
   opts.driver = await setupDriver(config)
   await opts.driver.get(opts.url)

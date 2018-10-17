@@ -1,4 +1,17 @@
-FROM nginx
+FROM node:10
 
-ADD ./docker/configuration/nginx/nginx.conf /etc/nginx/
-COPY ./build /usr/share/nginx/html
+WORKDIR /usr/src/app
+
+COPY ./docker/configuration/web-client-server/ ./
+COPY ./build ./build
+
+RUN npm install 
+
+ENV PORT=8080
+ENV LPWANSERVER_PROTOCOL=http
+ENV LPWANSERVER_HOST=
+ENV LPWANSERVER_PORT=
+
+EXPOSE 8080
+
+CMD [ "node", "./index.js" ]

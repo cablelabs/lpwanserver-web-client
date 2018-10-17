@@ -70,6 +70,17 @@ Other than that, all the other environment variables keep the same values.
 The test environment variable defaults are in `e2e/config.js`.  These values are
 overwritten by environment variables.
 
+```
+HUB_HOST=localhost \
+WEB_CLIENT_HOST=lpwanserver_web_client \
+WEB_CLIENT_PORT=8080 \
+LORA_SERVER_HOST=lora_appserver \
+LORA_SERVER_PORT=8080 \
+LORA_SERVER_V1_HOST=lora_appserver1 \
+LORA_SERVER_V1_PORT=8080 \
+npm run test:e2e  
+```
+
 ## Writing Tests
 
 For local development of e2e tests, it's easiest not to use selenium grid and

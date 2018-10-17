@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const path = require('path')
-const { spawnSync, execSync, spawn } = require('child_process')
-const component =require('../component.json')
+const { execSync, spawn } = require('child_process')
+const { packageWebClientServer, packageE2ETests } = require('./package')
 
 const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
@@ -11,16 +11,9 @@ if (!BROWSER_TOTAL) {
   throw new Error('Please set BROWSER_TOTAL environment variable')
 }
 
-function buildTestImages () {
-  const browserTestImage = `${component.registry}/browser-test:latest`
-  const uiServerImage = `${component.registry}/browser-test-ui-server:latest`
-  spawnSync('npm', ['run', 'build'], {
-    ...opts,
-    env: { REACT_APP_REST_SERVER_URL: 'http://lpwanserver:3200', ...process.env }
-  })
-  execSync(`docker build -f docker/Dockerfile.e2e -t ${browserTestImage} .`, opts)
-  execSync(`docker build -f docker/Dockerfile -t ${uiServerImage} .`, opts)
-  execSync('rm -rf build', opts)
+function buildImages () {
+  packageWebClientServer()
+  packageE2ETests()
 }
 
 function prepData () {
@@ -74,6 +67,6 @@ function runTest () {
   process.on('uncaughtException', handleError)
 }
 
-buildTestImages()
+buildImages()
 prepData()
 runTest()
