@@ -17,4 +17,4 @@ function clean () {
   })
 }
 
-clean().catch(console.error)
+clean()
