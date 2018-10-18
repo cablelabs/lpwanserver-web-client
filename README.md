@@ -88,7 +88,7 @@ Some may require sudo.
 
 | Script | Purpose |
 |---|---|
-| package.js | Create a docker image to serve the web client with nginx |
+| package.js | Create a docker image to serve the web client. |
 | e2e.js | See [TESTING.md][11] |
 | clean.js | Remove docker images created by other scripts. |
 
