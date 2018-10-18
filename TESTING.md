@@ -24,7 +24,8 @@ just to try to keep them in sync.
 
 ## Running the E2E Tests
 
-The script `bin/e2e.js` orchestrates the building and the running of E2E tests.
+First build the docker images for the ui-server and the test-runner by running
+`npm run package`.  The script `bin/e2e.js` orchestrates the running of E2E tests.
 The exit code of the process running `e2e.js` can be considered the exit code of
 the tests.  The script uses docker-compose to spin up all the containers, the tests
 being some of them, and run them.  When a test container exits, docker logs the
@@ -35,18 +36,13 @@ does the `e2e.js` process exit with a 0.
 
 The docker-compose runs selenium grid, which allows testing on multiple browsers
 and devices at once.  Firefox and Chrome are the easily supported browsers.  Currently
-running multiple browsers causes the tests to fail, because they're both working
-on the same data.  It would be possible to configure the tests at run time to
-access different values for user-input.  That may fix it.  If not, then they would
-have to run against multiple copies of the lpwanserver.  The web-client is configured
-with the lpwanserver location at build time.  Until that location can be overwritten
-by fetching an environment variable from the nginx image, it would require a separate build
-of the web-client per server.  I think it would be more scalable and more in line with
-good practice to serve the lpwanserver location from nginx, or replace nginx with a
-node server.  Anyway, until that is solved, Firefox is commented out of the
-docker-compose so that the tests run only in Chrome.
+running multiple browsers causes the tests to fail. This is probably due to
+some data/service that needs to be duplicated to support multiple browsers.
 
-`node ./bin/e2e.js`
+```
+node ./bin/package.js
+node ./bin/e2e.js
+```
 
 `e2e.js` uses a BROWSER_TOTAL global that will need to be updated or made configurable
 when more browsers are used in testing.

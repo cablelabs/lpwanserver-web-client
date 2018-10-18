@@ -8,6 +8,9 @@ node_js:
 services:
   - docker
 
+install:
+  - ./bin/package.js
+
 script:
   - ./bin/e2e.js
 
@@ -16,6 +19,8 @@ before_deploy:
 
 deploy:
   provider: script
-  script: docker push lpwanserver/lpwanserver-web-client
+  script:
+    - docker push lpwanserver/lpwanserver-web-client
+    - docker push lpwanserver/browser-test
   on:
     branch: master

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const path = require('path')
 const { execSync, spawn } = require('child_process')
-const { packageWebClientServer, packageE2ETests } = require('./lib/package')
 
 const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
@@ -9,11 +8,6 @@ const BROWSER_TOTAL = 1
 
 if (!BROWSER_TOTAL) {
   throw new Error('Please set BROWSER_TOTAL environment variable')
-}
-
-function buildImages () {
-  packageWebClientServer()
-  packageE2ETests()
 }
 
 function prepData () {
@@ -67,6 +61,5 @@ function runTest () {
   process.on('uncaughtException', handleError)
 }
 
-buildImages()
 prepData()
 runTest()
