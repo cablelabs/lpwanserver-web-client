@@ -2,7 +2,9 @@ import sessionStore from './stores/SessionStore'
 import userStore from './stores/UserStore'
 import companyStore from './stores/CompanyStore'
 
-sessionStore.on('session-started', () => userStore.getUserMe())
+sessionStore.on('session-started', () => {
+  userStore.getUserMe()
+})
 
 userStore.on('get-user-me', u => {
   sessionStore.user = u

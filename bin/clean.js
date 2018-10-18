@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const { execSync } = require('child_process')
 const path = require('path')
-const { imageTags } = require('./package')
+const { imageTags } = require('./lib/package')
 
 const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }

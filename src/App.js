@@ -41,10 +41,10 @@ import 'codemirror/theme/base16-light.css';
 class Layout extends Component {
   constructor (...args) {
     super(...args)
-
     dispatcher.register(this.handleActions.bind(this))
   }
-  onClick() {
+
+  onClick () {
     dispatcher.dispatch({
       type: "BODY_CLICK",
     });

@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 const path = require('path')
 const { spawnSync, execSync } = require('child_process')
-const { registry, name, version, build } = require('../component.json')
+const component = require('../../component.json')
+
+const { registry, name, version } = component
+const buildNumber = process.env.TRAVIS_BUILD_NUMBER || component.build
 
 const imageTags = {
-  serverRc: `${registry}/${name}:${version}-${build}-rc`,
+  serverRc: `${registry}/${name}:${version}-${buildNumber}-rc`,
   serverLatest: `${registry}/${name}:latest`,
   e2eTest: `${registry}/browser-test:latest`
 }
 
-const ROOT = path.join(__dirname, '..')
+const ROOT = path.join(__dirname, '../..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
 
 function packageWebClientServer () {
@@ -28,7 +31,3 @@ module.exports = {
   packageE2ETests,
   imageTags
 }
-
-// enable exported functions to be imported or run from command line
-// must be at end of file
-require('make-runnable')

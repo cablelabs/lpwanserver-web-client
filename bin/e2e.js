@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const path = require('path')
 const { execSync, spawn } = require('child_process')
-const { packageWebClientServer, packageE2ETests } = require('./package')
+const { packageWebClientServer, packageE2ETests } = require('./lib/package')
 
 const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
