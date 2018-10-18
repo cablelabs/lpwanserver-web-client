@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const path = require('path')
 const { spawnSync, execSync } = require('child_process')
 const component = require('../../component.json')
