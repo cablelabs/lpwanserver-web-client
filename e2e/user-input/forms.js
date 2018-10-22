@@ -20,6 +20,17 @@ const loraServerLogin = [
   }
 ]
 
+const ttnLogin = [
+  {
+    selector: '[name="username"]',
+    property: 'username'
+  },
+  {
+    selector: '[name="password"]',
+    property: 'password'
+  }
+]
+
 const createLoraNetwork = [
   {
     selector: '#networkProtocolVersion>option[value="{{value}}"]',
@@ -44,8 +55,29 @@ const createLoraNetwork = [
   }
 ]
 
+const createTtnNetwork = [
+  {
+    selector: '[name="name"]',
+    property: 'name'
+  },
+  {
+    selector: '[name="baseUrl"]',
+    property: 'baseUrl'
+  },
+  {
+    selector: '[name="clientId"]',
+    property: 'clientId'
+  },
+  {
+    selector: '[name="clientSecret"]',
+    property: 'clientSecret'
+  }
+]
+
 module.exports = {
   login,
+  loraServerLogin,
+  ttnLogin,
   createLoraNetwork,
-  loraServerLogin
+  createTtnNetwork
 }

@@ -74,6 +74,10 @@ LORA_SERVER_HOST=lora_appserver \
 LORA_SERVER_PORT=8080 \
 LORA_SERVER_V1_HOST=lora_appserver1 \
 LORA_SERVER_V1_PORT=8080 \
+TTN_CLIENT_ID=lpwanserver-test-client
+TTN_CLIENT_SECRET=GET_FROM_OTHER_DEVELOPER
+TTN_USERNAME=rhythnic
+TTN_PASSWORD=GET_FROM_OTHER_DEVELOPER
 npm run test:e2e  
 ```
 
@@ -83,14 +87,16 @@ For local development of e2e tests, it's easiest not to use selenium grid and
 use a local selenium browser driver.  These are included as dev dependencies,
 so `npm install` takes care of installing the correct browser drivers for your system.
 
-Spin up the demo script in the lpwanserver repo, `./bin/demo`.  With that running,
-run `PORT=4000 npm start` from within the web-client repo.  Then run the e2e tests.
+Comment out the "ui" service from the `/docker/docker-compose.yml` in the `lpwanserver` repo.
+
+Note:  export the TTN environment variables (show above) in the 3rd terminal before
+running the test.
 
 **Three Terminals**
 
 - **lpwanserver** - `./bin/demo`
-- **lpwanserver-web-client** - `PORT=4000 npm start`
+- **lpwanserver-web-client** - `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
 - **lpwanserver-web-client** - `npm run test:e2e`
 
 All of the values in `e2e/config.js` are set for writing unit tests.  You shouldn't
-have to overwrite any of them.
+have to overwrite any of them, just export the TTN environment variables.
