@@ -16,11 +16,14 @@
     return ctx
   }
 
-  const call = (method, ...args) => {
-    return async function call (ctx) {
-      let result = await ctx.driver[method](...args.map(x => normalizeArg(x, ctx)))
-      return { callResult: result }
-    }
+  const tap = fn => async ctx => {
+    await fn(ctx)
+    return null
+  }
+
+  const sleep = ms => async ctx => {
+    await ctx.driver.sleep(ms)
+    return null
   }
 
   const getElement = curry(async function getElement (selector, ctx) {
@@ -41,11 +44,20 @@
     return ctx
   }
 
-  const getText = selector => async function getText (ctx) {
+  const getText = (selector, prop = 'text') => async function getText (ctx) {
     if (selector) {
       ctx = await getElement(selector, ctx)
     }
-    ctx.text = await ctx.element.getText()
+    ctx[prop] = await ctx.element.getText()
+    return ctx
+  }
+
+  const sendKeys = (selector, text) => async function sendKeys (ctx) {
+    text = normalizeArg(text, ctx)
+    if (selector) {
+      ctx = await getElement(selector, ctx)
+    }
+    await ctx.element.sendKeys(text)
     return ctx
   }
 
@@ -69,9 +81,11 @@
 
   module.exports = {
     seq,
-    call,
+    tap,
+    sleep,
     getElement,
     getText,
+    sendKeys,
     click,
     fillForm
   }

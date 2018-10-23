@@ -84,8 +84,10 @@ npm run test:e2e
 ## Writing Tests
 
 For local development of e2e tests, it's easiest not to use selenium grid and
-use a local selenium browser driver.  These are included as dev dependencies,
-so `npm install` takes care of installing the correct browser drivers for your system.
+use a local selenium browser driver.
+
+`npm install --no-save chromedriver geckodriver`
+
 
 Comment out the "ui" service from the `/docker/docker-compose.yml` in the `lpwanserver` repo.
 

@@ -36,13 +36,11 @@
     "test:e2e": "jest --config e2e/jest.conf.js"
   },
   "devDependencies": {
-    "chromedriver": "^2.42.0",
     "documentation": "^8.1.2",
     "eslint": "^5.2.0",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
     "fs-extra": "^7.0.0",
-    "geckodriver": "^1.12.2",
     "jest": "^23.6.0",
     "react-scripts": "^1.1.5",
     "selenium-webdriver": "^3.6.0"
