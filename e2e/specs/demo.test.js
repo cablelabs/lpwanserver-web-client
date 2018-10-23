@@ -63,41 +63,41 @@ describe('Add LoRA V1 Network', () => {
   )(opts))
 })
 
-describe('Add "The Things Network" Network', () => {
-  test('Create TTN Network', () => S.seq(
-    S.click(`[href="/admin/networks"]`),
-    S.click('[data-is="networkProtocol"][data-name="The Things Network"] [data-to="createNetwork"]'),
-    S.fillForm(forms.createTtnNetwork, input.createTtnNetwork),
-    S.click('button[type="submit"]'),
-    S.call('sleep', 1000),
-    S.fillForm(forms.ttnLogin, input.ttnLogin),
-    S.click('button[type="submit"]'),
-    S.call('sleep', 7000),
-    S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]'),
-    S.call('get', opts.url)
-  )(opts))
-})
-
-// describe('Verify apps and devices synced to external servers', () => {
-//   const verifyPushToLoraServer = S.seq(
-//     S.fillForm(forms.loraServerLogin, input.loraServerLogin),
+// describe('Add "The Things Network" Network', () => {
+//   test('Create TTN Network', () => S.seq(
+//     S.click(`[href="/admin/networks"]`),
+//     S.click('[data-is="networkProtocol"][data-name="The Things Network"] [data-to="createNetwork"]'),
+//     S.fillForm(forms.createTtnNetwork, input.createTtnNetwork),
 //     S.click('button[type="submit"]'),
-//     S.click('.Select'),
-//     S.click(By.xpath('//*[contains(text(), "cablelabs")]')),
-//     S.click(By.xpath('//*[contains(text(), "BobMouseTrapLv1")]')),
-//     S.getElement(By.xpath('//*[contains(text(), "BobMouseTrapDeviceLv1")]')),
-//     S.click(By.xpath('//a[contains(text(), "Applications")]')),
-//     S.click(By.xpath('//*[contains(text(), "BobMouseTrapLv2")]')),
-//     S.getElement(By.xpath('//*[contains(text(), "BobMouseTrapDeviceLv2")]'))
-//   )
-
-//   test('Verify apps and devices are pushed to LoRa Server', () => S.seq(
-//     S.call('get', getUrl('LORA_SERVER', config)),
-//     verifyPushToLoraServer
-//   )(opts))
-
-//   test('Verify apps and devices are pushed to LoRa Server V1', () => S.seq(
-//     S.call('get', getUrl('LORA_SERVER_V1', config)),
-//     verifyPushToLoraServer
+//     S.call('sleep', 1000),
+//     S.fillForm(forms.ttnLogin, input.ttnLogin),
+//     S.click('button[type="submit"]'),
+//     S.call('sleep', 7000),
+//     S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]'),
+//     S.call('get', opts.url)
 //   )(opts))
 // })
+
+describe('Verify apps and devices synced to external servers', () => {
+  const verifyPushToLoraServer = S.seq(
+    S.fillForm(forms.loraServerLogin, input.loraServerLogin),
+    S.click('button[type="submit"]'),
+    S.click('.Select'),
+    S.click(By.xpath('//*[contains(text(), "cablelabs")]')),
+    S.click(By.xpath('//*[contains(text(), "BobMouseTrapLv1")]')),
+    S.getElement(By.xpath('//*[contains(text(), "BobMouseTrapDeviceLv1")]')),
+    S.click(By.xpath('//a[contains(text(), "Applications")]')),
+    S.click(By.xpath('//*[contains(text(), "BobMouseTrapLv2")]')),
+    S.getElement(By.xpath('//*[contains(text(), "BobMouseTrapDeviceLv2")]'))
+  )
+
+  test('Verify apps and devices are pushed to LoRa Server', () => S.seq(
+    S.call('get', getUrl('LORA_SERVER', config)),
+    verifyPushToLoraServer
+  )(opts))
+
+  test('Verify apps and devices are pushed to LoRa Server V1', () => S.seq(
+    S.call('get', getUrl('LORA_SERVER_V1', config)),
+    verifyPushToLoraServer
+  )(opts))
+})

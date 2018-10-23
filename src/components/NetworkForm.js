@@ -69,8 +69,13 @@ export default function NetworkForm(props) {
         <h3 className='panel-title panel-title-buttons'>{panelHeading}</h3>
         { !isNew &&
         <div className='btn-group pull-right'>
-          <button type='button' className='btn btn-danger btn-sm margin-top-xl'
-            onClick={onDelete}> Delete Network
+          <button
+            type='button'
+            className='btn btn-danger btn-sm margin-top-xl'
+            onClick={onDelete}
+            data-do="deleteNetwork"
+          >
+            Delete Network
           </button>
         </div> }
       </div>
