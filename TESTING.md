@@ -68,8 +68,8 @@ overwritten by environment variables.
 
 ```
 HUB_HOST=localhost \
-WEB_CLIENT_HOST=lpwanserver_web_client \
-WEB_CLIENT_PORT=8080 \
+WEB_CLIENT_HOST=lpwanserver_web_client_chrome \
+WEB_CLIENT_PORT=3000 \
 LORA_SERVER_HOST=lora_appserver \
 LORA_SERVER_PORT=8080 \
 LORA_SERVER_V1_HOST=lora_appserver1 \
