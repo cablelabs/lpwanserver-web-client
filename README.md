@@ -66,7 +66,7 @@ npm install
 
 ### Start the UI Server
 
-1. From this repo, run `npm start`
+1. From this repo, run `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
 
 - The app is available at `http://localhost:3000`.
 

@@ -125,7 +125,8 @@ async function updateNetworkWithOauthInfo(network, networkProtocol, queryParams)
 
   const updatedSecrityData = {
     ...pick(securityProps, securityData),
-    ...responseParams
+    ...responseParams,
+    redirect_uri: `${window.location.protocol}//${window.location.host}/admin/networks/oauth`
   };
 
   return isEmpty(responseParams) ?

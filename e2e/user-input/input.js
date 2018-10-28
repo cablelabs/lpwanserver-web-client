@@ -8,6 +8,11 @@ const loraServerLogin = {
   password: 'admin'
 }
 
+const ttnLogin = {
+  username: process.env.TTN_USERNAME,
+  password: process.env.TTN_PASSWORD
+}
+
 const createLoraNetworkV1 = {
   networkProtocolVersion: '1.0',
   name: 'My LoRa V1',
@@ -24,9 +29,18 @@ const createLoraNetworkV2 = {
   password: 'admin'
 }
 
+const createTtnNetwork = {
+  name: 'My TTN',
+  baseUrl: 'https://account.thethingsnetwork.org',
+  clientId: process.env.TTN_CLIENT_ID,
+  clientSecret: process.env.TTN_CLIENT_SECRET
+}
+
 module.exports = {
   login,
   loraServerLogin,
+  ttnLogin,
   createLoraNetworkV1,
-  createLoraNetworkV2
+  createLoraNetworkV2,
+  createTtnNetwork
 }

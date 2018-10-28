@@ -3,7 +3,7 @@ const { pick, merge, keys } = require('ramda')
 const CONFIG_DEFAULTS = {
   BROWSER: 'chrome',
   WEB_CLIENT_HOST: 'localhost',
-  WEB_CLIENT_PORT: '4000',
+  WEB_CLIENT_PORT: '3000',
   HUB_HOST: null,
   HUB_PORT: '4444',
   LORA_SERVER_PROTOCOL: 'https',

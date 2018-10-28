@@ -366,8 +366,9 @@ function makeOauthRedirectUrl(networkProtocol, securityData) {
   const oauthUrl = pathOr('', ['metaData', 'oauthUrl'], networkProtocol);
   if ( !oauthUrl ) return '';
 
-  const thisServer = process.env.REACT_APP_PUBLIC_BASE_URL;
-  const frontEndOauthReturnUri = `${thisServer}/admin/networks/oauth`;
+  const origin = `${window.location.protocol}//${window.location.host}`
+  const frontEndOauthReturnUri = `${origin}/admin/networks/oauth`;
+
   const queryParams = pathOr([], ['metaData', 'oauthRequestUrlQueryParams'], networkProtocol);
 
   const queryParamString = queryParams.reduce((qpStr, qp, i)=>

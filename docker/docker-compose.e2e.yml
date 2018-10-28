@@ -41,6 +41,10 @@ services:
       - LORA_SERVER_PORT=8080
       - LORA_SERVER_V1_HOST=lora_appserver1
       - LORA_SERVER_V1_PORT=8080
+      - TTN_CLIENT_ID=${TTN_CLIENT_ID:-XXX}
+      - TTN_CLIENT_SECRET=${TTN_CLIENT_SECRET:-XXX}
+      - TTN_USERNAME=${TTN_USERNAME:-XXX}
+      - TTN_PASSWORD=${TTN_PASSWORD:-XXX}
 
   # browser_test_firefox:
   #   image: lpwanserver/browser-test

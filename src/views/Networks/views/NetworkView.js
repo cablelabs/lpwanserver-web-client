@@ -56,6 +56,8 @@ export default function NetworkView(props) {
         data-tip data-for={`edit-icon-${id}`}
         className='glyphicon glyphicon-pencil fs-md mrg-r-20 cur-ptr'
         onClick={onEdit}
+        data-go="editNetwork"
+        data-name={networkProtocolName}
       />
     </div>
   );
