@@ -38,22 +38,28 @@ import PullNetworks from "./views/ImportExport/PullNetworks";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/base16-light.css';
 
+/** Class representing the Layout and Router */
 class Layout extends Component {
   constructor (...args) {
     super(...args)
     dispatcher.register(this.handleActions.bind(this))
   }
 
+  componentDidMount() {
+    ErrorStore.clear();
+  }
+
+  /** Emit a body-click action */
   onClick () {
     dispatcher.dispatch({
       type: "BODY_CLICK",
     });
   }
 
-  componentDidMount() {
-    ErrorStore.clear();
-  }
-
+  /**
+   * Listen to actions from the flux dispatcher
+   * @param {Action} action 
+   */
   handleActions (action) {
     switch (action.type) {
       case 'LOGOUT': return this.props.history.push('/login')
