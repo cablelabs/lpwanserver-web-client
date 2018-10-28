@@ -52,7 +52,7 @@ class DeviceStore extends EventEmitter {
      * Delete device
      * @param {string} id 
      */
-    deleteDevice (id) {
+    async deleteDevice (id) {
         await this.fetch(id, { method: 'delete' })
     }
     /**

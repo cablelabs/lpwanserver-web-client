@@ -48,7 +48,7 @@ class NetworkProviderStore extends EventEmitter {
      * Delete a network provider
      * @param {string} id 
      */
-    deleteNetworkProvider (id) {
+    async deleteNetworkProvider (id) {
         await this.fetch(id, { method: 'delete' })
     }
     /**

@@ -67,7 +67,7 @@ class UserStore extends EventEmitter {
      * Delete a user
      * @param {string} id 
      */
-    deleteUser (id) {
+    async deleteUser (id) {
         await this.fetch(id, { method: 'delete' })
     }
     /**

@@ -63,7 +63,7 @@ class ReportingProtocolStore extends EventEmitter {
      * Delete a reporting protocol
      * @param {string} id 
      */
-    deleteReportingProtocol (id) {
+    async deleteReportingProtocol (id) {
         await this.fetch(id, { method: 'delete' })
     }
     /**
