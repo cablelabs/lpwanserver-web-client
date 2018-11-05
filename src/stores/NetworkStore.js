@@ -6,7 +6,9 @@ import flyd from 'flyd'
 import { omit } from 'ramda'
 import dispatcher from "../dispatcher";
 
+/** Class that represents a flux store for an LPWAN Network domain */
 class NetworkStore extends EventEmitter {
+  /** Create a store */
   constructor () {
     super()
     
@@ -25,8 +27,12 @@ class NetworkStore extends EventEmitter {
     // util
     this.fetch = fetchJson(`${rest_url}/api/networks`, () => sessionStore.getHeader() )
   }
-
-  // actions
+  /**
+   * Get a paginated list of networks
+   * @param {number} pageSize 
+   * @param {number} offset 
+   * @return {Object} object with list of networks on 'records' property
+   */
   async getNetworks( pageSize, offset ) {
     const pgQuery = paginationQuery(pageSize, offset);
     const response = await this.fetch(`${pgQuery ? '?' : ''}${pgQuery}`)
@@ -35,9 +41,11 @@ class NetworkStore extends EventEmitter {
     this.networks.insert(response.records)
     return response
   }
-
+  /**
+   * Get a list of networks grouped by master protocol ID
+   */
   async getNetworkGroups() {
-    const response = await  this.fetch('group')
+    const response = await this.fetch('group')
     if (!response) return
     response.records.forEach(record => {
       this.networks.insert(record.networks.map(x => ({
@@ -47,36 +55,57 @@ class NetworkStore extends EventEmitter {
     })
     this.groups.insert(response.records.map(x => omit(['networks'], x)))
   }
-
+  /**
+   * Create a network
+   * @param {Object} body
+   * @return {Object} network 
+   */
   async createNetwork (body) {
     const response = await this.fetch('', { method: 'post', body })
     this.networks.insert(response)
     return response
   }
-
+  /**
+   * Get a networ
+   * @param {string} id 
+   * @return {Object} network
+   */
   async getNetwork (id) {
     const response = await this.fetch(id)
     this.networks.insert(response)
     return response
   }
-
+  /**
+   * Update a network
+   * @param {Object} body
+   * @return {Object} network 
+   */
   async updateNetwork (body) {
     const response = await this.fetch(body.id, { method: 'put', body })
     this.networks.insert(response)
     return response
   }
-
+  /**
+   * Delete a network
+   * @param {string} id 
+   */
   async deleteNetwork (id) {
-    const response = await this.fetch(id, { method: 'delete' })
+    await this.fetch(id, { method: 'delete' })
     this.networks.remove(id)
-    return response
   }
-
+  /**
+   * Pull a network
+   * @param {string} id 
+   */
   async pullNetwork (id) {
-    return this.fetch(`${id}/pull`, { method: 'post' })
+    await this.fetch(`${id}/pull`, { method: 'post' })
   }
-  handleActions (action) {
-    switch (action.type) {
+  /**
+   * Handle actions from dispatcher
+   * @param {Object} param0 action  
+   */
+  handleActions ({ type }) {
+    switch (type) {
         default: return
     }
   }

@@ -1,21 +1,31 @@
 import { EventEmitter } from "events";
 import dispatcher from "../dispatcher";
 
+/** Class representing a flux store for application errors */
 class ErrorStore extends EventEmitter {
+  /** Create a store */
   constructor() {
     super();
     this.errors = [];
   }
-
+  /**
+   * Get all errors
+   * @return {Object[]} list of errors
+   */
   getAll() {
     return this.errors;
   }
-
+  /**
+   * Remove all errors from state
+   */
   clear() {
     this.errors = [];
     this.emit("change");
   }
-
+  /**
+   * Create an error
+   * @param {Error} error 
+   */
   createError(error) {
     const id = Date.now();
 
@@ -26,7 +36,10 @@ class ErrorStore extends EventEmitter {
 
     this.emit("change");
   }
-
+  /**
+   * Delete an error
+   * @param {string} id 
+   */
   deleteError(id) {
     let err = null;
 
@@ -39,19 +52,15 @@ class ErrorStore extends EventEmitter {
     this.errors.splice(this.errors.indexOf(err), 1);
     this.emit("change");
   }
-
-  handleActions(action) {
-    switch(action.type) {
-      case "CREATE_ERROR": {
-        this.createError(action.error);
-        break;
-      }
-      case "DELETE_ERROR": {
-        this.deleteError(action.id);
-        break;
-      }
-      default:
-        break;
+  /**
+   * Handle actions from dispatcher
+   * @param {Object} param0 action 
+   */
+  handleActions({ type, error, id }) {
+    switch(type) {
+      case "CREATE_ERROR": return this.createError(error)
+      case "DELETE_ERROR": return this.deleteError(id)
+      default: return
     }
   }
 }

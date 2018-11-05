@@ -4,7 +4,9 @@ import {EventEmitter} from "events";
 import Collection from '../lib/collection'
 import dispatcher from "../dispatcher";
 
+/** Class representing a flux store for the LPWAN Network Protocol domain */
 class NetworkProtocolStore extends EventEmitter {
+  /** Create a store */
   constructor () {
     super()
 
@@ -22,18 +24,33 @@ class NetworkProtocolStore extends EventEmitter {
       () => sessionStore.getHeader()
     )
   }
+  /**
+   * Get list of network protocol handlers
+   * @return {Object[]} list of network protocol handlers
+   */
   async getNetworkProtocolHandlers () {
     const response = await this.fetchHandlers()
     if (!response || !response.records) return []
     this.protocolHandlers.insert(response.records)
     return response
   }
+  /**
+   * Get a list of network protocols
+   * @return {Object[]} list of network protocols
+   */
   async getNetworkProtocols () {
     const response = await this.fetch()
     if (!response || !response.records) return []
     this.protocols.insert(response.records)
     return response
   }
+  /**
+   * Create a network protocol
+   * @param {string} name 
+   * @param {Object} protocolHandler 
+   * @param {string} networkTypeId 
+   * @return {string} network protocol ID
+   */
   async createNetworkProtocol (name, protocolHandler, networkTypeId) {
     const response = await this.fetch('', {
       method: 'post',
@@ -42,23 +59,40 @@ class NetworkProtocolStore extends EventEmitter {
     this.protocols.insert(response)
     return response.id
   }
+  /**
+   * Get a network protocol
+   * @param {string} id 
+   * @return {Object} a network protocol
+   */
   async getNetworkProtocol (id) {
     const response = await this.fetch(id)
     this.protocols.insert(response)
     return response
   }
+  /**
+   * Update a network protocol
+   * @param {Object} body 
+   * @return {Object} a network protocol
+   */
   async updateNetworkProtocol (body) {
     const response = await this.fetch(body.id, { method: 'put', body })
     this.protocols.insert(response)
-    return
+    return response
   }
+  /**
+   * Delete a network protocol
+   * @param {string} id 
+   */
   async deleteNetworkProtocol (id) {
     await this.fetch(id, { method: 'delete' })
     this.protocols.remove(id)
-    return
   }
-  handleActions (action) {
-    switch (action.type) {
+  /**
+   * Handle actions from dispatcher
+   * @param {Object} param0 action 
+   */
+  handleActions ({ type }) {
+    switch (type) {
         default: return
     }
   }
