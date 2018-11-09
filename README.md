@@ -93,3 +93,15 @@ Some may require sudo.
 | clean.js | Remove docker images created by other scripts. |
 
 [11]: TESTING.md
+
+## Code Documentation
+
+You can view the code's documentation as HTML by running `npm run documentation`.
+It will create a `docs` folder that contains a static website.  To view locally,
+run a simple webserver from within the docs folder.
+
+```
+npm run documentation
+cd docs
+python -m SimpleHTTPServer
+```
