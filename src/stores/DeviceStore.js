@@ -179,7 +179,7 @@ class DeviceStore extends EventEmitter {
      */
     async deleteDeviceNetworkType (id) {
         const response = await this.fetchDeviceNtwkTypeLink(id, { method: 'delete' })
-        remoteErrorDisplay(responsed)
+        remoteErrorDisplay(response)
     }
     /**
      * Handle actions from dispatcher
