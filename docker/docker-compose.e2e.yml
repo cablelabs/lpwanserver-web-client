@@ -1,30 +1,21 @@
 version: "3"
 services:
   selenium_hub:
-    image: selenium/hub
+    image: selenium/hub:3.141.59
     container_name: selenium-hub
     ports:
       - 4444:4444
 
   chrome:
-    image: selenium/node-chrome-debug
+    image: selenium/node-chrome-debug:3.141.59
     depends_on:
       - selenium_hub
     environment:
-      - HUB_HOST=selenium_hub
+      - HUB_HOST=localhost
       - HUB_PORT=4444
     ports:
       - 5900:5900
-
-  # firefox:
-  #   image: selenium/node-firefox-debug
-  #   depends_on:
-  #     - selenium_hub
-  #   environment:
-  #     - HUB_HOST=selenium_hub
-  #     - HUB_PORT=4444
-  #   ports:
-  #    - 5901:5900
+    network_mode: 'host'
 
   browser_test_chrome:
     image: lpwanserver/browser-test
@@ -35,32 +26,16 @@ services:
       - BROWSER=chrome
       - HUB_HOST=selenium_hub
       - HUB_PORT=4444
-      - WEB_CLIENT_HOST=lpwanserver_web_client_chrome
+      - WEB_CLIENT_HOST=localhost
       - WEB_CLIENT_PORT=3000
-      - LORA_SERVER_HOST=lora_appserver
+      - LORA_SERVER_HOST=localhost
       - LORA_SERVER_PORT=8080
-      - LORA_SERVER_V1_HOST=lora_appserver1
-      - LORA_SERVER_V1_PORT=8080
+      - LORA_SERVER_V1_HOST=localhost
+      - LORA_SERVER_V1_PORT=8081
       - TTN_CLIENT_ID=${TTN_CLIENT_ID:-XXX}
       - TTN_CLIENT_SECRET=${TTN_CLIENT_SECRET:-XXX}
       - TTN_USERNAME=${TTN_USERNAME:-XXX}
       - TTN_PASSWORD=${TTN_PASSWORD:-XXX}
-
-  # browser_test_firefox:
-  #   image: lpwanserver/browser-test
-  #   depends_on:
-  #     - lpwanserver_firefox
-  #     - firefox
-  #   environment:
-  #     - BROWSER=firefox
-  #     - HUB_HOST=selenium_hub
-  #     - HUB_PORT=4444
-  #     - WEB_CLIENT_HOST=lpwanserver_web_client_firefox
-  #     - WEB_CLIENT_PORT=3001
-  #     - LORA_SERVER_HOST=lora_appserver
-  #     - LORA_SERVER_PORT=8080
-  #     - LORA_SERVER_V1_HOST=lora_appserver1
-  #     - LORA_SERVER_V1_PORT=8080
 
   lpwanserver_chrome:
     image: lpwanserver/lpwanserver
@@ -74,18 +49,6 @@ services:
     ports:
       - 3200:3200
 
-  # lpwanserver_firefox:
-  #   image: lpwanserver/lpwanserver
-  #   depends_on:
-  #     - loraserver
-  #     - lora_appserver
-  #   environment:
-  #     - NODE_ENV=local
-  #     - PORT=3200
-  #     - db_file=data/demo_data/demo.sqlite3
-  #   ports:
-  #     - 3200:3200
-
   lpwanserver_web_client_chrome:
     image: lpwanserver/lpwanserver-web-client
     environment:
@@ -94,15 +57,6 @@ services:
       - LPWANSERVER_PORT=3200
     ports:
       - 3000:3000
-
-  # lpwanserver_web_client_firefox:
-  #   image: lpwanserver/lpwanserver-web-client
-  #   environment:
-  #     - PORT=3001
-  #     - LPWANSERVER_HOST=lpwanserver_firefox
-  #     - LPWANSERVER_PORT=3200
-  #   ports:
-  #     - 3001:3001
 
   loraserver:
     image: loraserver/loraserver:2

@@ -6,7 +6,7 @@
 
 The end-to-end test `e2e/specs/demo.test.js` is coupled with the lpwanserver demo
 data.  Because the sqlite3 database is run on the same process as the lpwanserver,
-the lpwanserver images used in e2e tests need to be built so that the demo data exist
+the lpwanserver images used in e2e tests need to be built so that the demo data exists
 in the image. You can get that by running `npm run package` in the lpwanserver repository.
 An environment variable is used to let lpwanserver know which database file to use.
 
@@ -22,10 +22,22 @@ just to try to keep them in sync.
 - Docker
 - docker-compose
 
+## Running scripts
+
+Most of the scripts use docker commands.  Depending on the machine, docker commands
+may require running with "sudo".  If you run the script as sudo, it should work.
+Sudo ignores environment variables unless you use the "-E" flag.  The scripts are JavaScript
+files, but you don't have to use the "node" command.
+
+```
+# Example
+sudo -E ./bin/e2e.js
+```
+
 ## Running the E2E Tests
 
 First build the docker images for the ui-server and the test-runner by running
-`npm run package`.  The script `bin/e2e.js` orchestrates the running of E2E tests.
+`./bin/package.js`.  The script `./bin/e2e.js` orchestrates the running of E2E tests.
 The exit code of the process running `e2e.js` can be considered the exit code of
 the tests.  The script uses docker-compose to spin up all the containers, the tests
 being some of them, and run them.  When a test container exits, docker logs the
@@ -34,71 +46,63 @@ exit code for the tests.  If one of them is a 1, an error, the tests are stopped
 and the `e2e.js` process exits with a 1.  Only if all tests exit with a 0 status
 does the `e2e.js` process exit with a 0.
 
-The docker-compose runs selenium grid, which allows testing on multiple browsers
-and devices at once.  Firefox and Chrome are the easily supported browsers.  Currently
-running multiple browsers causes the tests to fail. This is probably due to
-some data/service that needs to be duplicated to support multiple browsers.
+### Run e2e.js
 
 ```
-node ./bin/package.js
-node ./bin/e2e.js
+./bin/package.js
+expot TTN_CLIENT_ID=GET_FROM_OTHER_DEVELOPER
+expot TTN_CLIENT_SECRET=GET_FROM_OTHER_DEVELOPER
+expot TTN_USERNAME=GET_FROM_OTHER_DEVELOPER
+expot TTN_PASSWORD=GET_FROM_OTHER_DEVELOPER
+./bin/e2e.js
 ```
-
-`e2e.js` uses a BROWSER_TOTAL global that will need to be updated or made configurable
-when more browsers are used in testing.
 
 ## Debugging in Selenium Grid
 
-The docker-compose is using the "debug" version of the browser images, which means
-that you can use a VNC to watch the browser.  The tricky part is that you need
-to open the VPN connection after the docker containers are started but before the tests run.
-It requires commenting out the tests in the docker-compose file.  With the test
-services commented out of the docker-compose file, run `e2e.js`.
+The docker-compose is using the "debug" version of the selenium browser images, which means
+that you can use a VNC to watch the browser.
 
-When the e2e script is running, start a connnection from the VNC to the browser container.
-You can get the port for the browser container by running `docker ps`.
-Point the VNC to `0.0.0.0:port`.  The secret is "secret".
+### Setup the VNC
 
-Run the tests in a new tab with `npm run test:e2e`, making sure to set the environment variables,
-all the environment variables that it would have received from docker-compose.
-Set HUB_HOST to "localhost" because the tests are running outside of docker-compose.
-Other than that, all the other environment variables keep the same values.
-The test environment variable defaults are in `e2e/config.js`.  These values are
-overwritten by environment variables.
+Get the port for the browser from the `docker/docker-compose.e2e.yml`.  Set your VNC server to
+`localhost:PORT`.  When connecting for the first time, you'll be asked for the secret.  Enter "secret".
 
-```
-HUB_HOST=localhost \
-WEB_CLIENT_HOST=lpwanserver_web_client_chrome \
-WEB_CLIENT_PORT=3000 \
-LORA_SERVER_HOST=lora_appserver \
-LORA_SERVER_PORT=8080 \
-LORA_SERVER_V1_HOST=lora_appserver1 \
-LORA_SERVER_V1_PORT=8080 \
-TTN_CLIENT_ID=lpwanserver-test-client
-TTN_CLIENT_SECRET=GET_FROM_OTHER_DEVELOPER
-TTN_USERNAME=rhythnic
-TTN_PASSWORD=GET_FROM_OTHER_DEVELOPER
-npm run test:e2e  
-```
+### Watching the browser with a VNC
+
+The e2e script must be running before you can connect to the browser.  If there's not enough
+time to connect the VNC after starting the script, you can comment out the "browser_test" service
+from the docker-compose file and start the e2e test from a new terminal tab.  If you do this,
+in addition to the TTN variables described above, set HUB_HOST to "localhost" before running `npm run test:e2e`.
+If your VNC saves the connection and "secret" passphrase, you shouldn't need to run the test in a separate
+tab, but it may help when setting up the VNC.
 
 ## Writing Tests
 
-For local development of e2e tests, it's easiest not to use selenium grid and
-use a local selenium browser driver.
+When writing tests, it's easiest to run the web-client server and the e2e tests in separate tabs,
+so as not to have to use a VNC and package the docker images with each change.
 
-`npm install --no-save chromedriver geckodriver`
+1.  Comment out the lpwan_web_client and browser_test services in `docker/docker-compose.e2e.yml`.
+2.  In one terminal tab, run `./bin/e2e.js`, no environment variables needed.
+3.  In a new tab, run the development web client server.  `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
+4.  In a new tab, run the e2e tests, having exported the TTN env variables.  `npm run test:e2e`
+5.  Stop and re-start the `./bin/e2e.js` process after each test run.
 
+## Limitations and future browser support
 
-Comment out the "ui" service from the `/docker/docker-compose.yml` in the `lpwanserver` repo.
+The e2e tests are setup with selenium grid, which supports running tests in parallel and multiple
+browsers/machines; however, only chrome is supported currently.  These are the limitations that
+need addressed in the future.
 
-Note:  export the TTN environment variables (show above) in the 3rd terminal before
-running the test.
+1.  **Data** - Each browser needs it's own instances of lpwanserver and lora servers, because tests
+update backend data in a way that causes errors when multiple tests are run.  Until the e2e
+tests are using a locally running TTN network, the data on those lora servers needs to be different.
+No device EUI can be shared across multiple applications on TTN.
 
-**Three Terminals**
+2. **TTN client callback uri** - Each browser needs it's own TTN client, because the client's oauth callback
+URI needs to target the specific browser, unless the tests are run sequentially.
 
-- **lpwanserver** - `./bin/demo`
-- **lpwanserver-web-client** - `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
-- **lpwanserver-web-client** - `npm run test:e2e`
+3.  **Firefox HTTPS warning** - The selenium-webdriver connection code in `e2e/lib/helpers.js` needs to
+configure Firefox so that it doesn't fail on the `https://localhost` warning when accessing the LoRa app servers.
 
-All of the values in `e2e/config.js` are set for writing unit tests.  You shouldn't
-have to overwrite any of them, just export the TTN environment variables.
+Note: `e2e.js` uses a BROWSER_TOTAL global that will need to be updated or made configurable
+when more browsers are used in testing.  Currently it is set to 1 (chrome).

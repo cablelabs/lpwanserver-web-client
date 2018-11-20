@@ -6,10 +6,6 @@ const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
 const BROWSER_TOTAL = 1
 
-if (!BROWSER_TOTAL) {
-  throw new Error('Please set BROWSER_TOTAL environment variable')
-}
-
 function prepData () {
   execSync('docker system prune --force', opts)
   execSync('rm -rf ./e2e/data', opts)
