@@ -14,6 +14,7 @@ before_script:
   - ./bin/package.js
   - git clone https://github.com/cablelabs/lpwanserver.git
   - docker-compose -f ./lpwanserver/docker/docker-compose.yml up -d
+  - docker ps
 
 script:
   - ./bin/e2e.js
