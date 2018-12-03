@@ -64,20 +64,20 @@ describe('Add LoRA V1 Network', () => {
   )(opts))
 })
 
-// describe('Add "The Things Network" Network', () => {
-//   test('Create TTN Network', () => S.seq(
-//     S.click(`[href="/admin/networks"]`),
-//     S.click('[data-is="networkProtocol"][data-name="The Things Network"] [data-to="createNetwork"]'),
-//     S.fillForm(forms.createTtnNetwork, input.createTtnNetwork),
-//     S.click('button[type="submit"]'),
-//     S.sleep(1000),
-//     S.fillForm(forms.ttnLogin, input.ttnLogin),
-//     S.click('button[type="submit"]'),
-//     S.sleep(7000),
-//     S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]'),
-//     ctx => ctx.driver.get(ctx.url)
-//   )(opts))
-// })
+describe('Add "The Things Network" Network', () => {
+  test('Create TTN Network', () => S.seq(
+    S.click(`[href="/admin/networks"]`),
+    S.click('[data-is="networkProtocol"][data-name="The Things Network"] [data-to="createNetwork"]'),
+    S.fillForm(forms.createTtnNetwork, input.createTtnNetwork),
+    S.click('button[type="submit"]'),
+    S.sleep(1000),
+    S.fillForm(forms.ttnLogin, input.ttnLogin),
+    S.click('button[type="submit"]'),
+    S.sleep(7000),
+    S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]'),
+    ctx => ctx.driver.get(ctx.url)
+  )(opts))
+})
 
 describe('Verify apps and devices synced to external servers', () => {
   const verifyPushToLoraServer = S.seq(
@@ -103,23 +103,23 @@ describe('Verify apps and devices synced to external servers', () => {
   )(opts))
 })
 
-// describe('Remove remote applications', () => {
-//   test('Remove applications on TTN', () => {
-//     const removeTtnApp = name => S.seq(
-//       ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications`),
-//       S.getText(By.xpath(`//*[contains(text(), "${name}")]/preceding-sibling::span`), 'appId'),
-//       S.tap(ctx => console.log(ctx.appId)),
-//       ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/settings`),
-//       S.click(By.xpath('//*[contains(text(), "Delete application")]')),
-//       S.sleep(1000),
-//       S.sendKeys(By.xpath("//input[not(@name)]"), ctx => ctx.appId),
-//       S.click(By.xpath(`//button/span[contains(text(), "Delete")]`)),
-//       S.sleep(1000)
-//     )
+describe('Remove remote applications', () => {
+  test('Remove applications on TTN', () => {
+    const removeTtnApp = name => S.seq(
+      ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications`),
+      S.getText(By.xpath(`//*[contains(text(), "${name}")]/preceding-sibling::span`), 'appId'),
+      S.tap(ctx => console.log(ctx.appId)),
+      ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/settings`),
+      S.click(By.xpath('//*[contains(text(), "Delete application")]')),
+      S.sleep(1000),
+      S.sendKeys(By.xpath("//input[not(@name)]"), ctx => ctx.appId),
+      S.click(By.xpath(`//button/span[contains(text(), "Delete")]`)),
+      S.sleep(1000)
+    )
 
-//     return S.seq(
-//       removeTtnApp('BobMouseTrapLv2'),
-//       removeTtnApp('BobMouseTrapLv1')
-//     )(opts)
-//   })
-// })
+    return S.seq(
+      removeTtnApp('BobMouseTrapLv2'),
+      removeTtnApp('BobMouseTrapLv1')
+    )(opts)
+  })
+})
