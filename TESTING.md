@@ -4,17 +4,8 @@
 
 ## Background Information
 
-The end-to-end test `e2e/specs/demo.test.js` is coupled with the lpwanserver demo
-data.  Because the sqlite3 database is run on the same process as the lpwanserver,
-the lpwanserver images used in e2e tests need to be built so that the demo data exists
-in the image. You can get that by running `npm run package` in the lpwanserver repository.
-An environment variable is used to let lpwanserver know which database file to use.
-
-Postgresql also depends on data for the demo.  That data exists on lpwanserver at
-`data/demo_baseline`.  A clone of it is in the web-client at `e2e/data_baseline`.
-That data is coupled with the e2e tests.  It isn't necessary that they stay the same,
-but as the demo test will generally follow the demo script, it's probably easiest
-just to try to keep them in sync.
+The end-to-end test `e2e/specs/demo.test.js` is coupled with the lpwanserver demo.
+The E2E tests depend on a running demo.
 
 ## System Dependencies
 
@@ -37,16 +28,20 @@ sudo -E ./bin/e2e.js
 ## Running the E2E Tests
 
 First build the docker images for the ui-server and the test-runner by running
-`./bin/package.js`.  The script `./bin/e2e.js` orchestrates the running of E2E tests.
+`./bin/package.js`.
+
+### Run the demo
+From the lpwanserver repo, run the demo with `./bin/demo`.
+
+### Run the tests
+The script `./bin/e2e.js` orchestrates the running of E2E tests.
 The exit code of the process running `e2e.js` can be considered the exit code of
 the tests.  The script uses docker-compose to spin up all the containers, the tests
 being some of them, and run them.  When a test container exits, docker logs the
 exit status of that container to stdout.  `e2e.js` watches stdout to get the
-exit code for the tests.  If one of them is a 1, an error, the tests are stopped
-and the `e2e.js` process exits with a 1.  Only if all tests exit with a 0 status
+exit code for the container.  If one of them is a 1, an error, the tests are stopped
+and the `e2e.js` process exits with a 1.  Only if all test containers exit with a 0 status
 does the `e2e.js` process exit with a 0.
-
-### Run e2e.js
 
 ```
 ./bin/package.js
@@ -81,11 +76,11 @@ tab, but it may help when setting up the VNC.
 When writing tests, it's easiest to run the web-client server and the e2e tests in separate tabs,
 so as not to have to use a VNC and package the docker images with each change.
 
-1.  Comment out the lpwan_web_client and browser_test services in `docker/docker-compose.e2e.yml`.
-2.  In one terminal tab, run `./bin/e2e.js`, no environment variables needed.
+1.  In the lpwanserver repo, comment out the "ui" service from `docker/docker-compose.yml`.
+2.  In one terminal tab, from the lpwanserver repo, run the demo.  `./bin/demo`
 3.  In a new tab, run the development web client server.  `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
 4.  In a new tab, run the e2e tests, having exported the TTN env variables.  `npm run test:e2e`
-5.  Stop and re-start the `./bin/e2e.js` process after each test run.
+5.  Stop and re-start the demo after each test run.
 
 ## Limitations and future browser support
 
@@ -96,10 +91,13 @@ need addressed in the future.
 1.  **Data** - Each browser needs it's own instances of lpwanserver and lora servers, because tests
 update backend data in a way that causes errors when multiple tests are run.  Until the e2e
 tests are using a locally running TTN network, the data on those lora servers needs to be different.
-No device EUI can be shared across multiple applications on TTN.
+No device EUI can be shared across multiple applications on TTN.  The best approach might be using docker swarm
+to spin up a new machine running the demo for each browser tested.  That won't resolve the TTN data clashes between
+tests, so until TTN is running locally, it's best just to stick with Chrome.
 
 2. **TTN client callback uri** - Each browser needs it's own TTN client, because the client's oauth callback
-URI needs to target the specific browser, unless the tests are run sequentially.
+URI needs to target the specific browser, unless the tests are run sequentially, or each browser is tested
+in a new machine with docker swarm.
 
 3.  **Firefox HTTPS warning** - The selenium-webdriver connection code in `e2e/lib/helpers.js` needs to
 configure Firefox so that it doesn't fail on the `https://localhost` warning when accessing the LoRa app servers.

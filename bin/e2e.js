@@ -6,12 +6,6 @@ const ROOT = path.join(__dirname, '..')
 const opts = { cwd: ROOT, stdio: 'inherit' }
 const BROWSER_TOTAL = 1
 
-function prepData () {
-  execSync('docker system prune --force', opts)
-  execSync('rm -rf ./e2e/data', opts)
-  execSync('cp -r ./e2e/data_baseline ./e2e/data', opts)
-}
-
 function watchTest (endTest) {
   const EXIT_CODE_RE = /browser_test.+exited with code ([0,1])/
   let browserCount = 0
@@ -58,5 +52,4 @@ function runTest () {
   process.on('uncaughtException', handleError)
 }
 
-prepData()
 runTest()
