@@ -108,7 +108,12 @@ describe('Remove remote applications', () => {
     const removeTtnApp = name => S.seq(
       ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications`),
       S.getText(By.xpath(`//*[contains(text(), "${name}")]/preceding-sibling::span`), 'appId'),
-      S.tap(ctx => console.log(ctx.appId)),
+      ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/devices`),
+      S.getText(By.xpath(`//*[contains(text(), "Test Device for E2E")]/preceding-sibling::span`), 'deviceId'),
+      ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/devices/${ctx.deviceId}/settings`),
+      S.click(By.xpath('//*[contains(text(), "Delete Device")]')),
+      S.click(ctx => By.xpath(`//button/span[contains(text(), "Delete")]`)),
+      S.sleep(1000),
       ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/settings`),
       S.click(By.xpath('//*[contains(text(), "Delete application")]')),
       S.sleep(1000),

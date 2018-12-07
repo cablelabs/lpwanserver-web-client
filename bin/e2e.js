@@ -35,7 +35,6 @@ function runTest () {
 
   function exitProcess (code) {
     code = exitCode == null ? code : exitCode
-    execSync('sudo rm -rf ./e2e/data', opts)
     console.log('Test script exited with code', code)
     process.exit(code === 0 ? 0 : 1)
   }
