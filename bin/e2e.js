@@ -7,12 +7,14 @@ const opts = { cwd: ROOT, stdio: 'inherit' }
 const BROWSER_TOTAL = 1
 
 function watchTest (endTest) {
-  const EXIT_CODE_RE = /browser_test.+exited with code ([0,1])/
+  const EXIT_CODE_RE = /browser_test.+exited with code ([0,1])/g
+  const ERROR_RE = /Unhandled error/gi
   let browserCount = 0
 
   return data => {
     data = `${data}`
     console.log(data)
+    if (ERROR_RE.test(data)) return endTest(1)
     if (!EXIT_CODE_RE.test(data)) return
     const exitCode = (new RegExp(EXIT_CODE_RE).exec(data))[1]
     if (exitCode === '1') return endTest(1)
@@ -51,4 +53,4 @@ function runTest () {
   process.on('uncaughtException', handleError)
 }
 
-runTest()
+setTimeout(runTest, 5000)
