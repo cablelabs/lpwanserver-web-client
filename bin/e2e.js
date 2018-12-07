@@ -53,4 +53,4 @@ function runTest () {
   process.on('uncaughtException', handleError)
 }
 
-setTimeout(runTest, 5000)
+runTest()

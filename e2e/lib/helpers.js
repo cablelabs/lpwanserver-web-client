@@ -1,4 +1,5 @@
 const { Builder } = require('selenium-webdriver')
+const axios = require('axios')
 
 function getUrl (service, config) {
   const protocol = config[`${service}_PROTOCOL`] || 'http'
@@ -19,7 +20,36 @@ async function setupDriver (config) {
   return driver
 }
 
+function seleniumHubHealthcheck (host, port, limit = 30000) {
+  async function checkIsReady () {
+    const response = await axios({
+      url: `http://${host}:${port}/wd/hub/status`,
+      responseType: 'json'
+    })
+    console.log(response.data)
+    return response.data.value.ready
+  }
+  return new Promise((resolve, reject) => {
+    const intervalID = setInterval(async () => {
+      const ready = await checkIsReady()
+      if (!ready) return
+      end()
+    }, 5000)
+    const timerId = setTimeout(() => {
+      end(new Error('E2E global-setup timed out waiting for selenium hub to be ready.'))
+    }, limit)
+    function end (error) {
+      clearInterval(intervalID)
+      clearTimeout(timerId)
+      if (error) return reject(error)
+      return resolve()
+    }
+  })
+  
+}
+
 module.exports = {
   getUrl,
-  setupDriver
+  setupDriver,
+  seleniumHubHealthcheck
 }
