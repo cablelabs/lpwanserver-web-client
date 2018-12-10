@@ -1,13 +1,14 @@
-version: "3"
+version: '3'
+
 services:
   selenium_hub:
-    image: selenium/hub:3.141.59
-    container_name: selenium-hub
+    image: selenium/hub:latest
     ports:
       - 4444:4444
+    network_mode: host
 
-  chrome:
-    image: selenium/node-chrome-debug:3.141.59
+  selenium_chrome:
+    image: selenium/node-chrome-debug:latest
     depends_on:
       - selenium_hub
     environment:
@@ -21,10 +22,11 @@ services:
     image: lpwanserver/browser-test
     depends_on:
       - selenium_hub
-      - chrome
+      - selenium_chrome
+    network_mode: host
     environment:
       - BROWSER=chrome
-      - HUB_HOST=selenium_hub
+      - HUB_HOST=localhost
       - HUB_PORT=4444
       - WEB_CLIENT_HOST=localhost
       - WEB_CLIENT_PORT=3000
@@ -36,3 +38,8 @@ services:
       - TTN_CLIENT_SECRET=${TTN_CLIENT_SECRET:-XXX}
       - TTN_USERNAME=${TTN_USERNAME:-XXX}
       - TTN_PASSWORD=${TTN_PASSWORD:-XXX}
+
+networks:
+  default:
+    external:
+      name: docker_default
