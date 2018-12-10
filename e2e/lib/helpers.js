@@ -26,7 +26,6 @@ function seleniumHubHealthcheck (host, port, limit = 30000) {
       url: `http://${host}:${port}/wd/hub/status`,
       responseType: 'json'
     })
-    console.log(response.data)
     return response.data.value.ready
   }
   return new Promise((resolve, reject) => {
@@ -42,6 +41,7 @@ function seleniumHubHealthcheck (host, port, limit = 30000) {
       clearInterval(intervalID)
       clearTimeout(timerId)
       if (error) return reject(error)
+      console.info('Test confirmed Selenium Grid is ready to accept connections.')
       return resolve()
     }
   })

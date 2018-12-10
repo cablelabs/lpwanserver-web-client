@@ -6,6 +6,7 @@ const input = require('../user-input/input')
 const S = require('../lib/selenium-fp')
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 60 * 5
+const describeTtn = config.TTN_ENABLED ? describe : describe.skip.bind(describe)
 
 const opts = {
   url: getUrl('WEB_CLIENT', config),
@@ -64,7 +65,7 @@ describe('Add LoRA V1 Network', () => {
   )(opts))
 })
 
-describe('Add "The Things Network" Network', () => {
+describeTtn('Add "The Things Network" Network', () => {
   test('Create TTN Network', () => S.seq(
     S.click(`[href="/admin/networks"]`),
     S.click('[data-is="networkProtocol"][data-name="The Things Network"] [data-to="createNetwork"]'),
@@ -103,7 +104,7 @@ describe('Verify apps and devices synced to external servers', () => {
   )(opts))
 })
 
-describe('Remove remote applications', () => {
+describeTtn('Remove remote TTN applications', () => {
   test('Remove applications on TTN', () => {
     const removeTtnApp = name => S.seq(
       ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications`),
@@ -123,6 +124,7 @@ describe('Remove remote applications', () => {
     )
 
     return S.seq(
+      S.sleep(5000), // wait for devicese to be available in TTN console
       removeTtnApp('BobMouseTrapLv2'),
       removeTtnApp('BobMouseTrapLv1')
     )(opts)
