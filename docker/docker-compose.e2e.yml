@@ -5,35 +5,32 @@ services:
     image: selenium/hub:latest
     ports:
       - 4444:4444
-    network_mode: host
 
   selenium_chrome:
     image: selenium/node-chrome-debug:latest
     depends_on:
       - selenium_hub
     environment:
-      - HUB_HOST=localhost
+      - HUB_HOST=selenium_hub
       - HUB_PORT=4444
     ports:
       - 5900:5900
-    network_mode: host
 
   browser_test_chrome:
     image: lpwanserver/browser-test
     depends_on:
       - selenium_hub
       - selenium_chrome
-    network_mode: host
     environment:
       - BROWSER=chrome
-      - HUB_HOST=localhost
+      - HUB_HOST=selenium_hub
       - HUB_PORT=4444
-      - WEB_CLIENT_HOST=localhost
-      - WEB_CLIENT_PORT=3000
-      - LORA_SERVER_HOST=localhost
+      - WEB_CLIENT_HOST=ui
+      - WEB_CLIENT_PORT=8080
+      - LORA_SERVER_HOST=lora_appserver
       - LORA_SERVER_PORT=8080
-      - LORA_SERVER_V1_HOST=localhost
-      - LORA_SERVER_V1_PORT=8081
+      - LORA_SERVER_V1_HOST=lora_appserver1
+      - LORA_SERVER_V1_PORT=8080
       - TTN_CLIENT_ID=${TTN_CLIENT_ID:-XXX}
       - TTN_CLIENT_SECRET=${TTN_CLIENT_SECRET:-XXX}
       - TTN_USERNAME=${TTN_USERNAME:-XXX}
