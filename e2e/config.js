@@ -16,10 +16,16 @@ const CONFIG_DEFAULTS = {
   TTN_CLIENT_SECRET: null,
   TTN_USERNAME: null,
   TTN_PASSWORD: null,
+  TTN_ENABLED: null,
   SIZE: { width: 1280, height: 1024 }
 }
 
-module.exports = merge(
+const config = merge(
   CONFIG_DEFAULTS,
   pick(keys(CONFIG_DEFAULTS), process.env)
 )
+
+config.TTN_ENABLED = (/true/i).test(config.TTN_ENABLED || '')
+console.info('TTN_ENABLED', config.TTN_ENABLED)
+
+module.exports = config

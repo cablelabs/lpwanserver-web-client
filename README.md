@@ -4,11 +4,21 @@
 
 The LPWAN Server Web Client is a web application
 which provides a user interface for interaction with the
-[LPWAN Server][1].  This is the official web client; however,
-alternate clients, web or other, can be built using the APIs
-provided by the LPWAN Server.
+[LPWAN Server](https://github.com/cablelabs/lpwanserver).
+This is the official web client; however, alternate clients, web or other,
+can be built using the APIs provided by the LPWAN Server.
 
-[1]: https://github.com/cablelabs/lpwanserver
+## Getting started
+
+You'll probably want to start by reading the
+[LPWAN Server Overview](http://lpwanserver.com/overview/).
+
+The easiest way to run LPWAN Server is to follow the
+[Quickstart Docker-Compose](http://lpwanserver.com/guides/dockercompose/)
+guide.
+
+For development and customization, refer to the
+[install documentation](http://lpwanserver.com/install/).
 
 ## Technologies Used
 
@@ -32,67 +42,6 @@ provided by the LPWAN Server.
 [8]: https://jestjs.io/
 [9]: https://seleniumhq.github.io/selenium/docs/api/javascript/index.html
 
-## System Software Requirements
-
-The development environment is based on Docker and Node. You will need
-the following 4 packages on your development machine.  NPM is included
-with Node.  Sometimes Docker and Docker Compose are installed together.
-
-- [Docker](https://docs.docker.com/install/overview/)
-- [Docker Compose](https://docs.docker.com/compose/)
-- [Node](https://nodejs.org/en/)
-- [NPM](https://www.npmjs.com/)
-
-## Setup
-
-```
-cd lpwanserver-web-client
-npm install
-```
-
-## Getting Started
-
-### Start LPWAN Server
-
-1. CD into the cloned [lpwanserver][10] repo.
-2. Run `npm install && npm run package`.  This creates a docker image for lpwanserver.
-3. Run `docker-compose -f docker/docker-compose.yml up`.
-
-- LPWAN Server is running at `http://localhost:3200`
-- LoRa Server is running at `https://localhost:8080`
-- LoRa Server V1 is running at `https://localhost:8081`
-
-[10]: https://github.com/cablelabs/lpwanserver
-
-### Start the UI Server
-
-1. From this repo, run `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
-
-- The app is available at `http://localhost:3000`.
-
-### Build
-
-```
-// puts files in build folder
-npm run build
-// set the LPWAN Server location
-REACT_APP_REST_SERVER_URL=https://mylpwanserverdomain.com npm run build
-```
-
-## Bin Scripts
-
-There are some node scripts in the `bin` folder. Run any of these with node.
-Some may require sudo.
-
-`node bin/package.js`
-
-| Script | Purpose |
-|---|---|
-| package.js | Create a docker image to serve the web client. |
-| e2e.js | See [TESTING.md][11] |
-| clean.js | Remove docker images created by other scripts. |
-
-[11]: TESTING.md
 
 ## Code Documentation
 

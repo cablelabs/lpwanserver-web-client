@@ -1,26 +1,27 @@
-version: "3"
+version: '3'
+
 services:
   selenium_hub:
-    image: selenium/hub:3.141.59
-    container_name: selenium-hub
+    image: selenium/hub:latest
     ports:
       - 4444:4444
 
-  chrome:
-    image: selenium/node-chrome-debug:3.141.59
+  selenium_chrome:
+    image: selenium/node-chrome-debug:latest
     depends_on:
       - selenium_hub
     environment:
       - HUB_HOST=localhost
       - HUB_PORT=4444
+    network_mode: host
     ports:
       - 5900:5900
-    network_mode: 'host'
 
   browser_test_chrome:
     image: lpwanserver/browser-test
     depends_on:
-      - chrome
+      - selenium_hub
+      - selenium_chrome
     environment:
       - BROWSER=chrome
       - HUB_HOST=selenium_hub

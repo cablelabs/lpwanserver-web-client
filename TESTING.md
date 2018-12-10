@@ -73,14 +73,19 @@ tab, but it may help when setting up the VNC.
 
 ## Writing Tests
 
+Install `chromedriver`
+
+```
+$ npm install --no-save chromedriver
+```
+
 When writing tests, it's easiest to run the web-client server and the e2e tests in separate tabs,
 so as not to have to use a VNC and package the docker images with each change.
 
-1.  In the lpwanserver repo, comment out the "ui" service from `docker/docker-compose.yml`.
-2.  In one terminal tab, from the lpwanserver repo, run the demo.  `./bin/demo`
-3.  In a new tab, run the development web client server.  `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
-4.  In a new tab, run the e2e tests, having exported the TTN env variables.  `npm run test:e2e`
-5.  Stop and re-start the demo after each test run.
+1.  In the lpwanserver repo, run `docker-compose -f docker/docker-compose.loraserver.yml -f docker/dockercompose.rest.yml up`.
+2.  In a new tab, run the development web client server.  `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
+3.  In a new tab, run the e2e tests, having exported the TTN env variables.  `npm run test:e2e`
+4.  Stop step 1, remove postgresql container, and restart step 1 after each test run.
 
 ## Limitations and future browser support
 

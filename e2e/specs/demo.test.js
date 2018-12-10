@@ -6,6 +6,7 @@ const input = require('../user-input/input')
 const S = require('../lib/selenium-fp')
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 60 * 5
+const describeTtn = config.TTN_ENABLED ? describe : describe.skip.bind(describe)
 
 const opts = {
   url: getUrl('WEB_CLIENT', config),
@@ -64,7 +65,7 @@ describe('Add LoRA V1 Network', () => {
   )(opts))
 })
 
-describe('Add "The Things Network" Network', () => {
+describeTtn('Add "The Things Network" Network', () => {
   test('Create TTN Network', () => S.seq(
     S.click(`[href="/admin/networks"]`),
     S.click('[data-is="networkProtocol"][data-name="The Things Network"] [data-to="createNetwork"]'),
@@ -103,12 +104,17 @@ describe('Verify apps and devices synced to external servers', () => {
   )(opts))
 })
 
-describe('Remove remote applications', () => {
+describeTtn('Remove remote TTN applications', () => {
   test('Remove applications on TTN', () => {
     const removeTtnApp = name => S.seq(
       ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications`),
       S.getText(By.xpath(`//*[contains(text(), "${name}")]/preceding-sibling::span`), 'appId'),
-      S.tap(ctx => console.log(ctx.appId)),
+      ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/devices`),
+      S.getText(By.xpath(`//*[contains(text(), "Test Device for E2E")]/preceding-sibling::span`), 'deviceId'),
+      ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/devices/${ctx.deviceId}/settings`),
+      S.click(By.xpath('//*[contains(text(), "Delete Device")]')),
+      S.click(ctx => By.xpath(`//button/span[contains(text(), "Delete")]`)),
+      S.sleep(1000),
       ctx => ctx.driver.get(`${ctx.ttnConsoleUrl}/applications/${ctx.appId}/settings`),
       S.click(By.xpath('//*[contains(text(), "Delete application")]')),
       S.sleep(1000),
@@ -118,6 +124,7 @@ describe('Remove remote applications', () => {
     )
 
     return S.seq(
+      S.sleep(5000), // wait for devicese to be available in TTN console
       removeTtnApp('BobMouseTrapLv2'),
       removeTtnApp('BobMouseTrapLv1')
     )(opts)
