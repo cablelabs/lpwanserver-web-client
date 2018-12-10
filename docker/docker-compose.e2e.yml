@@ -11,8 +11,9 @@ services:
     depends_on:
       - selenium_hub
     environment:
-      - HUB_HOST=selenium_hub
+      - HUB_HOST=localhost
       - HUB_PORT=4444
+    network_mode: host
     ports:
       - 5900:5900
 
@@ -25,13 +26,38 @@ services:
       - BROWSER=chrome
       - HUB_HOST=selenium_hub
       - HUB_PORT=4444
-      - WEB_CLIENT_HOST=ui
-      - WEB_CLIENT_PORT=8080
-      - LORA_SERVER_HOST=lora_appserver
+      - WEB_CLIENT_HOST=localhost
+      - WEB_CLIENT_PORT=3000
+      - LORA_SERVER_HOST=localhost
       - LORA_SERVER_PORT=8080
-      - LORA_SERVER_V1_HOST=lora_appserver1
-      - LORA_SERVER_V1_PORT=8080
+      - LORA_SERVER_V1_HOST=localhost
+      - LORA_SERVER_V1_PORT=8081
       - TTN_CLIENT_ID=${TTN_CLIENT_ID:-XXX}
       - TTN_CLIENT_SECRET=${TTN_CLIENT_SECRET:-XXX}
       - TTN_USERNAME=${TTN_USERNAME:-XXX}
       - TTN_PASSWORD=${TTN_PASSWORD:-XXX}
+
+  rest:
+    image: lpwanserver/lpwanserver
+    depends_on:
+      - loraserver
+      - lora_appserver
+    environment:
+      - NODE_ENV=local
+      - PORT=3200
+      - db_file=data/demo_data/demo.sqlite3
+    ports:
+      - 3200:3200
+
+  ui:
+    image: lpwanserver/lpwanserver-web-client
+    environment:
+      - LPWANSERVER_PROTOCOL=http
+      - LPWANSERVER_HOST=rest
+      - LPWANSERVER_PORT=3200
+    ports:
+      - 3000:8080
+
+  postgresql:
+    volumes:
+      - ./configuration/postgresql/initdb-demo:/docker-entrypoint-initdb.d

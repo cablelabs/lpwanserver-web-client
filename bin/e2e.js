@@ -24,9 +24,12 @@ function watchTest (endTest) {
 
 function runTest () {
   let exitCode
-  const test = spawn(
-    'docker-compose',
-    ['-f', './docker/docker-compose.e2e.yml', 'up'],
+  const test = spawn('docker-compose',
+    [
+      '-f', './docker/docker-compose.loraserver.yml',
+      '-f', './docker/docker-compose.e2e.yml',
+      'up'
+    ],
     { cwd: ROOT, stdio: ['ignore', 'pipe', 'inherit'] }
   )
 
