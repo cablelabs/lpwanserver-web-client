@@ -18,7 +18,11 @@ The easiest way to run LPWAN Server is to follow the
 guide.
 
 For development and customization, refer to the
-[install documentation](http://lpwanserver.com/install/).
+[install documentation](https://lpwanserver.com/install/requirements/).
+
+If you're new to git and GitHub, be sure to check out the [Pro
+Git](https://git-scm.com/book/en/v2) book. [GitHub
+Help](https://help.github.com/) is also outstanding.
 
 ## Technologies Used
 
@@ -42,7 +46,6 @@ For development and customization, refer to the
 [8]: https://jestjs.io/
 [9]: https://seleniumhq.github.io/selenium/docs/api/javascript/index.html
 
-
 ## Code Documentation
 
 You can view the code's documentation as HTML by running `npm run documentation`.
@@ -54,3 +57,17 @@ npm run documentation
 cd docs
 python -m SimpleHTTPServer
 ```
+
+## Contributing
+
+LPWAN Server Web Client was originally built by
+[CableLabs](http://cablelabs.com/), but we could use your help! Check out our
+[contributing guidelines](CONTRIBUTING.md) to get started.
+
+## Other important stuff
+
+We use an [Apache 2.0 License](LICENSE) for LPWAN Server Web Client.
+
+Questions? Just send us an email at
+[lpwanserver@cablelabs.com](mailto:lpwanserver@cablelabs.com) or join the
+conversation on the [forum](http://forum.lpwanserver.com/).
