@@ -2,9 +2,9 @@
 
 ### Component.json
 
-The file `component.json` contains registry and the name of the application.
+The file `component.json` contains the registry and the name of the application.
 It contains the version for which release candidates are pushed to Docker Hub,
-as well as the build number in Travis.
+as well as the build number, overwritten by a Travis environment variable.
 
 ### Release candiates
 
@@ -32,5 +32,5 @@ also create a git tag for that version, with the "v" prefix, and push it up to G
 
 ### Update Component.json
 
-Increment the version in `component.json` so that release candidates will be build with
+Increment the version in `component.json` so that release candidates will be built with
 the next anticipated version in their tag name.  Commit change.
