@@ -20,6 +20,10 @@ guide.
 For development and customization, refer to the
 [install documentation](https://lpwanserver.com/install/requirements/).
 
+If you're new to git and GitHub, be sure to check out the [Pro
+Git](https://git-scm.com/book/en/v2) book. [GitHub
+Help](https://help.github.com/) is also outstanding.
+
 ## Technologies Used
 
 | Technology | Purpose |
