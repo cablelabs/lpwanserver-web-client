@@ -40,7 +40,6 @@
   "devDependencies": {
     "axios": "^0.18.0",
     "documentation": "^8.1.2",
-    "eslint": "^5.2.0",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
     "fs-extra": "^7.0.0",
