@@ -18,7 +18,7 @@ The easiest way to run LPWAN Server is to follow the
 guide.
 
 For development and customization, refer to the
-[install documentation](http://lpwanserver.com/install/).
+[install documentation](https://lpwanserver.com/install/requirements/).
 
 ## Technologies Used
 
