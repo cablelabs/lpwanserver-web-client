@@ -70,7 +70,7 @@ git push origin my-dev-branch
 
 Some useful resources to get started:
 - Web Client [README][11]
-- [LPWAN Server license][12]
+- [LPWAN Server Web Client license][12]
 - [LPWAN Server Project website][13]
 
 [11]: README.md
