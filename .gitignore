@@ -23,5 +23,4 @@ yarn-error.log*
 
 e2e2/data
 
-# Docs, until ready
-docs
+/code-documentation

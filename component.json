@@ -1,6 +1,6 @@
 {
   "name": "lpwanserver-web-client",
   "registry": "lpwanserver",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "build": "1"
 }
