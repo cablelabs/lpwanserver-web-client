@@ -265,7 +265,9 @@ class NetworkSpecificUI extends Component {
                              type={this.state.selectionType}
                              value={this.isSelected( name )}
                              checked={this.isSelected( name )}
-                             onChange={this.onEnabledCheckboxChange} />
+                             onChange={this.onEnabledCheckboxChange}
+                             data-enabled={this.isSelected(name)}
+                      />
                   </td>
                   <td>
                       <CustomUI

@@ -9,7 +9,7 @@ const login = [
   }
 ]
 
-const loraServerLogin = [
+const loraLogin = [
   {
     selector: '#username',
     property: 'username'
@@ -76,7 +76,7 @@ const createTtnNetwork = [
 
 module.exports = {
   login,
-  loraServerLogin,
+  loraLogin,
   ttnLogin,
   createLoraNetwork,
   createTtnNetwork

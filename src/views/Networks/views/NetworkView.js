@@ -39,17 +39,22 @@ export default function NetworkView(props) {
     'glyphicon-transfer text-success' : 'glyphicon-exclamation-sign text-danger';
 
   return (
-    <div className='flex-row jc-sb fs-xs'>
+    <div className='flex-row jc-sb fs-xs' data-is="network" data-name={network.name}>
       <div className='w-min-300 fs-md'>{name}</div>
 
       { !isEmpty(network) && <EnabledTooltip name={`enabled-xbox-${id}`} {...{networkProtocolName}}/> }
-      <div data-tip data-for={`enabled-xbox-${id}`} className='cur-ptr fs-sm' onClick={onToggleEnabled}>
+      <div data-tip data-for={`enabled-xbox-${id}`} className='cur-ptr fs-sm' onClick={onToggleEnabled} data-enabled={enabled}>
         <input className='xbox-small' type='checkbox' checked={enabled} onChange={noop}/>
         Enabled
       </div>
 
       { !isEmpty(network) && <ConnectedTooltip name={`connected-icon-${id}`} {...{networkProtocolName, message}}/> }
-      <div data-tip data-for={`connected-icon-${id}`} className={`glyphicon fs-md ${statusGlyph}`} />
+      <div
+        data-tip
+        data-for={`connected-icon-${id}`}
+        className={`glyphicon fs-md ${statusGlyph}`}
+        data-authorized={authorizied}
+      />
 
       { !isEmpty(network) && <EditToolTip name={`edit-icon-${id}`}/> }
       <div

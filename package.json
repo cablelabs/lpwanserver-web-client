@@ -34,7 +34,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "test:e2e": "jest --config e2e/jest.conf.js",
+    "test:e2e": "jest --config e2e/jest.conf.js --runInBand",
     "documentation": "documentation build src/** -f html -o code-documentation"
   },
   "devDependencies": {
@@ -46,5 +46,11 @@
     "jest": "^23.6.0",
     "react-scripts": "^2.1.1",
     "selenium-webdriver": "^3.6.0"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
