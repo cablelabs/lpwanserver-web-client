@@ -82,10 +82,11 @@ $ npm install --no-save chromedriver
 When writing tests, it's easiest to run the web-client server and the e2e tests in separate tabs,
 so as not to have to use a VNC and package the docker images with each change.
 
-1.  In the lpwanserver repo, run `docker-compose -f docker/docker-compose.loraserver.yml -f docker/dockercompose.rest.yml up`.
-2.  In a new tab, run the development web client server.  `REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start`
+1.  In the lpwanserver repo, temporarily comment out the ui service at `docker/docker-compose.demo.yml`
+2.  Run the demo script: `./bin/demo`
+3.  In a new tab, run the development web client server.  `npm run dev`
 3.  In a new tab, run the e2e tests, having exported the TTN env variables.  `npm run test:e2e`
-4.  Stop step 1, remove postgresql container, and restart step 1 after each test run.
+4.  Stop and start demo after each test run.
 
 ## Limitations and future browser support
 

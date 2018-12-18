@@ -5,7 +5,7 @@ const login = {
   password: 'password'
 }
 
-const loraServerLogin = {
+const loraLogin = {
   username: 'admin',
   password: 'admin'
 }
@@ -40,7 +40,7 @@ const createTtnNetwork = {
 
 module.exports = {
   login,
-  loraServerLogin,
+  loraLogin,
   ttnLogin,
   createLoraNetworkV1,
   createLoraNetworkV2,
