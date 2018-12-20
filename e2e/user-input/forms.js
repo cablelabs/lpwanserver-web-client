@@ -74,10 +74,30 @@ const createTtnNetwork = [
   }
 ]
 
+const createApplication = [
+  {
+    selector: '#name',
+    property: 'name'
+  },
+  {
+    selector: '#description',
+    property: 'description'
+  },
+  {
+    selector: '#baseUrl',
+    property: 'baseUrl'
+  },
+  {
+    selector: '#reportingProtocolId',
+    property: 'reportingProtocolId'
+  }
+]
+
 module.exports = {
   login,
   loraLogin,
   ttnLogin,
   createLoraNetwork,
-  createTtnNetwork
+  createTtnNetwork,
+  createApplication
 }

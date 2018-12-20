@@ -25,7 +25,7 @@ describe('Setup Networks', () => {
   afterAll(() => ctx.driver.quit())
   
   test('System administrator can login', () =>
-    partials.lpwanserver.login({ form: forms.login, input: input.login })(ctx)
+    partials.lpwanserver.login(input.login)(ctx)
   )
 
   describe('Setup LoRa 1.0 Network', () => {
@@ -37,14 +37,11 @@ describe('Setup Networks', () => {
       })(ctx)
     )
     test('View the Local LoraOS 1.0 Network', () =>
-      partials.lpwanserver.verifyNetworkCreated({
-        input: input.createLoraNetworkV1
-      })(ctx)
+      partials.lpwanserver.verifyNetworkCreated(input.createLoraNetworkV1)(ctx)
     )
-    test('Verify the application was created', () => S.seq(
-      S.tap(ctx => ctx.driver.get(ctx.url)),
-      S.click(`[data-is="application"][data-name="BobMouseTrapLv1"] > td:first-child > a`)
-    )(ctx))
+    test('Verify the application was created', () =>
+      partials.lpwanserver.goToApplication('BobMouseTrapLv1')(ctx)
+    )
     test('Verify the device and device profile were created', () => S.seq(
       S.click(`[data-is="device"][data-name="BobMouseTrapDeviceLv1"] > td:first-child > a`),
       S.getElement(By.xpath('//*[contains(text(), "BobMouseTrapDeviceProfileLv1")]'))
@@ -63,9 +60,7 @@ describe('Setup Networks', () => {
       })(ctx)
     )
     test('View the Local LoraOS 1.0 Network', () =>
-      partials.lpwanserver.verifyNetworkCreated({
-        input: input.createLoraNetworkV2
-      })(ctx)
+      partials.lpwanserver.verifyNetworkCreated(input.createLoraNetworkV2)(ctx)
     )
     test('Verify the application was created', () => S.seq(
       S.tap(ctx => ctx.driver.get(ctx.url)),

@@ -38,11 +38,19 @@ const createTtnNetwork = {
   clientSecret: config.TTN_CLIENT_SECRET
 }
 
+const application1 = {
+  name: 'CATA',
+  description: 'CATA Description',
+  reportingProtocolId: 1,
+  baseUrl: 'http://localhost:5086'
+}
+
 module.exports = {
   login,
   loraLogin,
   ttnLogin,
   createLoraNetworkV1,
   createLoraNetworkV2,
-  createTtnNetwork
+  createTtnNetwork,
+  application1
 }
