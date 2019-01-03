@@ -61,23 +61,60 @@
     return ctx
   }
 
-  const fillForm = curry(async function fillForm (fields, data, ctx) {
+  async function fillField (element, value) {
+    let tag = await element.getTagName()
+    if (tag === 'select') {
+      element = await element.findElement(By.css(`option[value="${value}"]`))
+      return element.click()
+    }
+    let type = await element.getAttribute('type')
+    if (type === 'checkbox') {
+      if (value) await element.click()
+      return
+    }
+    await element.clear()
+    return element.sendKeys(value)
+  }
+
+  const fillForm = (fields, data) => async function fillForm (ctx) {
     for (let i = 0; i < fields.length; i++) {
-      let { selector, property, type } = fields[i]
-      if (selector.includes('{{value}}')) {
-        selector = selector.replace('{{value}}', data[property])
+      let { selector, property, name, id } = fields[i]
+      if (name) {
+        selector = `[name="${name}"]`
+        property = name
+      } else if (id) {
+        selector = `#${id}`
+        property = id
       }
       let { element } = await getElement(selector, ctx)
-      switch ((type || '').toLowerCase()) {
-        case 'select':
-          await element.click()
-          break
-        default:
-          await element.sendKeys(data[property])
-      }
+      await fillField(element, data[property])
     }
     return
-  })
+  }
+
+  const getFormValues = (fields, prop = 'values') => async function getFormValues (ctx) {
+    const values = {}
+    for (let i = 0; i < fields.length; i++) {
+      let { selector, property, name, id } = fields[i]
+      if (name) {
+        selector = `[name="${name}"]`
+        property = name
+      } else if (id) {
+        selector = `#${id}`
+        property = id
+      }
+      let { element } = await getElement(selector, ctx)
+      let type = await element.getAttribute('type')
+      switch (type) {
+        case 'checkbox':
+          values[property] = (await element.getAttribute('checked')) === 'true'
+          break
+        default:
+          values[property] = await element.getAttribute('value')
+      }
+    }
+    return { [prop]: values }
+  }
 
   module.exports = {
     seq,
@@ -87,5 +124,6 @@
     getText,
     sendKeys,
     click,
-    fillForm
+    fillForm,
+    getFormValues
   }

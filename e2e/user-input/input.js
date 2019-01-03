@@ -15,7 +15,7 @@ const ttnLogin = {
   password: config.TTN_PASSWORD
 }
 
-const createLoraNetworkV1 = {
+const loraNetwork1 = {
   networkProtocolVersion: '1.0',
   name: 'My LoRa V1',
   baseUrl: 'https://lora_appserver1:8080/api',
@@ -23,7 +23,7 @@ const createLoraNetworkV1 = {
   password: 'admin'
 }
 
-const createLoraNetworkV2 = {
+const loraNetwork2 = {
   networkProtocolVersion: '2.0',
   name: 'My LoRa V2',
   baseUrl: 'https://lora_appserver:8080/api',
@@ -31,26 +31,46 @@ const createLoraNetworkV2 = {
   password: 'admin'
 }
 
-const createTtnNetwork = {
+const ttnNetwork = {
   name: 'My TTN',
   baseUrl: 'https://account.thethingsnetwork.org',
   clientId: config.TTN_CLIENT_ID,
   clientSecret: config.TTN_CLIENT_SECRET
 }
 
-const application1 = {
+const lora1App = {
+  name: 'BobMouseTrapLv1',
+  deviceName: 'BobMouseTrapDeviceLv1',
+  deviceProfileName: 'BobMouseTrapDeviceProfileLv1'
+}
+
+const lora2App = {
+  name: 'BobMouseTrapLv2',
+  deviceName: 'BobMouseTrapDeviceLv2',
+  deviceProfileName: 'BobMouseTrapDeviceProfileLv2'
+}
+
+const app1 = {
   name: 'CATA',
   description: 'CATA Description',
   reportingProtocolId: 1,
-  baseUrl: 'http://localhost:5086'
+  baseUrl: 'http://localhost:5086',
+  LoRa: true
+}
+
+const app1Update = {
+  description: `${app1.description} - updated`
 }
 
 module.exports = {
   login,
   loraLogin,
   ttnLogin,
-  createLoraNetworkV1,
-  createLoraNetworkV2,
-  createTtnNetwork,
-  application1
+  loraNetwork1,
+  loraNetwork2,
+  ttnNetwork,
+  lora1App,
+  lora2App,
+  app1,
+  app1Update
 }

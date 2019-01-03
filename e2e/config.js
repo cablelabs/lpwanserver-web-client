@@ -17,6 +17,7 @@ const CONFIG_DEFAULTS = {
   TTN_USERNAME: null,
   TTN_PASSWORD: null,
   TTN_ENABLED: null,
+  HEADLESS: true,
   SIZE: { width: 1280, height: 1024 }
 }
 

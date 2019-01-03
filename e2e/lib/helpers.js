@@ -1,4 +1,4 @@
-const { Builder } = require('selenium-webdriver')
+const webdriver = require('selenium-webdriver')
 const axios = require('axios')
 
 function getUrl (service, config) {
@@ -9,7 +9,12 @@ function getUrl (service, config) {
 }
 
 async function setupDriver (config) {
-  let driver = await new Builder().forBrowser(config.BROWSER)
+  let driver = await new webdriver.Builder().forBrowser(config.BROWSER)
+  if (config.BROWSER === 'chrome' && config.HEADLESS) {
+    const chromeCapabilities = webdriver.Capabilities.chrome()
+    chromeCapabilities.set('chromeOptions', {args: ['--headless']})
+    driver = driver.withCapabilities(chromeCapabilities)
+  }
   if (config.HUB_HOST) {
     driver = driver.usingServer(`http://${config.HUB_HOST}:${config.HUB_PORT}/wd/hub`)
   }
