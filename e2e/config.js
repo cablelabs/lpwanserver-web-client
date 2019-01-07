@@ -17,7 +17,7 @@ const CONFIG_DEFAULTS = {
   TTN_USERNAME: null,
   TTN_PASSWORD: null,
   TTN_ENABLED: null,
-  HEADLESS: true,
+  HEADLESS: 'true',
   SIZE: { width: 1280, height: 1024 }
 }
 
@@ -27,6 +27,8 @@ const config = merge(
 )
 
 config.TTN_ENABLED = (/true/i).test(config.TTN_ENABLED || '')
-console.info('TTN_ENABLED', config.TTN_ENABLED)
+config.HEADLESS = (/true/i).test(config.HEADLESS || '')
+
+console.log('TTN_ENABLED', config.TTN_ENABLED)
 
 module.exports = config

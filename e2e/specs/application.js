@@ -4,9 +4,9 @@ const input = require('../user-input/input')
 const S = require('../lib/selenium-fp')
 const R = require('ramda')
 
-const goToApp = name => S.seq(
+const goToApp = app => S.seq(
   S.tap(ctx => ctx.driver.get(ctx.url)),
-  S.click(`[data-is="application"][data-name="${name}"] > td:first-child > a`)
+  S.click(`[data-is="application"][data-name="${app.name}"] > td:first-child > a`)
 )
 
 const goToDevice = name => S.click(`[data-is="device"][data-name="${name}"] > td:first-child > a`)
@@ -30,27 +30,26 @@ const verifyAppDetails = app => S.seq(
   S.tap(ctx => expect(ctx.values).toEqual(app))
 )
 
-const updateApp = (app, update) => {
-  const keys = Object.keys(update)
-  const fields = forms.app.filter(x => keys.includes(x.id) || keys.includes(x.name))
+const updateApp = (app) => {
   return S.seq(
-    S.fillForm(fields, update),
-    S.click('button[type="submit"]'),
-    S.sleep(1000)
+    goToApp(app),
+    S.click('[href="#application"]'),
+    S.fillForm(forms.app, app),
+    S.click('button[type="submit"]')
   )
 }
 
-const verifyAppUpdate = (app, update) => S.seq(
-  goToApp(app.name),
-  verifyAppDetails(R.merge(app, update))
+const verifyAppUpdate = (app) => S.seq(
+  goToApp(app),
+  verifyAppDetails(app)
 )
 
 const app1 = {
   create: createApp(input.app1),
-  goTo: goToApp(input.app1.name),
+  goTo: goToApp(input.app1),
   verifyDetails: verifyAppDetails(input.app1),
-  update: updateApp(input.app1, input.app1Update),
-  verifyUpdate: verifyAppUpdate(input.app1, input.app1Update)
+  update: updateApp(input.app1Updated),
+  verifyUpdate: verifyAppUpdate(input.app1Updated)
 }
 
 module.exports = {

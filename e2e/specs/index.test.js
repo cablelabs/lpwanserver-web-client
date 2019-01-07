@@ -2,6 +2,7 @@ const config = require('../config')
 const { getUrl, setupDriver } = require('../lib/helpers')
 const S = require('../lib/selenium-fp')
 const R = require('ramda')
+const input = require('../user-input/input')
 const User = require('./user')
 const Network = require('./network')
 const App = require('./application')
@@ -40,7 +41,7 @@ describe('LPWAN Server Web Client Integration Tests', () => {
       return () => {
         test('Create the Local Network', () => network.create(ctx))
         test('View the Local Network', () => network.verify(ctx))
-        test('Verify the application was pulled', () => App.goToApp(network.app.name)(ctx))
+        test('Verify the application was pulled', () => App.goToApp(network.app)(ctx))
         test('Verify device was pulled', () => App.goToDevice(network.app.deviceName)(ctx))
         test('Verify device profile was pulled', () => App.findDeviceProfile(network.app.deviceProfileName)(ctx))
         test('Verify device is enabled', () => S.getElement('[data-enabled="true"]')(ctx))
@@ -67,9 +68,19 @@ describe('LPWAN Server Web Client Integration Tests', () => {
       test('Verify application details', () => App.app1.verifyDetails(ctx))
     })
 
+    describe('Verify app was pushed', () => {
+      test('Verify app is on LoRa Server', () => Lora.goToApp(input.app1)(loraCtx))
+      test('Verify app is on LoRa Server V1', () => Lora.goToApp(input.app1)(lora1Ctx))
+    })
+
     describe('Update application', () => {
       test('Update application description', () => App.app1.update(ctx))
       test('Verify application updated', () => App.app1.verifyUpdate(ctx))
+    })
+
+    describe.skip('Verify app update was pushed', () => {
+      test('Verify app is on LoRa Server', () => Lora.verifyAppDescription(input.app1Updated)(loraCtx))
+      test('Verify app is on LoRa Server V1', () => Lora.verifyAppDescription(input.app1Updated)(lora1Ctx))
     })
   })
 })

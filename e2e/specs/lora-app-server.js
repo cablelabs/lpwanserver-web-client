@@ -11,25 +11,37 @@ const login = S.seq(
   S.sleep(1000)
 )
 
-const goToOrg = S.seq(
+const selectOrg = S.seq(
   S.click('.Select'),
   S.click(By.xpath('//*[contains(text(), "cablelabs")]')),
 )
-const goToAppListing = S.click(By.xpath('//a[contains(text(), "Applications")]'))
-const goToApp = name => S.click(By.xpath(`//*[contains(text(), "${name}")]`))
+const clickApplications = S.click(By.xpath('//a[contains(text(), "Applications")]'))
+const clickAppName = name => S.click(By.xpath(`//*[contains(text(), "${name}")]`))
 const findDevice = name => S.getElement(By.xpath(`//*[contains(text(), "${name}")]`))
+const findDescription = desc => S.getElement(By.xpath(`//*[contains(text(), "${desc}")]`))
+
+const goToApp = app => S.seq(
+  S.tap(ctx => ctx.driver.get(ctx.url)),
+  selectOrg,
+  clickAppName(app.name),
+)
 
 const verifyNetworkSync = S.seq(
-  S.tap(ctx => ctx.driver.get(ctx.url)),
-  goToOrg,
-  goToApp(input.lora1App.name),
+  goToApp(input.lora1App),
   findDevice(input.lora1App.deviceName),
-  goToAppListing,
-  goToApp(input.lora2App.name),
+  clickApplications,
+  clickAppName(input.lora2App.name),
   findDevice(input.lora2App.deviceName)
+)
+
+const verifyAppDescription = app => S.seq(
+  goToApp(app),
+  findDescription(app.description)
 )
 
 module.exports = {
   login,
-  verifyNetworkSync
+  verifyNetworkSync,
+  goToApp,
+  verifyAppDescription
 }

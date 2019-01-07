@@ -1,4 +1,5 @@
 const config = require('../config')
+const R = require('ramda')
 
 const login = {
   username: 'admin',
@@ -58,9 +59,9 @@ const app1 = {
   LoRa: true
 }
 
-const app1Update = {
+const app1Updated = R.merge(app1, {
   description: `${app1.description} - updated`
-}
+})
 
 module.exports = {
   login,
@@ -72,5 +73,5 @@ module.exports = {
   lora1App,
   lora2App,
   app1,
-  app1Update
+  app1Updated
 }
