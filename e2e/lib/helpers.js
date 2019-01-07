@@ -1,5 +1,7 @@
 const webdriver = require('selenium-webdriver')
 const axios = require('axios')
+const firefox = require('selenium-webdriver/firefox')
+const chrome = require('selenium-webdriver/chrome')
 
 function getUrl (service, config) {
   const protocol = config[`${service}_PROTOCOL`] || 'http'
@@ -9,19 +11,30 @@ function getUrl (service, config) {
 }
 
 async function setupDriver (config) {
-  let driver = await new webdriver.Builder().forBrowser(config.BROWSER)
-  if (config.BROWSER === 'chrome' && config.HEADLESS) {
-    const chromeCapabilities = webdriver.Capabilities.chrome()
-    chromeCapabilities.set('chromeOptions', {args: ['--headless']})
-    driver = driver.withCapabilities(chromeCapabilities)
-  }
+  let driver = await new webdriver.Builder().forBrowser(config.SELENIUM_BROWSER)
   if (config.HUB_HOST) {
     driver = driver.usingServer(`http://${config.HUB_HOST}:${config.HUB_PORT}/wd/hub`)
   }
+  const chromeCapabilities = webdriver.Capabilities.chrome()
+  const ffCapabilities = webdriver.Capabilities.firefox()
+  const chromeOptions = new chrome.Options()
+  const ffOptions = new firefox.Options()
+  // Accept self-signed certs for LoRa app servers
+  ffCapabilities.set('acceptInsecureCerts', true)
+  // Run in headless mode
+  if (config.HEADLESS) {
+    // chromeCapabilities.set('chromeOptions', { args: ['--headless'] })
+    chromeOptions.addArguments('--headless')
+    ffOptions.addArguments('-headless')
+  }
+  driver = driver
+    .withCapabilities(chromeCapabilities)
+    .withCapabilities(ffCapabilities)
+    .setChromeOptions(chromeOptions)
+    .setFirefoxOptions(ffOptions)
   driver = driver.build()
-  const size = Object.assign({ width: 1280, height: 1024 }, config.size)
   await driver.manage().window().setPosition(0, 0)
-  await driver.manage().window().setSize(size.width, size.height)
+  await driver.manage().window().setSize(config.SIZE.width, config.SIZE.height)
   return driver
 }
 

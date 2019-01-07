@@ -69,7 +69,8 @@
     }
     let type = await element.getAttribute('type')
     if (type === 'checkbox') {
-      if (value) await element.click()
+      let checked = (await element.getAttribute('checked')) === 'true'
+      if ((checked && !value) || (!checked && value)) await element.click()
       return
     }
     await element.clear()
