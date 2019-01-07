@@ -1,7 +1,7 @@
 const { pick, merge, keys } = require('ramda')
 
 const CONFIG_DEFAULTS = {
-  BROWSER: 'chrome',
+  SELENIUM_BROWSER: 'chrome',
   WEB_CLIENT_HOST: 'localhost',
   WEB_CLIENT_PORT: '3000',
   HUB_HOST: null,
@@ -17,6 +17,7 @@ const CONFIG_DEFAULTS = {
   TTN_USERNAME: null,
   TTN_PASSWORD: null,
   TTN_ENABLED: null,
+  HEADLESS: 'false',
   SIZE: { width: 1280, height: 1024 }
 }
 
@@ -25,7 +26,10 @@ const config = merge(
   pick(keys(CONFIG_DEFAULTS), process.env)
 )
 
+
 config.TTN_ENABLED = (/true/i).test(config.TTN_ENABLED || '')
-console.info('TTN_ENABLED', config.TTN_ENABLED)
+config.HEADLESS = (/true/i).test(config.HEADLESS || '')
+
+console.log('TTN_ENABLED', config.TTN_ENABLED)
 
 module.exports = config

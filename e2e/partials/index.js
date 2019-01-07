@@ -1,1 +1,0 @@
-module.exports.lpwanserver = require('./lpwanserver')

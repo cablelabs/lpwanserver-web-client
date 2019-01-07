@@ -6,24 +6,26 @@ services:
     ports:
       - 4444:4444
 
-  selenium_chrome:
-    image: selenium/node-chrome-debug:latest
+  browser:
+    image: selenium/node-firefox-debug:latest
     depends_on:
       - selenium_hub
     environment:
       - HUB_HOST=localhost
       - HUB_PORT=4444
+      - START_XVFB=false
     network_mode: host
     ports:
       - 5900:5900
 
-  browser_test_chrome:
+  browser_test:
     image: lpwanserver/browser-test
     depends_on:
       - selenium_hub
-      - selenium_chrome
+      - browser
     environment:
-      - BROWSER=chrome
+      - SELENIUM_BROWSER=firefox
+      - HEADLESS=true
       - HUB_HOST=selenium_hub
       - HUB_PORT=4444
       - WEB_CLIENT_HOST=localhost

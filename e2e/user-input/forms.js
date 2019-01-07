@@ -10,74 +10,43 @@ const login = [
 ]
 
 const loraLogin = [
-  {
-    selector: '#username',
-    property: 'username'
-  },
-  {
-    selector: '#password',
-    property: 'password'
-  }
+  { id: 'username' },
+  { id: 'password' }
 ]
 
 const ttnLogin = [
-  {
-    selector: '[name="username"]',
-    property: 'username'
-  },
-  {
-    selector: '[name="password"]',
-    property: 'password'
-  }
+  { name: 'username' },
+  { name: 'password' }
 ]
 
-const createLoraNetwork = [
-  {
-    selector: '#networkProtocolVersion>option[value="{{value}}"]',
-    type: 'select',
-    property: 'networkProtocolVersion'
-  },
-  {
-    selector: '[name="name"]',
-    property: 'name'
-  },
-  {
-    selector: '[name="baseUrl"]',
-    property: 'baseUrl'
-  },
-  {
-    selector: '[name="username"]',
-    property: 'username'
-  },
-  {
-    selector: '[name="password"]',
-    property: 'password'
-  }
+const loraNetwork = [
+  { id: 'networkProtocolVersion' },
+  { name: 'name' },
+  { name: 'baseUrl' },
+  { name: 'username' },
+  { name: 'password' }
 ]
 
-const createTtnNetwork = [
-  {
-    selector: '[name="name"]',
-    property: 'name'
-  },
-  {
-    selector: '[name="baseUrl"]',
-    property: 'baseUrl'
-  },
-  {
-    selector: '[name="clientId"]',
-    property: 'clientId'
-  },
-  {
-    selector: '[name="clientSecret"]',
-    property: 'clientSecret'
-  }
+const ttnNetwork = [
+  { name: 'name' },
+  { name: 'baseUrl' },
+  { name: 'clientId' },
+  { name: 'clientSecret' }
+]
+
+const app = [
+  { id: 'name' },
+  { id: 'description' },
+  { id: 'baseUrl' },
+  { id: 'reportingProtocolId' },
+  { name: 'LoRa' }
 ]
 
 module.exports = {
   login,
   loraLogin,
   ttnLogin,
-  createLoraNetwork,
-  createTtnNetwork
+  loraNetwork,
+  ttnNetwork,
+  app
 }

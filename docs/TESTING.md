@@ -55,7 +55,10 @@ expot TTN_PASSWORD=GET_FROM_OTHER_DEVELOPER
 ## Debugging in Selenium Grid
 
 The docker-compose is using the "debug" version of the selenium browser images, which means
-that you can use a VNC to watch the browser.
+that you can use a VNC to watch the browser.  The docker-compose for the e2e tests is configured
+to run the tests headlessly, so that they finish faster in continuous integration.
+To change the headless setting, set the environement variable HEADLESS=false.  Also set START_XVFB=true,
+so that you can use the VNC to view the remotely running tests.
 
 ### Setup the VNC
 
@@ -73,7 +76,7 @@ tab, but it may help when setting up the VNC.
 
 ## Writing Tests
 
-Install `chromedriver`
+Install `chromedriver` or `geckodriver`, depeding on which browser you are using for development.
 
 ```
 $ npm install --no-save chromedriver
@@ -91,7 +94,7 @@ so as not to have to use a VNC and package the docker images with each change.
 ## Limitations and future browser support
 
 The e2e tests are setup with selenium grid, which supports running tests in parallel and multiple
-browsers/machines; however, only chrome is supported currently.  These are the limitations that
+browsers/machines; however, only one browser at a time is currently supported.  These are the limitations that
 need addressed in the future.
 
 1.  **Data** - Each browser needs it's own instances of lpwanserver and lora servers, because tests
@@ -105,8 +108,5 @@ tests, so until TTN is running locally, it's best just to stick with Chrome.
 URI needs to target the specific browser, unless the tests are run sequentially, or each browser is tested
 in a new machine with docker swarm.
 
-3.  **Firefox HTTPS warning** - The selenium-webdriver connection code in `e2e/lib/helpers.js` needs to
-configure Firefox so that it doesn't fail on the `https://localhost` warning when accessing the LoRa app servers.
-
 Note: `e2e.js` uses a BROWSER_TOTAL global that will need to be updated or made configurable
-when more browsers are used in testing.  Currently it is set to 1 (chrome).
+when more browsers are used in testing.  Currently it is set to 1.
