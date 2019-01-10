@@ -20,9 +20,9 @@ class NetworkSpecificUI extends Component {
     // Using "if" now because it's the on case, may change to "switch" if it
     // gets more complex.
     let selectionType = "checkbox";
-    if ( "DeviceProfile" === props.dataName ) {
-        selectionType = "radio";
-    }
+    // if ( "DeviceProfile" === props.dataName ) {
+    //     selectionType = "radio";
+    // }
 
     //props.dataName - "Company", "Application", "DeviceProfile", "Device"
     //props.referenceDataId - id of associated data
