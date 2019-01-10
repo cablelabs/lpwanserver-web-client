@@ -42,55 +42,56 @@ describe('LPWAN Server Web Client Integration Tests', () => {
         test('Create the Local Network', () => network.create(ctx))
         test('View the Local Network', () => network.verify(ctx))
         test('Verify the application was pulled', () => App.goToApp(network.app)(ctx))
-        test('Verify device was pulled', () => App.goToDevice(network.device.name)(ctx))
+        test('Verify device was pulled', () => App.clickDevice(network.device.name)(ctx))
         test('Verify device profile was pulled', () => App.findDeviceProfile(network.deviceProfile.name)(ctx))
         test('Verify device is enabled', () => S.getElement('[data-enabled="true"]')(ctx))
       }
     }
 
-    describe.skip('Setup LoRa 1.0 Network', setupNetwork(Network.lora1))
-    describe.skip('Setup LoRa 2.0 Network', setupNetwork(Network.lora2))
+    describe('Setup LoRa 1.0 Network', setupNetwork(Network.lora1))
+    describe('Setup LoRa 2.0 Network', setupNetwork(Network.lora2))
     
     describeTtn('Setup TTN Network', () => {
       test('Create the Local Network', () => Network.ttn.create(ctx))
       test('View the Local Network', () => Network.ttn.verify(ctx))
     })
 
-    describe.skip('Verify apps and devices synced', () => {
+    describe('Verify apps and devices synced', () => {
       test('Verify apps and devices on LoRa Server', () => Lora.verifyNetworkSync(loraCtx))
       test('Verify apps and devices on LoRa Server V1', () => Lora.verifyNetworkSync(lora1Ctx))
     })
 
-    describe.skip('Create application', () => {
+    describe('Create application', () => {
       beforeAll(() => ctx.driver.get(ctx.url))
       test('Submit application form', () => App.app1.create(ctx))
       test('Verify the application was created', () => App.app1.goTo(ctx))
       test('Verify application details', () => App.app1.verifyDetails(ctx))
-    })
-
-    describe.skip('Verify app was pushed', () => {
       test('Verify app is on LoRa Server', () => Lora.goToApp(input.app1)(loraCtx))
       test('Verify app is on LoRa Server V1', () => Lora.goToApp(input.app1)(lora1Ctx))
     })
 
-    describe.skip('Update application', () => {
+    describe('Update application', () => {
       test('Update application description', () => App.app1.update(ctx))
       test('Verify application updated', () => App.app1.verifyUpdate(ctx))
+      test.skip('Verify app is on LoRa Server', () => Lora.verifyAppDescription(input.app1Updated)(loraCtx))
+      test.skip('Verify app is on LoRa Server V1', () => Lora.verifyAppDescription(input.app1Updated)(lora1Ctx))
     })
 
-    describe.skip('Verify app update was pushed', () => {
-      test('Verify app is on LoRa Server', () => Lora.verifyAppDescription(input.app1Updated)(loraCtx))
-      test('Verify app is on LoRa Server V1', () => Lora.verifyAppDescription(input.app1Updated)(lora1Ctx))
+    describe('Create a device profile', () => {
+      test('Create device profile', () => App.createDeviceProfile(input.deviceProfile1)(ctx))
+      test('View device profile', () => App.goToDeviceProfile(input.deviceProfile1)(ctx))
     })
 
     describe('Add a device to an app pulled from LoRa', () => {
-      test('Create device profile', () => S.seq(App.createDeviceProfile(input.lora2DeviceProfile2))(ctx))
-      // test('Create device')
+      test('Create device', () => App.createDevice(input.lora2App1, input.lora2App1Device2)(ctx))
+      test('View device', () => App.goToDevice(input.lora2App1, input.lora2App1Device2)(ctx))
+      test('Verify device is on LoRa Server', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2)(loraCtx))
+      test('Verify device is on LoRa Server V1', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2)(lora1Ctx))
     })
 
-    // describe('Add a device to an app created on LPWAN Server', () => {
-
-    // })
+    describe.skip('Add a device to an app created on LPWAN Server', () => {
+      test('Create device', () => S.seq(App.createDevice(input.app1, input.app1Device1))(ctx))
+    })
 
     // describe('Update a device on an app pulled from LoRa', () => {
       

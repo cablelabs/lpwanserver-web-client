@@ -9,8 +9,8 @@ const goToApp = app => S.seq(
   S.click(`[data-is="application"][data-name="${app.name}"] > td:first-child > a`)
 )
 
-const goToDevice = name => S.click(`[data-is="device"][data-name="${name}"] > td:first-child > a`)
-
+const clickDevice = name => S.click(`[data-is="device"][data-name="${name}"] > td:first-child > a`)
+const clickDeviceProfile = name => S.click(`[data-is="device-profile"][data-name="${name}"] > td:first-child > a`)
 const findDeviceProfile = name => S.getElement(By.xpath(`//*[contains(text(), "${name}")]`))
 
 const createApp = app => S.seq(
@@ -50,7 +50,34 @@ const createDeviceProfile = deviceProfile => S.seq(
   S.click('[href="/create/deviceProfile"]'),
   S.fillForm(forms.deviceProfile, deviceProfile),
   S.click('button[type="submit"]'),
-  S.sleep(3000)
+  S.sleep(1000)
+)
+
+const createDevice = (app, device) => S.seq(
+  goToApp(app),
+  S.click(By.xpath(`//button[contains(text(), "Create Device")]`)),
+  S.fillForm(forms.device, device),
+  async ctx => {
+    const generatorSelector = By.xpath(`//button[contains(text(), "generate")]`)
+    const generators = await ctx.driver.findElements(generatorSelector)
+    for (let i = 0; i < generators.length; i++) {
+      await generators[i].click()
+      await ctx.driver.sleep(1000)
+    }
+  },
+  S.click('button[type="submit"]'),
+  S.sleep(1000)
+)
+
+const goToDeviceProfile = dp => S.seq(
+  S.tap(ctx => ctx.driver.get(ctx.url)),
+  S.click('[href="#deviceProfiles"]'),
+  clickDeviceProfile(dp.name)
+)
+
+const goToDevice = (app, device) => S.seq(
+  goToApp(app),
+  clickDevice(device.name)
 )
 
 const app1 = {
@@ -63,8 +90,11 @@ const app1 = {
 
 module.exports = {
   goToApp,
-  goToDevice,
+  clickDevice,
   findDeviceProfile,
   app1,
-  createDeviceProfile
+  createDeviceProfile,
+  createDevice,
+  goToDeviceProfile,
+  goToDevice
 }

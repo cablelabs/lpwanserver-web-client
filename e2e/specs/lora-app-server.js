@@ -26,9 +26,13 @@ const goToApp = app => S.seq(
   clickAppName(app.name),
 )
 
+const goToDevice = (app, device) => S.seq(
+  goToApp(app),
+  findDevice(device),
+)
+
 const verifyNetworkSync = S.seq(
-  goToApp(input.lora1App1),
-  findDevice(input.lora1App1Device1.name),
+  goToDevice(input.lora1App1, input.lora1App1Device1.name),
   clickApplications,
   clickAppName(input.lora2App1.name),
   findDevice(input.lora2App1Device1.name)
@@ -43,5 +47,6 @@ module.exports = {
   login,
   verifyNetworkSync,
   goToApp,
+  goToDevice,
   verifyAppDescription
 }

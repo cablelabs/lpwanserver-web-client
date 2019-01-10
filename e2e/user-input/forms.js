@@ -1,8 +1,7 @@
 const S = require('../lib/selenium-fp')
 
 const clickReactSelectOption = selector => (_, value, ctx) => S.seq(
-  S.getElement(`${selector} .Select-input input`),
-  S.tap(ctx => ctx.element.set('value', value)),
+  S.sendKeys(`${selector} .Select-input input`, value),
   S.click('.Select-option')
 )(ctx)
 
@@ -70,7 +69,8 @@ const device = [
   { id: 'name' },
   { id: 'description' },
   { id: 'deviceModel' },
-  { name: 'LoRa' }
+  { name: 'LoRa' },
+  { id: 'deviceProfileId' },
 ]
 
 module.exports = {

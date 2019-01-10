@@ -64,7 +64,11 @@
   async function fillField (element, value) {
     let tag = await element.getTagName()
     if (tag === 'select') {
-      element = await element.findElement(By.css(`option[value="${value}"]`))
+      try {
+        element = await element.findElement(By.css(`option[value="${value}"]`))
+      } catch (err) {
+        element = await element.findElement(By.xpath(`//option[contains(text(), "${value}")]`))
+      }
       return element.click()
     }
     let type = await element.getAttribute('type')

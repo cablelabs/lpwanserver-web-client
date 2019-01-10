@@ -68,7 +68,7 @@ class DeviceProfileRow extends Component {
 
   render() {
     return (
-      <tr>
+      <tr data-is="device-profile" data-name={this.props.deviceProfile.name}>
         <td><Link to={`/deviceProfile/${this.props.deviceProfile.id}`}>{this.props.deviceProfile.name}</Link></td>
       </tr>
     );
@@ -255,7 +255,7 @@ class ListApplications extends Component {
     const DeviceProfileRows = this.state.deviceProfiles.map((dp, i) =>
         <DeviceProfileRow key={dp.id}
                           deviceProfile={dp}
-                          isGlobalAdmin={this.state.isGlobalAdmin} />);
+                          isGlobalAdmin={this.state.isGlobalAdmin} /> );
 
     return (
       <div>

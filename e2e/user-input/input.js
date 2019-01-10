@@ -63,6 +63,14 @@ const lora2DeviceProfile1 = {
   name: 'BobMouseTrapDeviceProfileLv2'
 }
 
+const lora2App1Device2 = {
+  name: 'Lv2BobMouseTrapDevice2',
+  description: 'Lv2BobMouseTrapDevice2 description',
+  deviceModel: 'Release 1',
+  LoRa: true,
+  deviceProfileId: lora2DeviceProfile1.name // name used to click the select option to get id
+}
+
 const app1 = {
   name: 'CATA',
   description: 'CATA Description',
@@ -75,16 +83,20 @@ const app1Updated = R.merge(app1, {
   description: `${app1.description} - updated`
 })
 
-const lora2App1Device2 = {
-  name: 'Lv2BobMouseTrapDevice2'
-}
-
-const lora2DeviceProfile2 = {
-  name: 'Lv2BobMouseTrapDeviceProfile2',
-  description: 'Lv2BobMouseTrapDeviceProfile2 description',
+const deviceProfile1 = {
+  name: 'Roach Zapper',
+  description: 'Zap m dead.',
   LoRa: true,
   'networkSettings.macVersion': '1.0.0',
   'networkSettings.regParamsRevision': 'A'
+}
+
+const app1Device1 = {
+  name: 'Roach Zap 2000',
+  description: 'Zaps m from all directions',
+  deviceModel: 'Release 1',
+  LoRa: true,
+  deviceProfileId: deviceProfile1.name // name used to click the select option to get id
 }
 
 module.exports = {
@@ -100,8 +112,10 @@ module.exports = {
   lora2App1,
   lora2App1Device1,
   lora2DeviceProfile1,
+  lora2App1Device2,
   app1,
   app1Updated,
-  lora2App1Device2,
-  lora2DeviceProfile2
+  app1Device1,
+  deviceProfile1,
+  app1Device1
 }
