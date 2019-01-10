@@ -42,38 +42,38 @@ describe('LPWAN Server Web Client Integration Tests', () => {
         test('Create the Local Network', () => network.create(ctx))
         test('View the Local Network', () => network.verify(ctx))
         test('Verify the application was pulled', () => App.goToApp(network.app)(ctx))
-        test('Verify device was pulled', () => App.goToDevice(network.app.deviceName)(ctx))
-        test('Verify device profile was pulled', () => App.findDeviceProfile(network.app.deviceProfileName)(ctx))
+        test('Verify device was pulled', () => App.goToDevice(network.device.name)(ctx))
+        test('Verify device profile was pulled', () => App.findDeviceProfile(network.deviceProfile.name)(ctx))
         test('Verify device is enabled', () => S.getElement('[data-enabled="true"]')(ctx))
       }
     }
 
-    describe('Setup LoRa 1.0 Network', setupNetwork(Network.lora1))
-    describe('Setup LoRa 2.0 Network', setupNetwork(Network.lora2))
+    describe.skip('Setup LoRa 1.0 Network', setupNetwork(Network.lora1))
+    describe.skip('Setup LoRa 2.0 Network', setupNetwork(Network.lora2))
     
     describeTtn('Setup TTN Network', () => {
       test('Create the Local Network', () => Network.ttn.create(ctx))
       test('View the Local Network', () => Network.ttn.verify(ctx))
     })
 
-    describe('Verify apps and devices synced', () => {
+    describe.skip('Verify apps and devices synced', () => {
       test('Verify apps and devices on LoRa Server', () => Lora.verifyNetworkSync(loraCtx))
       test('Verify apps and devices on LoRa Server V1', () => Lora.verifyNetworkSync(lora1Ctx))
     })
 
-    describe('Create application', () => {
+    describe.skip('Create application', () => {
       beforeAll(() => ctx.driver.get(ctx.url))
       test('Submit application form', () => App.app1.create(ctx))
       test('Verify the application was created', () => App.app1.goTo(ctx))
       test('Verify application details', () => App.app1.verifyDetails(ctx))
     })
 
-    describe('Verify app was pushed', () => {
+    describe.skip('Verify app was pushed', () => {
       test('Verify app is on LoRa Server', () => Lora.goToApp(input.app1)(loraCtx))
       test('Verify app is on LoRa Server V1', () => Lora.goToApp(input.app1)(lora1Ctx))
     })
 
-    describe('Update application', () => {
+    describe.skip('Update application', () => {
       test('Update application description', () => App.app1.update(ctx))
       test('Verify application updated', () => App.app1.verifyUpdate(ctx))
     })
@@ -82,6 +82,23 @@ describe('LPWAN Server Web Client Integration Tests', () => {
       test('Verify app is on LoRa Server', () => Lora.verifyAppDescription(input.app1Updated)(loraCtx))
       test('Verify app is on LoRa Server V1', () => Lora.verifyAppDescription(input.app1Updated)(lora1Ctx))
     })
+
+    describe('Add a device to an app pulled from LoRa', () => {
+      test('Create device profile', () => S.seq(App.createDeviceProfile(input.lora2DeviceProfile2))(ctx))
+      // test('Create device')
+    })
+
+    // describe('Add a device to an app created on LPWAN Server', () => {
+
+    // })
+
+    // describe('Update a device on an app pulled from LoRa', () => {
+      
+    // })
+
+    // describe('Update a device on an app created on LPWAN Server', () => {
+      
+    // })
   })
 })
 

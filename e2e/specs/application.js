@@ -44,6 +44,15 @@ const verifyAppUpdate = (app) => S.seq(
   verifyAppDetails(app)
 )
 
+const createDeviceProfile = deviceProfile => S.seq(
+  S.tap(ctx => ctx.driver.get(ctx.url)),
+  S.click('[href="#deviceProfiles"]'),
+  S.click('[href="/create/deviceProfile"]'),
+  S.fillForm(forms.deviceProfile, deviceProfile),
+  S.click('button[type="submit"]'),
+  S.sleep(3000)
+)
+
 const app1 = {
   create: createApp(input.app1),
   goTo: goToApp(input.app1),
@@ -56,5 +65,6 @@ module.exports = {
   goToApp,
   goToDevice,
   findDeviceProfile,
-  app1
+  app1,
+  createDeviceProfile
 }

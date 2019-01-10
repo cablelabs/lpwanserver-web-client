@@ -39,16 +39,28 @@ const ttnNetwork = {
   clientSecret: config.TTN_CLIENT_SECRET
 }
 
-const lora1App = {
-  name: 'BobMouseTrapLv1',
-  deviceName: 'BobMouseTrapDeviceLv1',
-  deviceProfileName: 'BobMouseTrapDeviceProfileLv1'
+const lora1App1 = {
+  name: 'BobMouseTrapLv1'
 }
 
-const lora2App = {
-  name: 'BobMouseTrapLv2',
-  deviceName: 'BobMouseTrapDeviceLv2',
-  deviceProfileName: 'BobMouseTrapDeviceProfileLv2'
+const lora1App1Device1 = {
+  name: 'BobMouseTrapDeviceLv1',
+}
+
+const lora1DeviceProfile1 = {
+  name: 'BobMouseTrapDeviceProfileLv1'
+}
+
+const lora2App1 = {
+  name: 'BobMouseTrapLv2'
+}
+
+const lora2App1Device1 = {
+  name: 'BobMouseTrapDeviceLv2',
+}
+
+const lora2DeviceProfile1 = {
+  name: 'BobMouseTrapDeviceProfileLv2'
 }
 
 const app1 = {
@@ -63,6 +75,18 @@ const app1Updated = R.merge(app1, {
   description: `${app1.description} - updated`
 })
 
+const lora2App1Device2 = {
+  name: 'Lv2BobMouseTrapDevice2'
+}
+
+const lora2DeviceProfile2 = {
+  name: 'Lv2BobMouseTrapDeviceProfile2',
+  description: 'Lv2BobMouseTrapDeviceProfile2 description',
+  LoRa: true,
+  'networkSettings.macVersion': '1.0.0',
+  'networkSettings.regParamsRevision': 'A'
+}
+
 module.exports = {
   login,
   loraLogin,
@@ -70,8 +94,14 @@ module.exports = {
   loraNetwork1,
   loraNetwork2,
   ttnNetwork,
-  lora1App,
-  lora2App,
+  lora1App1,
+  lora1App1Device1,
+  lora1DeviceProfile1,
+  lora2App1,
+  lora2App1Device1,
+  lora2DeviceProfile1,
   app1,
-  app1Updated
+  app1Updated,
+  lora2App1Device2,
+  lora2DeviceProfile2
 }

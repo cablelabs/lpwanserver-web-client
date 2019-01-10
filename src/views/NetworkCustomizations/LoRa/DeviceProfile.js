@@ -221,19 +221,19 @@ class LoRaDeviceProfileNetworkSettings extends Component {
                 </ul>
                 <hr />
                 <div className={(this.state.activeTab === "general" ? "" : "hidden")}>
-                    <div className="form-group">
-                        <label className="control-label" htmlFor="macVersion">LoRaWAN MAC version</label>
+                    <div className="form-group" data-name="networkSettings.macVersion">
+                        <label className="control-label">LoRaWAN MAC version</label>
                         <Select
-                            name="macVersion"
                             options={macVersionOptions}
                             value={this.state.value.macVersion}
                             onChange={this.onSelectChange.bind(this, 'macVersion')}
+
                         />
                         <p className="help-block">
                             Version of the LoRaWAN supported by the End-Device.
                         </p>
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" data-name="networkSettings.regParamsRevision">
                         <label className="control-label" htmlFor="macVersion">LoRaWAN Regional Parameters revision</label>
                         <Select
                             name="regParamsRevision"

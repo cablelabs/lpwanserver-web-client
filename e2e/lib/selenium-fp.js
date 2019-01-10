@@ -88,7 +88,8 @@
         property = id
       }
       let { element } = await getElement(selector, ctx)
-      await fillField(element, data[property])
+      const setValue = fields[i].fillField || fillField
+      await setValue(element, data[property], ctx)
     }
     return
   }
