@@ -159,7 +159,7 @@ class LoRaApplicationNetworkSettings extends Component {
     // Not an onSubmit for the framework, but called from the parent component
     // when the submit happens.  Do what need to be done for this networkType.
     onSubmit = async function( e ) {
-console.log( "Submitting: state = ", this.state );
+    console.log( "Submitting: state = ", this.state );
         var ret = this.props.parentRec.name + " is unchanged.";
 
         // If we aren't submitting custom code, get rid of the fields.
@@ -181,10 +181,10 @@ console.log( "Submitting: state = ", this.state );
                     ret = this.props.name + " is created.";
                 }
                 // ...and we had an old record with a data change: UPDATE
-                else if ( JSON.stringify( this.state.value ) !== this.state.original ) {
+                else {
                     console.log(this.props);
                     var updRec = {
-                        id: this.props.netRec.id,
+                        id: this.state.rec.id,
                         networkSettings: this.state.value
                     };
                     await applicationStore.updateApplicationNetworkType( updRec );

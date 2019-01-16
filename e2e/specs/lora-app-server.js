@@ -39,7 +39,7 @@ const verifyNetworkSync = S.seq(
 )
 
 const verifyAppDescription = app => S.seq(
-  goToApp(app),
+  S.tap(ctx => ctx.driver.get(ctx.url)),
   findDescription(app.description)
 )
 
