@@ -72,7 +72,7 @@ describe('LPWAN Server Web Client Integration Tests', () => {
 
     // Remove skip after bug fix
     // Bug:  UI not PUTing applicationNetworkTypeLink after app update
-    describe.skip('Update application', () => {
+    describe('Update application', () => {
       test('Update application description', () => App.app1.update(ctx))
       test('Verify application updated', () => App.app1.verifyUpdate(ctx))
       test('Verify app is on LoRa Server', () => Lora.verifyAppDescription(input.app1Updated)(loraCtx))

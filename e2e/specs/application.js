@@ -35,7 +35,8 @@ const updateApp = (app) => {
     goToApp(app),
     S.click('[href="#application"]'),
     S.fillForm(forms.app, app),
-    S.click('button[type="submit"]')
+    S.click('button[type="submit"]'),
+    S.sleep(1000)
   )
 }
 
