@@ -145,12 +145,13 @@ class LoRaDeviceProfileNetworkSettings extends Component {
                 console.log( "State is enabled" );
                 // ... but we had no old record: CREATE
                 if ( !this.state.wasEnabled ) {
-                    ret = await deviceStore.createDeviceProfile(
-                                    this.props.parentRec.name,
-                                    this.props.parentRec.description,
-                                    this.props.parentRec.companyId,
-                                    this.props.netRec.id,
-                                    this.state.value );
+                    ret = await deviceStore.createDeviceProfile({
+                      name: this.props.parentRec.name,
+                      description: this.props.parentRec.description,
+                      companyId: this.props.parentRec.companyId,
+                      networkTypeId: this.props.netRec.id,
+                      networkSettings: this.state.value
+                    })
                     console.log( "CREATE: ", ret );
                 }
                 // ...and we had an old record with a data change: UPDATE
@@ -221,19 +222,19 @@ class LoRaDeviceProfileNetworkSettings extends Component {
                 </ul>
                 <hr />
                 <div className={(this.state.activeTab === "general" ? "" : "hidden")}>
-                    <div className="form-group">
-                        <label className="control-label" htmlFor="macVersion">LoRaWAN MAC version</label>
+                    <div className="form-group" data-name="networkSettings.macVersion">
+                        <label className="control-label">LoRaWAN MAC version</label>
                         <Select
-                            name="macVersion"
                             options={macVersionOptions}
                             value={this.state.value.macVersion}
                             onChange={this.onSelectChange.bind(this, 'macVersion')}
+
                         />
                         <p className="help-block">
                             Version of the LoRaWAN supported by the End-Device.
                         </p>
                     </div>
-                    <div className="form-group">
+                    <div className="form-group" data-name="networkSettings.regParamsRevision">
                         <label className="control-label" htmlFor="macVersion">LoRaWAN Regional Parameters revision</label>
                         <Select
                             name="regParamsRevision"

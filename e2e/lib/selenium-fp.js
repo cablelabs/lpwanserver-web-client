@@ -27,13 +27,19 @@
   }
 
   const getElement = curry(async function getElement (selector, ctx) {
-    selector = normalizeArg(selector, ctx)
-    const element = await ctx.driver.wait(
-      until.elementLocated(normalizeSelector(selector)),
-      ctx.timeout
-    )
-    await ctx.driver.wait(until.elementIsVisible(element), ctx.timeout)
-    return { selector, element }
+    try {
+      selector = normalizeArg(selector, ctx)
+      const element = await ctx.driver.wait(
+        until.elementLocated(normalizeSelector(selector)),
+        ctx.timeout
+      )
+      await ctx.driver.wait(until.elementIsVisible(element), ctx.timeout)
+      return { selector, element }
+    } catch (err) {
+      console.error(`Failed to locate "${arguments[0]}"`)
+      throw err
+    }
+
   })
 
   const click = selector => async function click (ctx) {
@@ -64,7 +70,11 @@
   async function fillField (element, value) {
     let tag = await element.getTagName()
     if (tag === 'select') {
-      element = await element.findElement(By.css(`option[value="${value}"]`))
+      try {
+        element = await element.findElement(By.css(`option[value="${value}"]`))
+      } catch (err) {
+        element = await element.findElement(By.xpath(`//option[contains(text(), "${value}")]`))
+      }
       return element.click()
     }
     let type = await element.getAttribute('type')
@@ -88,7 +98,8 @@
         property = id
       }
       let { element } = await getElement(selector, ctx)
-      await fillField(element, data[property])
+      const setValue = fields[i].fillField || fillField
+      await setValue(element, data[property], ctx)
     }
     return
   }

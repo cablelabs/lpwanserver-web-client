@@ -76,8 +76,6 @@ class CreateDeviceProfile extends Component {
 
     onChange(field, e) {
         let deviceProfile = this.state.deviceProfile;
-        console.log(field);
-        console.log(e);
         if ((e.target.type === "number") || (e.target.type === "select-one")) {
             deviceProfile[field] = parseInt(e.target.value, 10);
         } else if (e.target.type === "checkbox") {

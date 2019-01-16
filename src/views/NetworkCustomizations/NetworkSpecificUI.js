@@ -20,9 +20,9 @@ class NetworkSpecificUI extends Component {
     // Using "if" now because it's the on case, may change to "switch" if it
     // gets more complex.
     let selectionType = "checkbox";
-    if ( "DeviceProfile" === props.dataName ) {
-        selectionType = "radio";
-    }
+    // if ( "DeviceProfile" === props.dataName ) {
+    //     selectionType = "radio";
+    // }
 
     //props.dataName - "Company", "Application", "DeviceProfile", "Device"
     //props.referenceDataId - id of associated data
@@ -39,6 +39,7 @@ class NetworkSpecificUI extends Component {
         networkTypeNames: [],
         nameToNetIdMap: {},
         nameToUIMap: {},
+        loading: true
     };
 
     this.subComponents = {};
@@ -47,7 +48,6 @@ class NetworkSpecificUI extends Component {
     this.onEnabledCheckboxChange  = this.onEnabledCheckboxChange.bind( this );
     this.isSelected  = this.isSelected.bind( this );
     this.generateNetworksDisplay = this.generateNetworksDisplay.bind( this );
-    this.componentWillMount = this.componentWillMount.bind( this );
     this.populateNetworkTypes = this.populateNetworkTypes.bind( this );
     this.onSubmit = this.onSubmit.bind( this );
     this.addNetworkSettingsComponent = this.addNetworkSettingsComponent.bind( this );
@@ -189,7 +189,7 @@ class NetworkSpecificUI extends Component {
   }
 
   // Called by framework before the UI displays.
-  async componentWillMount() {
+  async componentDidMount() {
       let nts
       // We need to know about all available networkTypes for this data type.
       switch ( this.props.dataName ) {
@@ -218,7 +218,7 @@ class NetworkSpecificUI extends Component {
             console.log( "Invalid props dataName = " + this.props.dataName );
             break;
       }
-
+      this.setState({ loading: false })
   }
 
   // We get this callback when a subcomponent is rendered so we can keep track
@@ -289,7 +289,7 @@ class NetworkSpecificUI extends Component {
   }
 
   render() {
-
+    if (this.state.loading) return false
     return (
         <div>
 

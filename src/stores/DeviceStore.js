@@ -76,8 +76,7 @@ class DeviceStore extends EventEmitter {
      * @param {string} networkSettings 
      * @return {string} device profile ID
      */
-    async createDeviceProfile (name, description, companyId, networkTypeId, networkSettings) {
-        const body = { name, description, companyId, networkTypeId, networkSettings }
+    async createDeviceProfile (body) {
         const response = await this.fetchDeviceProfile('', { method: 'post', body })
         remoteErrorDisplay(response)
         return response.id

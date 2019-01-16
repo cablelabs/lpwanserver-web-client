@@ -7,7 +7,8 @@ const createNetwork = ({ protocol, form, input }) => S.seq(
   S.click(`[data-is="networkProtocol"][data-name="${protocol}"] [data-to="createNetwork"]`),
   S.fillForm(form, input),
   S.click('button[type="submit"]'),
-  S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]')
+  S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]'),
+  S.sleep(2000)
 )
 
 const verifyNetwork = network => S.seq(
@@ -27,7 +28,9 @@ const lora1 = {
     input: input.loraNetwork1
   }),
   verify: verifyNetwork(input.loraNetwork1),
-  app: input.lora1App
+  app: input.lora1App1,
+  device: input.lora1App1Device1,
+  deviceProfile: input.lora1DeviceProfile1
 }
 
 const lora2 = {
@@ -37,7 +40,9 @@ const lora2 = {
     input: input.loraNetwork2
   }),
   verify: verifyNetwork(input.loraNetwork2),
-  app: input.lora2App
+  app: input.lora2App1,
+  device: input.lora2App1Device1,
+  deviceProfile: input.lora2DeviceProfile1
 }
 
 const ttn = {

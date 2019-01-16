@@ -18,9 +18,11 @@ class DeviceLayout extends Component {
       application: {},
       device: {},
       isAdmin: sessionStore.isAdmin(),
+      loading: true
     };
 
     this.onDelete = this.onDelete.bind(this);
+    this.sessionChange = this.sessionChange.bind(this)
 
   }
 
@@ -31,17 +33,16 @@ class DeviceLayout extends Component {
    }
 
   componentDidMount() {
-      applicationStore.getApplication(this.props.match.params.applicationID)
-      .then( (application) => {
-          this.setState({application: application});
-      });
+    const { params } = this.props.match
+    Promise.all([
+      applicationStore.getApplication(params.applicationID),
+      deviceStore.getDevice(params.deviceID)
+    ])
+    .then(([application, device]) => {
+      this.setState({ application, device, loading: false })
+    })
 
-      deviceStore.getDevice(this.props.match.params.deviceID)
-      .then( (device) => {
-          this.setState({device: (device)});
-      });
-
-      sessionStore.on("change", this.sessionChange );
+    sessionStore.on("change", this.sessionChange );
   }
 
   componentWillUnmount() {
@@ -53,6 +54,7 @@ class DeviceLayout extends Component {
 
   render() {
     const { state, props } = this
+    if (state.loading) return false
     let page = 1;
     if (props.history.location.state !== undefined)
       page = props.history.location.state.page;
