@@ -89,17 +89,26 @@ describe('LPWAN Server Web Client Integration Tests', () => {
       test('Verify device is on LoRa Server V1', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2)(lora1Ctx))
     })
 
-    describe.skip('Add a device to an app created on LPWAN Server', () => {
+    describe('Add a device to an app created on LPWAN Server', () => {
       test('Create device', () => S.seq(App.createDevice(input.app1, input.app1Device1))(ctx))
+      test('View device', () => App.goToDevice(input.app1, input.app1Device1)(ctx))
+      test('Verify device is on LoRa Server', () => Lora.goToDevice(input.app1, input.app1Device1)(loraCtx))
+      test('Verify device is on LoRa Server V1', () => Lora.goToDevice(input.app1, input.app1Device1)(lora1Ctx))
     })
 
-    // describe('Update a device on an app pulled from LoRa', () => {
-      
-    // })
+    describe('Update a device on an app pulled from LoRa', () => {
+      test('Update device', () => App.updateDevice(input.lora2App1, input.lora2App1Device2.name, input.lora2App1Device2Updated)(ctx))
+      test('View device', () => App.goToDevice(input.lora2App1, input.lora2App1Device2Updated)(ctx))
+      test.skip('Verify device is updated on LoRa Server', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2Updated)(loraCtx))
+      test.skip('Verify device is updated on LoRa Server V1', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2Updated)(lora1Ctx))
+    })
 
-    // describe('Update a device on an app created on LPWAN Server', () => {
-      
-    // })
+    describe('Update a device on an app created on LPWAN Server', () => {
+      test('Update device', () => App.updateDevice(input.app1, input.app1Device1.name, input.app1Device1Updated)(ctx))
+      test('View device', () => App.goToDevice(input.app1, input.app1Device1Updated)(ctx))
+      test.skip('Verify device is udpated on LoRa Server', () => Lora.goToDevice(input.app1, input.app1Device1Updated)(loraCtx))
+      test.skip('Verify device is udpated on LoRa Server V1', () => Lora.goToDevice(input.app1, input.app1Device1Updated)(lora1Ctx))
+    })
   })
 })
 

@@ -71,6 +71,7 @@ const device = [
   { id: 'deviceModel' },
   { name: 'LoRa' },
   { id: 'deviceProfileId' },
+  { name: 'devEUI' }
 ]
 
 module.exports = {

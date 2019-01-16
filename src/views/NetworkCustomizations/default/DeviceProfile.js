@@ -82,11 +82,12 @@ class DefaultDeviceProfileNetworkSettings extends Component {
             if ( this.state.enabled ) {
                 // ... but we had no old record: CREATE
                 if ( !this.state.wasEnabled ) {
-                    ret = await deviceStore.createDeviceProfile(
-                                    this.props.parentRec.name,
-                                    this.props.parentRec.companyId,
-                                    this.props.netRec.id,
-                                    this.state.value );
+                    ret = await deviceStore.createDeviceProfile({
+                        name: this.props.parentRec.name,
+                        companyId: this.props.parentRec.companyId,
+                        networkTypeId: this.props.netRec.id,
+                        networkSettings: this.state.value
+                    })
                     console.log( "CREATE: ", ret );
                 }
                 // ...and we had an old record with a data change: UPDATE

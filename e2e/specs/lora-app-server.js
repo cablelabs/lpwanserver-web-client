@@ -28,11 +28,11 @@ const goToApp = app => S.seq(
 
 const goToDevice = (app, device) => S.seq(
   goToApp(app),
-  findDevice(device),
+  findDevice(device.name),
 )
 
 const verifyNetworkSync = S.seq(
-  goToDevice(input.lora1App1, input.lora1App1Device1.name),
+  goToDevice(input.lora1App1, input.lora1App1Device1),
   clickApplications,
   clickAppName(input.lora2App1.name),
   findDevice(input.lora2App1Device1.name)

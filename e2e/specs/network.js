@@ -7,7 +7,8 @@ const createNetwork = ({ protocol, form, input }) => S.seq(
   S.click(`[data-is="networkProtocol"][data-name="${protocol}"] [data-to="createNetwork"]`),
   S.fillForm(form, input),
   S.click('button[type="submit"]'),
-  S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]')
+  S.click('[data-is="networkAuthorizationSuccess"] button[data-do="confirm"]'),
+  S.sleep(2000)
 )
 
 const verifyNetwork = network => S.seq(

@@ -27,13 +27,19 @@
   }
 
   const getElement = curry(async function getElement (selector, ctx) {
-    selector = normalizeArg(selector, ctx)
-    const element = await ctx.driver.wait(
-      until.elementLocated(normalizeSelector(selector)),
-      ctx.timeout
-    )
-    await ctx.driver.wait(until.elementIsVisible(element), ctx.timeout)
-    return { selector, element }
+    try {
+      selector = normalizeArg(selector, ctx)
+      const element = await ctx.driver.wait(
+        until.elementLocated(normalizeSelector(selector)),
+        ctx.timeout
+      )
+      await ctx.driver.wait(until.elementIsVisible(element), ctx.timeout)
+      return { selector, element }
+    } catch (err) {
+      console.error(`Failed to locate "${arguments[0]}"`)
+      throw err
+    }
+
   })
 
   const click = selector => async function click (ctx) {

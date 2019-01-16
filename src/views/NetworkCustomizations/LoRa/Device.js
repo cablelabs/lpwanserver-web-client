@@ -24,6 +24,7 @@ class LoRaDeviceNetworkSettings extends Component {
             original: initValue,
             rec: null,
             deviceProfileList: [],
+            loading: true
         };
 
         this.select = this.select.bind(this);
@@ -61,7 +62,8 @@ class LoRaDeviceNetworkSettings extends Component {
               ...rest,
               rec,
               value: mergeDeepRight(rest.value || state.value, valueExt),
-              deviceProfileList
+              deviceProfileList,
+              loading: false
             },
             props.onChange
         )
@@ -71,6 +73,7 @@ class LoRaDeviceNetworkSettings extends Component {
         const deviceProfileId = pathOr(0, [0, 'id'], deviceProfileList)
         // Skip trying to load new records
         if (!props.parentRec || (!props.parentRec.id || 0 === props.parentRec.id)) {
+            // alert(JSON.stringify(props.parentRec))
             return { deviceProfileId }
         }
         try {
@@ -241,6 +244,8 @@ class LoRaDeviceNetworkSettings extends Component {
         let { supportsJoin, macVersion: mac } = deviceProfile.networkSettings || {}
         const isABP = !supportsJoin
         mac = mac || '0.0.0'
+
+        if (this.state.loading) return false
 
         return !!state.enabled && (
             <div>

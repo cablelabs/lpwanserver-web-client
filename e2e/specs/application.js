@@ -77,7 +77,14 @@ const goToDeviceProfile = dp => S.seq(
 
 const goToDevice = (app, device) => S.seq(
   goToApp(app),
-  clickDevice(device.name)
+  clickDevice(device.name),
+)
+
+const updateDevice = (app, deviceName, deviceUpdate) => S.seq(
+  goToDevice(app, { name: deviceName }),
+  S.fillForm(forms.device, deviceUpdate),
+  S.click('button[type="submit"]'),
+  S.sleep(1000)
 )
 
 const app1 = {
@@ -96,5 +103,6 @@ module.exports = {
   createDeviceProfile,
   createDevice,
   goToDeviceProfile,
-  goToDevice
+  goToDevice,
+  updateDevice
 }
