@@ -88,6 +88,32 @@ const updateDevice = (app, deviceName, deviceUpdate) => S.seq(
   S.sleep(1000)
 )
 
+const deleteDevice = (app, device) => S.seq(
+  goToDevice(app, device),
+  S.click(By.xpath(`//button[contains(text(), "Delete Device")]`)),
+  S.tap(ctx => ctx.driver.switchTo().alert().accept()),
+  S.sleep(1000)
+)
+
+const verifyDeviceDeleted = (device) => S.seq(
+  S.findElements(`[data-is="device"][data-name="${device.name}"]`),
+  S.tap(ctx => expect(ctx.elements.length).toBe(0))
+)
+
+const deleteApp = (app) => S.seq(
+  goToApp(app),
+  S.click('[href="#application"]'),
+  S.click(By.xpath(`//button[contains(text(), "Delete Application")]`)),
+  S.tap(ctx => ctx.driver.switchTo().alert().accept()),
+  S.sleep(3000)
+)
+
+const verifyAppDeleted = app => S.seq(
+  S.tap(ctx => ctx.driver.get(ctx.url)),
+  S.findElements(`[data-is="application"][data-name="${app.name}"]`),
+  S.tap(ctx => expect(ctx.elements.length).toBe(0))
+)
+
 const app1 = {
   create: createApp(input.app1),
   goTo: goToApp(input.app1),
@@ -105,5 +131,9 @@ module.exports = {
   createDevice,
   goToDeviceProfile,
   goToDevice,
-  updateDevice
+  updateDevice,
+  deleteDevice,
+  verifyDeviceDeleted,
+  deleteApp,
+  verifyAppDeleted
 }

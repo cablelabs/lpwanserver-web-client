@@ -56,7 +56,7 @@ describe('LPWAN Server Web Client Integration Tests', () => {
       test('View the Local Network', () => Network.ttn.verify(ctx))
     })
 
-    describe('Verify apps and devices synced', () => {
+    describe.skip('Verify apps and devices synced', () => {
       test('Verify apps and devices on LoRa Server', () => Lora.verifyNetworkSync(loraCtx))
       test('Verify apps and devices on LoRa Server V1', () => Lora.verifyNetworkSync(lora1Ctx))
     })
@@ -72,7 +72,7 @@ describe('LPWAN Server Web Client Integration Tests', () => {
 
     // Remove skip after bug fix
     // Bug:  UI not PUTing applicationNetworkTypeLink after app update
-    describe('Update application', () => {
+    describe.skip('Update application', () => {
       test('Update application description', () => App.app1.update(ctx))
       test('Verify application updated', () => App.app1.verifyUpdate(ctx))
       test('Verify app is on LoRa Server', () => Lora.verifyAppDescription(input.app1Updated)(loraCtx))
@@ -84,32 +84,46 @@ describe('LPWAN Server Web Client Integration Tests', () => {
       test('View device profile', () => App.goToDeviceProfile(input.deviceProfile1)(ctx))
     })
 
-    describe('Add a device to an app pulled from LoRa', () => {
+    describe.skip('Add a device to an app pulled from LoRa', () => {
       test('Create device', () => App.createDevice(input.lora2App1, input.lora2App1Device2)(ctx))
       test('View device', () => App.goToDevice(input.lora2App1, input.lora2App1Device2)(ctx))
-      test('Verify device is on LoRa Server', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2)(loraCtx))
-      test('Verify device is on LoRa Server V1', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2)(lora1Ctx))
+      test('Verify device is on LoRa Server', () => Lora.verifyDeviceExists(input.lora2App1, input.lora2App1Device2)(loraCtx))
+      test('Verify device is on LoRa Server V1', () => Lora.verifyDeviceExists(input.lora2App1, input.lora2App1Device2)(lora1Ctx))
     })
 
     describe('Add a device to an app created on LPWAN Server', () => {
-      test('Create device', () => S.seq(App.createDevice(input.app1, input.app1Device1))(ctx))
+      test('Create device', () => App.createDevice(input.app1, input.app1Device1)(ctx))
       test('View device', () => App.goToDevice(input.app1, input.app1Device1)(ctx))
-      test('Verify device is on LoRa Server', () => Lora.goToDevice(input.app1, input.app1Device1)(loraCtx))
-      test('Verify device is on LoRa Server V1', () => Lora.goToDevice(input.app1, input.app1Device1)(lora1Ctx))
+      test('Verify device is on LoRa Server', () => Lora.verifyDeviceExists(input.app1, input.app1Device1)(loraCtx))
+      test('Verify device is on LoRa Server V1', () => Lora.verifyDeviceExists(input.app1, input.app1Device1)(lora1Ctx))
     })
 
-    describe('Update a device on an app pulled from LoRa', () => {
+    describe.skip('Update a device on an app pulled from LoRa', () => {
       test('Update device', () => App.updateDevice(input.lora2App1, input.lora2App1Device2.name, input.lora2App1Device2Updated)(ctx))
       test('View device', () => App.goToDevice(input.lora2App1, input.lora2App1Device2Updated)(ctx))
-      test('Verify device is updated on LoRa Server', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2Updated)(loraCtx))
-      test('Verify device is updated on LoRa Server V1', () => Lora.goToDevice(input.lora2App1, input.lora2App1Device2Updated)(lora1Ctx))
+      test('Verify device is updated on LoRa Server', () => Lora.verifyDeviceExists(input.lora2App1, input.lora2App1Device2Updated)(loraCtx))
+      test('Verify device is updated on LoRa Server V1', () => Lora.verifyDeviceExists(input.lora2App1, input.lora2App1Device2Updated)(lora1Ctx))
     })
 
-    describe('Update a device on an app created on LPWAN Server', () => {
+    describe.skip('Update a device on an app created on LPWAN Server', () => {
       test('Update device', () => App.updateDevice(input.app1, input.app1Device1.name, input.app1Device1Updated)(ctx))
       test('View device', () => App.goToDevice(input.app1, input.app1Device1Updated)(ctx))
-      test('Verify device is udpated on LoRa Server', () => Lora.goToDevice(input.app1, input.app1Device1Updated)(loraCtx))
-      test('Verify device is udpated on LoRa Server V1', () => Lora.goToDevice(input.app1, input.app1Device1Updated)(lora1Ctx))
+      test('Verify device is udpated on LoRa Server', () => Lora.verifyDeviceExists(input.app1, input.app1Device1Updated)(loraCtx))
+      test('Verify device is udpated on LoRa Server V1', () => Lora.verifyDeviceExists(input.app1, input.app1Device1Updated)(lora1Ctx))
+    })
+
+    describe('Delete a device', () => {
+      test('Delete device', () => App.deleteDevice(input.app1, input.app1Device1)(ctx))
+      test('Verify device is not listed', () => App.verifyDeviceDeleted(input.app1Device1)(ctx))
+      test('Verify device is not on LoRa Server', () => Lora.verifyDeviceDeleted(input.app1, input.app1Device1)(loraCtx))
+      test('Verify device is not on LoRa Server v1', () => Lora.verifyDeviceDeleted(input.app1, input.app1Device1)(lora1Ctx))
+    })
+
+    describe('Delete an application', () => {
+      test('Delete app', () => App.deleteApp(input.app1)(ctx))
+      test('Verify app is not listed', () => App.verifyAppDeleted(input.app1)(ctx))
+      test('Verify app is not on LoRa Server', () => Lora.verifyAppDeleted(input.app1)(loraCtx))
+      test('Verify app is not on LoRa Server v1', () => Lora.verifyAppDeleted(input.app1)(lora1Ctx))
     })
   })
 })

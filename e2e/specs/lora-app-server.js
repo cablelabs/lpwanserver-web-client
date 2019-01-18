@@ -26,13 +26,13 @@ const goToApp = app => S.seq(
   clickAppName(app.name),
 )
 
-const goToDevice = (app, device) => S.seq(
+const verifyDeviceExists = (app, device) => S.seq(
   goToApp(app),
   findDevice(device.name),
 )
 
 const verifyNetworkSync = S.seq(
-  goToDevice(input.lora1App1, input.lora1App1Device1),
+  verifyDeviceExists(input.lora1App1, input.lora1App1Device1),
   clickApplications,
   clickAppName(input.lora2App1.name),
   findDevice(input.lora2App1Device1.name)
@@ -43,10 +43,24 @@ const verifyAppDescription = app => S.seq(
   findDescription(app.description)
 )
 
+const verifyDeviceDeleted = (app, device) => S.seq(
+  goToApp(app),
+  S.findElements(By.xpath(`//*[contains(text(), "${device.name}")]`)),
+  S.tap(ctx => expect(ctx.elements.length).toBe(0))
+)
+
+const verifyAppDeleted = (app) => S.seq(
+  S.tap(ctx => ctx.driver.get(ctx.url)),
+  S.findElements(By.xpath(`//*[contains(text(), "${app.name}")]`)),
+  S.tap(ctx => expect(ctx.elements.length).toBe(0))
+)
+
 module.exports = {
   login,
   verifyNetworkSync,
   goToApp,
-  goToDevice,
-  verifyAppDescription
+  verifyDeviceExists,
+  verifyAppDescription,
+  verifyDeviceDeleted,
+  verifyAppDeleted
 }
