@@ -128,6 +128,11 @@
     return { [prop]: values }
   }
 
+  const findElements = selector => async function findElements (ctx) {
+    const elements = await ctx.driver.findElements(normalizeSelector(selector))
+    return { elements }
+  }
+
   module.exports = {
     seq,
     tap,
@@ -137,5 +142,6 @@
     sendKeys,
     click,
     fillForm,
-    getFormValues
+    getFormValues,
+    findElements
   }
