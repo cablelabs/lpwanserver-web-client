@@ -12,7 +12,7 @@ install: npm ci
 
 before_script:
   - ./bin/package.js
-  - git clone https://github.com/cablelabs/lpwanserver.git
+  - git clone --depth 1 https://github.com/cablelabs/lpwanserver.git
   - docker-compose -f ./lpwanserver/docker/docker-compose.loraserver.yml -f ./lpwanserver/docker/docker-compose.demo.yml up -d
 
 script:
