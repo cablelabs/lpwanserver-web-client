@@ -4,7 +4,7 @@
 
 ## Background Information
 
-The end-to-end test `e2e/specs/demo.test.js` is coupled with the lpwanserver demo.
+The end-to-end test `e2e/specs/index.test.js` is coupled with the lpwanserver demo.
 The E2E tests depend on a running demo.
 
 ## System Dependencies
@@ -30,18 +30,17 @@ sudo -E ./bin/e2e.js
 First build the docker images for the ui-server and the test-runner by running
 `./bin/package.js`.
 
-### Run the demo
-From the lpwanserver repo, run the demo with `./bin/demo`.
+The e2e script in `./bin/e2e.js` uses one docker-compose "up" command to run
+the lpwanserver demo and the web-client's e2e tests together.  Ensure that
+there are no stopped docker containers for postgresql.  The easiest way to do this
+is `docker system prune --force`, but be sure you're not removing docker containers/networks
+that you need elsewhere.
 
-### Run the tests
-The script `./bin/e2e.js` orchestrates the running of E2E tests.
-The exit code of the process running `e2e.js` can be considered the exit code of
-the tests.  The script uses docker-compose to spin up all the containers, the tests
-being some of them, and run them.  When a test container exits, docker logs the
-exit status of that container to stdout.  `e2e.js` watches stdout to get the
-exit code for the container.  If one of them is a 1, an error, the tests are stopped
-and the `e2e.js` process exits with a 1.  Only if all test containers exit with a 0 status
-does the `e2e.js` process exit with a 0.
+Once you've removed any stopped postgresql container, run `./bin/e2e.js`.
+
+The exit code of the script process will be 0 for pass or 1 for fail.
+
+### Commands
 
 ```
 ./bin/package.js
@@ -107,6 +106,3 @@ tests, so until TTN is running locally, it's best just to stick with Chrome.
 2. **TTN client callback uri** - Each browser needs it's own TTN client, because the client's oauth callback
 URI needs to target the specific browser, unless the tests are run sequentially, or each browser is tested
 in a new machine with docker swarm.
-
-Note: `e2e.js` uses a BROWSER_TOTAL global that will need to be updated or made configurable
-when more browsers are used in testing.  Currently it is set to 1.
