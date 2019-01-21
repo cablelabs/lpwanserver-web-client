@@ -15,7 +15,7 @@ before_script:
   - cd .. && git clone --depth 1 https://github.com/cablelabs/lpwanserver.git && cd lpwanserver-web-client
 
 script:
-  - ./bin/e2e
+  - ./bin/e2e.js
 
 deploy:
   provider: script
