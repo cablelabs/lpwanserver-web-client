@@ -35,7 +35,7 @@ class SessionStore extends EventEmitter {
     }
     /**
      * Get a setting value for the given key
-     * @param {string} key 
+     * @param {string} key
      * @return {any} value of setting at key
      */
     getSetting(key) {
@@ -43,8 +43,8 @@ class SessionStore extends EventEmitter {
     }
     /**
      * Save a setting in session storage
-     * @param {string} key 
-     * @param {any} value 
+     * @param {string} key
+     * @param {any} value
      */
     putSetting(key, value) {
       const lens = lensPath(["settings", key])
@@ -55,7 +55,7 @@ class SessionStore extends EventEmitter {
     }
     /**
      * Remove a setting from session storage
-     * @param {string} key 
+     * @param {string} key
      */
     removeSetting(key) {
       const user = JSON.parse( sessionStorage.getItem( "user" ));
@@ -78,7 +78,7 @@ class SessionStore extends EventEmitter {
     }
     /**
      * Set token in cache
-     * @param {string} token 
+     * @param {string} token
      */
     setToken(token) {
         this.token = token;
@@ -115,7 +115,7 @@ class SessionStore extends EventEmitter {
     }
     /**
      * Login
-     * @param {Object} body 
+     * @param {Object} body
      */
     async login (body) {
         try {
@@ -161,6 +161,7 @@ class SessionStore extends EventEmitter {
     /** Retrieve session from session storage */
     retrieveMeFromStore() {
         var me = sessionStorage.getItem( "user" );
+        console.log('me', me)
         if ( me ) {
             me = JSON.parse( me );
             if ( me.user ) {

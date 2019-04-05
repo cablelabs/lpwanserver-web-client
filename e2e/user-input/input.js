@@ -92,7 +92,7 @@ const deviceProfile1 = {
   name: 'CATA Device Profile',
   description: 'CATA device profile description',
   LoRa: true,
-  'networkSettings.macVersion': '1.0.0',
+  'networkSettings.macVersion': '1.1.0',
   'networkSettings.regParamsRevision': 'A'
 }
 

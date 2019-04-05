@@ -69,6 +69,7 @@ class Navbar extends Component {
   }
 
   render() {
+    console.log(this.state)
     return (
       <nav className="navbar navbar-default navbar-fixed-top">
         <div className="container">
