@@ -51,7 +51,7 @@ const createDeviceProfile = deviceProfile => S.seq(
   S.click('[href="/create/deviceProfile"]'),
   S.fillForm(forms.deviceProfile, deviceProfile),
   S.click('button[type="submit"]'),
-  S.sleep(10000)
+  S.sleep(1000)
 )
 
 const createDevice = (app, device) => S.seq(
@@ -67,7 +67,7 @@ const createDevice = (app, device) => S.seq(
     }
   },
   S.click('button[type="submit"]'),
-  S.sleep(10000)
+  S.sleep(1000)
 )
 
 const goToDeviceProfile = dp => S.seq(

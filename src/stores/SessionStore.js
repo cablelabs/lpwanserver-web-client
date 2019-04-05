@@ -161,7 +161,6 @@ class SessionStore extends EventEmitter {
     /** Retrieve session from session storage */
     retrieveMeFromStore() {
         var me = sessionStorage.getItem( "user" );
-        console.log('me', me)
         if ( me ) {
             me = JSON.parse( me );
             if ( me.user ) {
