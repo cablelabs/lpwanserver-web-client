@@ -85,10 +85,10 @@ When writing tests, it's easiest to run the web-client server and the e2e tests 
 so as not to have to use a VNC and package the docker images with each change.
 
 1.  In the lpwanserver repo, temporarily comment out the ui service at `docker/docker-compose.demo.yml`
-2.  Run the demo script: `./bin/demo`
+2.  Run the demo script (lpwanserver repo): `./bin/demo`
 3.  In a new tab, run the development web client server.  `npm run dev`
 3.  In a new tab, run the e2e tests, having exported the TTN env variables.  `npm run test:e2e`
-4.  Stop and start demo after each test run.
+4.  Stop and start demo after each test (lpwanserver repo).  `./bin/demo stop`
 
 ## Limitations and future browser support
 

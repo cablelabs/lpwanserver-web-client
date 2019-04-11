@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 
 services:
   selenium_hub:
@@ -31,7 +31,7 @@ services:
       - WEB_CLIENT_HOST=localhost
       - WEB_CLIENT_PORT=3000
       - LORA_SERVER_HOST=localhost
-      - LORA_SERVER_PORT=8080
+      - LORA_SERVER_PORT=8082
       - LORA_SERVER_V1_HOST=localhost
       - LORA_SERVER_V1_PORT=8081
       - TTN_CLIENT_ID=${TTN_CLIENT_ID:-XXX}

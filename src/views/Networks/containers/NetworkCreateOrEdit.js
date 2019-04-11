@@ -106,7 +106,7 @@ class NetworkCreateOrEdit extends Component {
     if (!isNew) return pick(networkProps, network)
     return {
       name: '',
-      networkProviderId: -1, // for now, not providing network provider
+      networkProviderId: null, // for now, not providing network provider
       networkTypeId: typeId,
       baseUrl: '',
       securityData: getSecurityDefaults(networkProtocol),
