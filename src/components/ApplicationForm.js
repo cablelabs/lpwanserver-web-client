@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-
-
 import SessionStore from "../stores/SessionStore";
 import applicationStore from "../stores/ApplicationStore";
 import deviceStore from "../stores/DeviceStore";
@@ -11,18 +9,14 @@ import {Link, withRouter} from 'react-router-dom';
 import Pagination from "../components/Pagination";
 import PropTypes from 'prop-types';
 
-
-class DeviceRow extends Component {
-
-  render() {
-    return (
-      <tr data-is="device" data-name={this.props.device.name}>
-        <td><Link
-          to={`/applications/${this.props.appID}/devices/${this.props.device.id}`}>{this.props.device.name}</Link></td>
-        <td>{this.props.device.deviceModel}</td>
-      </tr>
-    );
-  }
+function DeviceRow ({ device, appID }) {
+  return (
+    <tr data-is="device" data-name={device.name}>
+      <td><Link
+        to={`/applications/${appID}/devices/${device.id}`}>{device.name}</Link></td>
+      <td>{device.deviceModel}</td>
+    </tr>
+  );
 }
 
 class ApplicationForm extends Component {
@@ -37,7 +31,7 @@ class ApplicationForm extends Component {
       application: {},
       isGlobalAdmin: false,
       pageSize: 20,
-      pageNumber: 1,
+      page: 1,
       pages: 1,
       devices: [],
       reportingProtocols: [],
@@ -45,7 +39,6 @@ class ApplicationForm extends Component {
 
     this.networkTypeLinksComp = {};
 
-    this.updatePage = this.updatePage.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.changeTab = this.changeTab.bind(this);
     this.sessionChange = this.sessionChange.bind(this);
@@ -93,24 +86,22 @@ class ApplicationForm extends Component {
   }
 
 
-  handleSubmit = async function(e) {
-      e.preventDefault();
-      var me = this;
-      try {
-          await applicationStore.updateApplication( this.state.application );
-          if ( me.networkTypeLinksComp.onSubmit ) {
-              var ret = await me.networkTypeLinksComp.onSubmit();
-              console.log( "ApplicatonForm update returns", ret );
-          }
-          else {
-              console.log("No data to update!" );
-          }
+  async handleSubmit (e) {
+    e.preventDefault()
+    try {
+      await applicationStore.updateApplication(this.state.application)
+      if ( this.networkTypeLinksComp.onSubmit ) {
+          var ret = await this.networkTypeLinksComp.onSubmit();
+          console.log( "ApplicatonForm update returns", ret );
       }
-      catch( err ) {
-          console.log( "Error updating application" , err );
+      else {
+          console.log("No data to update!" );
       }
-
-      me.props.history.push('/?tab=applications');
+    }
+    catch( err ) {
+        console.log( "Error updating application" , err );
+    }
+    this.props.history.push('/?tab=applications');
   }
 
   componentWillReceiveProps(nextProps) {
@@ -118,35 +109,25 @@ class ApplicationForm extends Component {
   }
 
   getDevices() {
-    const page = this.state.pageNumber;
-    if ( !this.state.application ||
-         !this.state.application.id ) {
-        // No basis yet, skip for now.
-        return;
-    }
-    deviceStore.getAll( this.state.pageSize, (page - 1) * this.state.pageSize, this.props.application.id ).then( (response) => {
-      this.setState({
-        devices: response.records,
-        pages: Math.ceil(response.totalCount / this.state.pageSize),
-      });
-      window.scrollTo(0, 0);
-    });
+    const { state, props } = this
+    if (!state.application || !state.application.id) return
+    deviceStore.getAll( state.pageSize, (state.page - 1) * state.pageSize, props.application.id )
+      .then(res => {
+        this.setState({
+          devices: res.records,
+          pages: Math.ceil(res.totalCount / state.pageSize),
+        })
+        window.scrollTo(0, 0)
+      })
   }
 
-  updatePage(props) {
-    this.setState({
-      application: props.application,
-      pageNumber: props.page,
-    }, (prevState, props) => this.getDevices());
-
+  updatePage(state) {
+    this.setState(state, () => this.getDevices())
   }
 
   changeTab(e) {
     e.preventDefault();
-    this.setState({
-      activeTab: e.target.getAttribute('aria-controls'),
-    });
-    this.getDevices();
+    this.updatePage({ activeTab: e.target.getAttribute('aria-controls') })
   }
 
   onDelete() {
@@ -164,61 +145,50 @@ class ApplicationForm extends Component {
 
 
   render() {
-    let message = {};
-    var appid = 0;
-    if ( this.state.application &&
-         this.state.application.id ) {
-        appid = this.state.application.id;
-    }
-    else {
-        return ( <div></div> );
-    }
+    const { state } = this
+    let { id: appId } = state.application || {}
+    if (!appId) return <div></div>
+    let message = {}
 
-    message[appid] = {};
-    message[appid]["DevEUI"] = "BE7A000000000104";
-    message[appid]["DevName"] = "unknown";
-    message[appid]["AppType"] = 1;
-    message[appid]["SeqNum"] = 0;
-    message[appid]["TimeStamp"] = 149391448087;
-    message[appid]["SensorData"] = "FFFFFFFF";
+    message[appId] = {};
+    message[appId]["DevEUI"] = "BE7A000000000104";
+    message[appId]["DevName"] = "unknown";
+    message[appId]["AppType"] = 1;
+    message[appId]["SeqNum"] = 0;
+    message[appId]["TimeStamp"] = 149391448087;
+    message[appId]["SensorData"] = "FFFFFFFF";
 
-    const DeviceRows = this.state.devices.map((device, i) => <DeviceRow key={device.id} device={device} appID={appid}/>);
-
-    let me = this;
+    const DeviceRows = state.devices.map(x => <DeviceRow key={x.id} device={x} appID={appId}/>)
 
     //Add test back in when available
-    //<li role="presentation" className={(this.state.activeTab === "test-application" ? 'active' : '')}><a onClick={this.changeTab} href="#test-application" aria-controls="test-application">Test Application</a></li>
+    //<li role="presentation" className={(state.activeTab === "test-application" ? 'active' : '')}><a onClick={this.changeTab} href="#test-application" aria-controls="test-application">Test Application</a></li>
     return (
-
       <div>
         <div className="btn-group pull-right">
-
-          <div className={(this.state.activeTab === "application" ? '' : 'hidden')}>
-
+          <div className={(state.activeTab === "application" ? '' : 'hidden')}>
             <div className="btn-group" role="group" aria-label="...">
               <button type="button" className="btn btn-danger btn-sm" onClick={this.onDelete}>Delete Application
               </button>
             </div>
           </div>
 
-          <div className={(this.state.activeTab === "devices" ? '' : 'hidden')}>
-
-            <Link to={`/create/application/${this.state.application.id}/device`}>
+          <div className={(state.activeTab === "devices" ? '' : 'hidden')}>
+            <Link to={`/create/application/${state.application.id}/device`}>
               <button type="button" className="btn btn-default btn-sm">Create Device</button>
             </Link>
           </div>
         </div>
 
         <ul className="nav nav-tabs">
-          <li role="presentation" className={(this.state.activeTab === "devices" ? 'active' : '')}><a
+          <li role="presentation" className={(state.activeTab === "devices" ? 'active' : '')}><a
             onClick={this.changeTab} href="#devices" aria-controls="devices">Devices</a></li>
-          <li role="presentation" className={(this.state.activeTab === "application" ? 'active' : '')}><a
+          <li role="presentation" className={(state.activeTab === "application" ? 'active' : '')}><a
             onClick={this.changeTab} href="#application" aria-controls="application">Application details</a></li>
         </ul>
 
         <hr/>
         <form onSubmit={this.handleSubmit}>
-          <div className={(this.state.activeTab === "application" ? '' : 'hidden')}>
+          <div className={(state.activeTab === "application" ? '' : 'hidden')}>
             <div className="form-group">
               <label className="control-label" htmlFor="name">Application Name</label>
               <input className="form-control"
@@ -226,7 +196,7 @@ class ApplicationForm extends Component {
                      type="text"
                      placeholder="e.g. 'temperature-sensor'"
                      required
-                     value={this.state.application.name || ''} onChange={this.onChange.bind(this, 'name')}/>
+                     value={state.application.name || ''} onChange={this.onChange.bind(this, 'name')}/>
             </div>
             <div className="form-group">
               <label className="control-label" htmlFor="description">Application Description</label>
@@ -235,7 +205,7 @@ class ApplicationForm extends Component {
                      type="text"
                      placeholder="e.g. 'Track temperature app'"
                      required
-                     value={this.state.application.description || ''} onChange={this.onChange.bind(this, 'description')}/>
+                     value={state.application.description || ''} onChange={this.onChange.bind(this, 'description')}/>
             </div>
             <div className="form-group">
               <label className="control-label" htmlFor="baseUrl">Post URL</label>
@@ -244,16 +214,16 @@ class ApplicationForm extends Component {
                      type="text"
                      placeholder="URL to send sensor data to"
                      required
-                     value={this.state.application.baseUrl || ''} onChange={this.onChange.bind(this, 'baseUrl')}/>
+                     value={state.application.baseUrl || ''} onChange={this.onChange.bind(this, 'baseUrl')}/>
             </div>
             <div className="form-group">
               <label className="control-label" htmlFor="reportingProtocolId">Reporting Protocol</label>
               <select className="form-control"
                       id="reportingProtocolId"
                       required
-                      value={this.state.reportingProtocolId}
+                      value={state.reportingProtocolId}
                       onChange={this.onChange.bind(this, 'reportingProtocolId')}>
-                {this.state.reportingProtocols.map( rprot => <option value={rprot.id} key={"typeSelector" + rprot.id }>{rprot.name}</option>)}
+                {state.reportingProtocols.map( rprot => <option value={rprot.id} key={"typeSelector" + rprot.id }>{rprot.name}</option>)}
               </select>
               <p className="help-block">
                 Specifies the Network Protocol that this application will use
@@ -263,10 +233,10 @@ class ApplicationForm extends Component {
             </div>
 
             <NetworkSpecificUI
-                  ref={ (comp) => { me.networkTypeLinksComp = comp; }}
+                  ref={ (comp) => { this.networkTypeLinksComp = comp; }}
                   dataName="Application"
-                  referenceDataId={this.state.application.companyId}
-                  dataRec={me.state.application} />
+                  referenceDataId={state.application.companyId}
+                  dataRec={state.application} />
 
             <hr/>
             <div className="btn-toolbar pull-right">
@@ -276,7 +246,7 @@ class ApplicationForm extends Component {
 
           </div>
 
-          <div className={(this.state.activeTab === "devices" ? '' : 'hidden')}>
+          <div className={(state.activeTab === "devices" ? '' : 'hidden')}>
 
             <div className="panel-body">
               <table className="table table-hover">
@@ -292,13 +262,13 @@ class ApplicationForm extends Component {
                 </tbody>
               </table>
             </div>
-            <Pagination pages={this.state.pages} currentPage={this.state.pageNumber}
-                        pathname={`/applications/${this.state.application.id}`}/>
+            <Pagination pages={state.pages} currentPage={state.page}
+                        pathname={`/applications/${state.application.id}`}/>
 
 
           </div>
 
-          <div className={(this.state.activeTab === "test-application" ? '' : 'hidden')}>
+          <div className={(state.activeTab === "test-application" ? '' : 'hidden')}>
 
             <div className={"form-group"}>
               <label className="control-label" htmlFor="name">Payload</label>

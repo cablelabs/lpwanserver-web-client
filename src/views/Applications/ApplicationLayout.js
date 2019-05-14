@@ -22,9 +22,6 @@ class ApplicationLayout extends Component {
       application: {},
       isAdmin: sessionStore.isAdmin(),
     };
-
-    this.onDelete = this.onDelete.bind(this);
-
   }
 
   sessionChange() {
@@ -45,23 +42,16 @@ class ApplicationLayout extends Component {
   }
 
   componentWillUnmount() {
-       sessionStore.removeListener("change", this.sessionChange );
-  }
-
-  onDelete() {
-
+    sessionStore.removeListener("change", this.sessionChange );
   }
 
   render() {
-
-    let page = 1;
-    if (this.props.history.location.state !== undefined)
-      page = this.props.history.location.state.page;
+    let { page = 1 } = this.props.history.location.state || {}
     return (
       <div>
         <BreadCrumbs trail={breadCrumbs} destination={this.state.application.name} />
         <div className="panel-body">
-          <ApplicationForm application={this.state.application} onSubmit={this.onSubmit} update={true} page={page}/>
+          <ApplicationForm application={this.state.application} update={true} page={page}/>
         </div>
       </div>
     );

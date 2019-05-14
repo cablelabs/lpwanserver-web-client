@@ -58,7 +58,7 @@ class Layout extends Component {
 
   /**
    * Listen to actions from the flux dispatcher
-   * @param {Action} action 
+   * @param {Action} action
    */
   handleActions (action) {
     switch (action.type) {
