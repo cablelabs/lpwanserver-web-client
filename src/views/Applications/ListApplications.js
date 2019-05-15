@@ -2,77 +2,50 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import Pagination from "../../components/Pagination";
 import applicationStore from "../../stores/ApplicationStore";
-import networkTypeStore from "../../stores/NetworkTypeStore";
 import reportingProtocolStore from "../../stores/ReportingProtocolStore";
 import sessionStore from "../../stores/SessionStore";
 import userStore from "../../stores/UserStore";
 import deviceStore from "../../stores/DeviceStore";
 import { parse as qs_parse } from 'qs'
 
-
-class ApplicationRow extends Component {
-    constructor( props ) {
-        super( props );
-
-        this.toggleRunning = this.toggleRunning.bind( this );
-    }
-
-    toggleRunning( running, id ) {
-        if ( running ) {
-            applicationStore.stopApplication( id );
-        }
-        else {
-            applicationStore.startApplication( id );
-        }
-        this.props.parentReload();
-    }
-
-  render() {
-    return (
-      <tr data-is="application" data-name={this.props.application.name}>
-        <td><Link to={`/applications/${this.props.application.id}`}>{this.props.application.name}</Link></td>
-        <td>{this.props.reportingProtocolsMap[this.props.application.reportingProtocolId]}</td>
-        <td>{this.props.application.baseUrl}</td>
-        <td>{this.props.application.running.toString()}</td>
-        <td>
-            <div className="btn-group pull-right">
-                <button type="button"
-                        className="btn btn-default btn-sm"
-                        onClick={this.toggleRunning.bind( this, this.props.application.running, this.props.application.id ) }>
-                    { this.props.application.running ? "Stop" : "Start" }
-                </button>
-            </div>
-        </td>
-      </tr>
-    );
-  }
+function ApplicationRow (props) {
+  const { application: app } = props
+  return (
+    <tr data-is="application" data-name={app.name}>
+      <td><Link to={`/applications/${app.id}`}>{app.name}</Link></td>
+      <td>{props.reportingProtocolsMap[app.reportingProtocolId]}</td>
+      <td>{app.baseUrl}</td>
+      <td>{app.running.toString()}</td>
+      <td>
+          <div className="btn-group pull-right">
+              <button type="button"
+                      className="btn btn-default btn-sm"
+                      onClick={props.toggleRunning}>
+                  { app.running ? "Stop" : "Start" }
+              </button>
+          </div>
+      </td>
+    </tr>
+  )
 }
 
-class UserRow extends Component {
-
-  render() {
-    let verified = ((this.props.user.emailVerified) ? "True" : "False");
-    let email = ((this.props.user.email) ? this.props.user.email : "Unlisted");
-    return (
-      <tr>
-        <td><Link to={`/users/${this.props.user.id}`}>{this.props.user.username}</Link></td>
-        <td>{email}</td>
-        <td>{verified}</td>
-        <td>{this.props.user.role}</td>
-      </tr>
-    );
-  }
+function UserRow ({ user }) {
+  return (
+    <tr>
+      <td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
+      <td>{user.email || 'Unlisted'}</td>
+      <td>{user.emailVerified ? 'True' : 'False'}</td>
+      <td>{user.role}</td>
+    </tr>
+  )
 }
 
-class DeviceProfileRow extends Component {
-
-  render() {
-    return (
-      <tr data-is="device-profile" data-name={this.props.deviceProfile.name}>
-        <td><Link to={`/deviceProfile/${this.props.deviceProfile.id}`}>{this.props.deviceProfile.name}</Link></td>
-      </tr>
-    );
-  }
+function DeviceProfileRow ({ deviceProfile: dp }) {
+  return (
+    <tr data-is="device-profile" data-name={dp.name}>
+      <td><Link to={`/deviceProfile/${dp.id}`}>{dp.name}</Link></td>
+    </tr>
+  )
 }
 
 class ListApplications extends Component {
@@ -84,7 +57,6 @@ class ListApplications extends Component {
       this.state = {
           pageSize: 20,
           activeTab: "applications",
-          networkTypesMap: {},
           reportingProtocolsMap: {},
           applications: [],
           users: [],
@@ -102,11 +74,8 @@ class ListApplications extends Component {
           reloadCount: 0,
       };
 
-      this.updatePage = this.updatePage.bind(this);
       this.changeTab = this.changeTab.bind(this);
-      this.reload = this.reload.bind(this);
       this.sessionWatch = this.sessionWatch.bind(this);
-      this.reloadBasedOnFilter = this.reloadBasedOnFilter.bind(this);
  }
 
   changeTab(e) {
@@ -148,18 +117,6 @@ class ListApplications extends Component {
       }
 
       sessionStore.on("change", this.sessionWatch );
-
-      try {
-          let networkTypes = await networkTypeStore.getNetworkTypes();
-          let networkTypesMap = {};
-          for (let i = 0; i < networkTypes.length; ++i) {
-              networkTypesMap[networkTypes[i].id] = networkTypes[i].name;
-          }
-          this.setState({networkTypesMap: networkTypesMap});
-      }
-      catch( err ) {
-          console.log( "Error getting network types: " + err );
-      }
 
       try {
           let reportingProtocols = await reportingProtocolStore.getReportingProtocols();
@@ -232,20 +189,24 @@ class ListApplications extends Component {
       sessionStore.removeListener("change", this.sessionWatch );
   }
 
-  reload(i) {
-      let apps = this.state.applications;
-      apps[i].running = !apps[i].running;
-
-      this.setState( { applications: apps } );
+  toggleRunning(app, i) {
+    if (app.running) {
+      applicationStore.stopApplication(app.id)
+    }
+    else {
+      applicationStore.startApplication(app.id)
+    }
+    let apps = this.state.applications
+    apps[i].running = !apps[i].running
+    this.setState( { applications: apps } )
   }
 
   render() {
     const ApplicationRows = this.state.applications.map((application, i) =>
         <ApplicationRow key={application.id}
-                        parentReload={() => this.reload(i)}
+                        toggleRunning={() => this.toggleRunning(application, i)}
                         application={application}
                         isGlobalAdmin={this.state.isGlobalAdmin}
-                        networkTypesMap={this.state.networkTypesMap}
                         reportingProtocolsMap={this.state.reportingProtocolsMap}
                         />);
     const UserRows = this.state.users.map((user, i) =>
