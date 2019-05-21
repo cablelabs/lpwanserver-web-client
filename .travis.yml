@@ -10,7 +10,7 @@ services:
 
 before_install:
   - cd .. && git clone --depth 1 https://github.com/cablelabs/lpwanserver.git
-  - cd lpwanserver && npm install && ./bin/generate-development-certs && cd ../lpwanserver-web-client
+  - cd lpwanserver && npm install && ./bin/generate-development-certificates && cd ../lpwanserver-web-client
 
 install: npm ci
 
