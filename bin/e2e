@@ -9,7 +9,7 @@ cd ../lpwanserver-web-client
 docker-compose \
   -f ./docker/docker-compose.e2e.yml up \
   --abort-on-container-exit \
-  --exit-code-from e2e-test
+  --exit-code-from browser_test
 
 echo "$?"
 

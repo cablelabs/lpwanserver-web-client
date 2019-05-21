@@ -30,7 +30,7 @@
   "scripts": {
     "local": "env-cmd .env.local react-scripts start",
     "start": "react-scripts start",
-    "dev": "REACT_APP_REST_SERVER_URL=http://localhost:3200 npm start",
+    "dev": "REACT_APP_REST_SERVER_URL=https://localhost:3200 npm start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",

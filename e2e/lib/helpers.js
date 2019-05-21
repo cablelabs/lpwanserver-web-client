@@ -63,7 +63,7 @@ function seleniumHubHealthcheck (host, port, limit = 30000) {
       return resolve()
     }
   })
-  
+
 }
 
 module.exports = {

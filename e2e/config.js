@@ -2,8 +2,9 @@ const { pick, merge, keys } = require('ramda')
 
 const CONFIG_DEFAULTS = {
   SELENIUM_BROWSER: 'chrome',
+  WEB_CLIENT_PROTOCOL: 'https',
   WEB_CLIENT_HOST: 'localhost',
-  WEB_CLIENT_PORT: '3000',
+  WEB_CLIENT_PORT: '3200',
   HUB_HOST: null,
   HUB_PORT: '4444',
   LORA_SERVER_PROTOCOL: 'https',
