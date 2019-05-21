@@ -83,6 +83,13 @@
       if ((checked && !value) || (!checked && value)) await element.click()
       return
     }
+    if (type === 'radio') {
+      // only radio currently in test is the NetworkType on the DeviceProfile form
+      // but, each radio button has a different name, so can just click it
+      // need to change in future to support more traditional radio options
+      await element.click()
+      return
+    }
     await element.clear()
     return element.sendKeys(value)
   }

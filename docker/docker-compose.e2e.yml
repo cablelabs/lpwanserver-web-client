@@ -13,7 +13,7 @@ services:
     environment:
       - HUB_HOST=localhost
       - HUB_PORT=4444
-      - START_XVFB=false
+      - START_XVFB=true
     network_mode: host
     ports:
       - 5900:5900
@@ -25,11 +25,12 @@ services:
       - browser
     environment:
       - SELENIUM_BROWSER=firefox
-      - HEADLESS=true
+      - HEADLESS=false
       - HUB_HOST=selenium_hub
       - HUB_PORT=4444
+      - WEB_CLIENT_PROTOCOL=https
       - WEB_CLIENT_HOST=localhost
-      - WEB_CLIENT_PORT=3000
+      - WEB_CLIENT_PORT=3200
       - LORA_SERVER_HOST=localhost
       - LORA_SERVER_PORT=8082
       - LORA_SERVER_V1_HOST=localhost
