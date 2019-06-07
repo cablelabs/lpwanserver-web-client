@@ -20,7 +20,7 @@ class LoRaNetworkSettings extends Component {
 
     onChange(field, e) {
         let securityData = this.state.securityData;
-        if ( (e.target.type === "number") || (e.target.type === "select-one") ) {
+        if ( e.target.type === "number") {
           securityData[field] = parseInt(e.target.value, 10);
         } else if (e.target.type === "checkbox") {
           securityData[field] = e.target.checked;

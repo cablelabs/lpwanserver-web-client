@@ -67,14 +67,14 @@ class SessionStore extends EventEmitter {
      * @return {Boolean}
      */
     isAdmin() {
-        return (this.getUser().role === "admin") || this.isGlobalAdmin();
+        return (this.getUser().role === "ADMIN") || this.isGlobalAdmin();
     }
     /**
      * Get a boolean indicating if the session user's company is of type 'admin'
      * @return {Boolean}
      */
     isGlobalAdmin() {
-        return this.getCompany().type === "admin";
+        return this.getCompany().type === "ADMIN";
     }
     /**
      * Set token in cache
@@ -119,6 +119,7 @@ class SessionStore extends EventEmitter {
      */
     async login (body) {
         try {
+            this.clearMeFromStore();
             const headers = { 'content-type': 'application/json' }
             const opts = { method: 'post', headers, body: JSON.stringify(body) }
             const token = await _fetch(`${rest_url}/api/sessions`, opts).then(x => x.text())

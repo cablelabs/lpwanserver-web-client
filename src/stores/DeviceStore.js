@@ -34,7 +34,7 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Get a device
-     * @param {string} id 
+     * @param {string} id
      * @return {Object} a device
      */
     getDevice (id) {
@@ -50,16 +50,16 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Delete device
-     * @param {string} id 
+     * @param {string} id
      */
     async deleteDevice (id) {
         await this.fetch(id, { method: 'delete' })
     }
     /**
      * Get paginated list of devices
-     * @param {number} pageSize 
-     * @param {number} offset 
-     * @param {string} applicationId 
+     * @param {number} pageSize
+     * @param {number} offset
+     * @param {string} applicationId
      * @return {Object[]} list of devices
      */
     getAll (pageSize, offset, applicationId) {
@@ -69,11 +69,11 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Create a device profile
-     * @param {string} name 
-     * @param {string} description 
-     * @param {string} companyId 
-     * @param {string} networkTypeId 
-     * @param {string} networkSettings 
+     * @param {string} name
+     * @param {string} description
+     * @param {string} companyId
+     * @param {string} networkTypeId
+     * @param {string} networkSettings
      * @return {string} device profile ID
      */
     async createDeviceProfile (body) {
@@ -103,7 +103,7 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Delete a device profile
-     * @param {string} id 
+     * @param {string} id
      */
     async deleteDeviceProfile (id) {
         const response = await this.fetchDeviceProfile(id, { method: 'delete' })
@@ -111,8 +111,8 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Get a paginated list of device profiles
-     * @param {number} pageSize 
-     * @param {number} offset 
+     * @param {number} pageSize
+     * @param {number} offset
      * @return {Object[]} list of device profiles
      */
     async getAllDeviceProfiles (pageSize, offset) {
@@ -123,8 +123,8 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Query device profiles by company ID and network type ID
-     * @param {string} appId 
-     * @param {string} netId 
+     * @param {string} appId
+     * @param {string} netId
      * @return {Object[]} list of device profiles
      */
     async getAllDeviceProfilesForAppAndNetType (appId, netId) {
@@ -136,10 +136,10 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Create a device network type
-     * @param {string} deviceId 
-     * @param {string} networkTypeId 
-     * @param {string} deviceProfileId 
-     * @param {Object} networkSettings 
+     * @param {string} deviceId
+     * @param {string} networkTypeId
+     * @param {string} deviceProfileId
+     * @param {Object} networkSettings
      * @return {Object} a device network type
      */
     async createDeviceNetworkType (deviceId, networkTypeId, deviceProfileId, networkSettings) {
@@ -150,10 +150,10 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Query device network types by device ID and networkType ID
-     * @param {string} devId 
-     * @param {string} netId 
+     * @param {string} devId
+     * @param {string} netId
      */
-    async getDeviceNetworkType (devId, netId) {
+    async getDeviceNetworkTypeLink (devId, netId) {
         const query = `?deviceId=${devId}&networkTypeId=${netId}`
         const response = await this.fetchDeviceNtwkTypeLink(query)
         remoteErrorDisplay(response)
@@ -174,7 +174,7 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Delete a device network type
-     * @param {string} id 
+     * @param {string} id
      */
     async deleteDeviceNetworkType (id) {
         const response = await this.fetchDeviceNtwkTypeLink(id, { method: 'delete' })
@@ -182,7 +182,7 @@ class DeviceStore extends EventEmitter {
     }
     /**
      * Handle actions from dispatcher
-     * @param {Object} param0 action 
+     * @param {Object} param0 action
      */
     handleActions ({ type }) {
         switch (type) {

@@ -14,8 +14,8 @@ class UserStore extends EventEmitter {
     }
     /**
      * Get a paginated list of users
-     * @param {number} pageSize 
-     * @param {number} offset 
+     * @param {number} pageSize
+     * @param {number} offset
      * @return {Object[]}
      */
     getAll (pageSize, offset) {
@@ -24,7 +24,7 @@ class UserStore extends EventEmitter {
     }
     /**
      * Get a user
-     * @param {string} id 
+     * @param {string} id
      * @return {Object}
      */
     getUser (id) {
@@ -42,37 +42,34 @@ class UserStore extends EventEmitter {
     /**
      * Create a user
      * @param {Object} user
-     * @return {Object} 
+     * @return {Object}
      */
     createUser (user) {
-        // Convert isAdmin to a role.
-        user.role = user.isAdmin ? 'admin' : 'user'
-        delete user.isAdmin
-        // Add in the company if not specified.  Same as current user.
-        if (!user.companyId) {
-            user.companyId = sessionStore.getUser().companyId
-        }
-        console.log("Create User", user)
-        return this.fetch('', { method: 'post', body: user })
+    // Add in the company if not specified.  Same as current user.
+    if (!user.companyId) {
+        user.companyId = sessionStore.getUser().companyId
+    }
+    console.log("Create User", user)
+    return this.fetch('', { method: 'post', body: user })
     }
     /**
      * Update a user
      * @param {Object} body
-     * @return {Object} 
+     * @return {Object}
      */
     updateUser (body) {
         return this.fetch(body.id, { method: 'put', body })
     }
     /**
      * Delete a user
-     * @param {string} id 
+     * @param {string} id
      */
     async deleteUser (id) {
         await this.fetch(id, { method: 'delete' })
     }
     /**
      * Delete all users of a company
-     * @param {string} companyId 
+     * @param {string} companyId
      */
     async deleteUsersForCompany (companyId) {
         const users = await this.fetch(`?companyId=${companyId}`)
@@ -80,7 +77,7 @@ class UserStore extends EventEmitter {
     }
     /**
      * Handle actions from dispatcher
-     * @param {Object} param0 action 
+     * @param {Object} param0 action
      */
     handleActions ({ type }) {
         switch (type) {

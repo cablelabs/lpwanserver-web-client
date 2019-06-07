@@ -13,8 +13,9 @@ const login = S.seq(
 
 const selectOrg = S.seq(
   S.click('.Select'),
-  S.click(By.xpath('//*[contains(text(), "cablelabs")]')),
+  S.click(By.xpath('//*[contains(text(), "sysadmins") or contains(text(), "SysAdmins")]'))
 )
+
 const clickApplications = S.click(By.xpath('//a[contains(text(), "Applications")]'))
 const clickAppName = name => S.click(By.xpath(`//*[contains(text(), "${name}")]`))
 const findDevice = name => S.getElement(By.xpath(`//*[contains(text(), "${name}")]`))

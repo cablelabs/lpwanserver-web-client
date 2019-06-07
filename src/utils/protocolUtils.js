@@ -21,5 +21,5 @@ export const getSecurityDefaults = networkProtocol => {
 
 export const getDefaultProtocol = networkProtocol =>
 findById(
-  propOr('', 'masterProtocol', networkProtocol),
+  propOr('', 'masterProtocolId', networkProtocol),
   propOr([], 'versions', networkProtocol));

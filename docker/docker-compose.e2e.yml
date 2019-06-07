@@ -13,19 +13,21 @@ services:
     environment:
       - HUB_HOST=localhost
       - HUB_PORT=4444
-      - START_XVFB=false
+      - START_XVFB=true
     network_mode: host
     ports:
       - 5900:5900
 
   browser_test:
-    image: lpwanserver/browser-test
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.e2e
     depends_on:
       - selenium_hub
       - browser
     environment:
       - SELENIUM_BROWSER=firefox
-      - HEADLESS=true
+      - HEADLESS=false
       - HUB_HOST=selenium_hub
       - HUB_PORT=4444
       - WEB_CLIENT_PROTOCOL=https

@@ -11,26 +11,26 @@ class NetworkStore extends EventEmitter {
   /** Create a store */
   constructor () {
     super()
-    
+
     // state
     this.networks = new Collection()
     this.networkPage = flyd.stream({ totalCount: 0, records: [] })
-    this.groups = new Collection({ idKey: 'masterProtocol' })
+    this.groups = new Collection({ idKey: 'masterProtocolId' })
 
     // computed state
     this.groupsByNetworkTypeId = this.groups.filter('networkTypeId')
     this.networksByMasterProtocol = this.networks.filter(
-      'masterProtocol',
+      'masterProtocolId',
       (a,b) => b.networkProtocolId < a.networkProtocolId
     )
-    
+
     // util
     this.fetch = fetchJson(`${rest_url}/api/networks`, () => sessionStore.getHeader() )
   }
   /**
    * Get a paginated list of networks
-   * @param {number} pageSize 
-   * @param {number} offset 
+   * @param {number} pageSize
+   * @param {number} offset
    * @return {Object} object with list of networks on 'records' property
    */
   async getNetworks( pageSize, offset ) {
@@ -45,20 +45,23 @@ class NetworkStore extends EventEmitter {
    * Get a list of networks grouped by master protocol ID
    */
   async getNetworkGroups() {
-    const response = await this.fetch('group')
-    if (!response) return
-    response.records.forEach(record => {
-      this.networks.insert(record.networks.map(x => ({
+    let { records: groups } = await this.fetch('group')
+    // No networks for IP network type
+    groups = groups.filter(x => x.name !== 'IP')
+    groups.forEach(group => {
+      this.networks.insert(group.networks.map(x => ({
         ...x,
-        masterProtocol: record.masterProtocol
+        masterProtocolId: group.masterProtocolId
       })))
     })
-    this.groups.insert(response.records.map(x => omit(['networks'], x)))
+    groups = groups.map(x => omit(['networks'], x))
+    this.groups.insert(groups)
+    return groups
   }
   /**
    * Create a network
    * @param {Object} body
-   * @return {Object} network 
+   * @return {Object} network
    */
   async createNetwork (body) {
     const response = await this.fetch('', { method: 'post', body })
@@ -67,7 +70,7 @@ class NetworkStore extends EventEmitter {
   }
   /**
    * Get a networ
-   * @param {string} id 
+   * @param {string} id
    * @return {Object} network
    */
   async getNetwork (id) {
@@ -78,7 +81,7 @@ class NetworkStore extends EventEmitter {
   /**
    * Update a network
    * @param {Object} body
-   * @return {Object} network 
+   * @return {Object} network
    */
   async updateNetwork (body) {
     const response = await this.fetch(body.id, { method: 'put', body })
@@ -87,7 +90,7 @@ class NetworkStore extends EventEmitter {
   }
   /**
    * Delete a network
-   * @param {string} id 
+   * @param {string} id
    */
   async deleteNetwork (id) {
     await this.fetch(id, { method: 'delete' })
@@ -95,14 +98,14 @@ class NetworkStore extends EventEmitter {
   }
   /**
    * Pull a network
-   * @param {string} id 
+   * @param {string} id
    */
   async pullNetwork (id) {
     await this.fetch(`${id}/pull`, { method: 'post' })
   }
   /**
    * Handle actions from dispatcher
-   * @param {Object} param0 action  
+   * @param {Object} param0 action
    */
   handleActions ({ type }) {
     switch (type) {

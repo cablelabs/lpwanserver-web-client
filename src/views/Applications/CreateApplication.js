@@ -36,34 +36,24 @@ class CreateApplication extends Component {
         this.onSubmit = this.onSubmit.bind(this);
 
         this.networkSpecificComps = {};
-
-        reportingProtocolStore.getReportingProtocols()
-          .then(response => {
-              var app = this.state.application;
-              app.reportingProtocolId = response[0].id;
-              this.setState({application: app, reportingProtocols: response});
-          });
-
     }
 
-    onSubmit = async function (e) {
+    async onSubmit (e) {
         e.preventDefault();
-        let me = this;
 
         try {
-            let id = await applicationStore.createApplication(this.state.application);
-            // Need to update the ID so the app links can get created
             let app = this.state.application;
-            app.id = id.id;
-            this.setState({application: app}, async function () {
+            let { id } = await applicationStore.createApplication(app);
+            app.id = id
+            this.setState({ application: app }, async function () {
                 // Handle the network-specific data.
-                if (me.networkSpecificComps.onSubmit) {
-                    await me.networkSpecificComps.onSubmit();
+                if (this.networkSpecificComps.onSubmit) {
+                    await this.networkSpecificComps.onSubmit();
                 }
                 else {
                     console.log("No data to update!");
                 }
-                me.props.history.push('/?tab=applications');
+                this.props.history.push('/?tab=applications');
             });
         }
         catch (err) {
@@ -95,15 +85,21 @@ class CreateApplication extends Component {
         }
 
         sessionStore.on("change", this.sessionWatch);
-        console.log("Finished mounting component");
 
+        reportingProtocolStore.getReportingProtocols()
+          .then(records => {
+              this.setState({
+                  application: { ...this.state.application, reportingProtocolId: records[0].id },
+                  reportingProtocols: records
+              })
+          });
     };
 
 
     onChange(field, e) {
         let application = this.state.application;
 
-        if ((e.target.type === "number") || (e.target.type === "select-one")) {
+        if ((e.target.type === "number")) {
             application[field] = parseInt(e.target.value, 10);
         } else if (e.target.type === "checkbox") {
             application[field] = e.target.checked;
@@ -115,6 +111,7 @@ class CreateApplication extends Component {
 
     render() {
         let me = this;
+        if (!this.state.reportingProtocols.length) return false
 
         return (
           <div>
@@ -153,9 +150,11 @@ class CreateApplication extends Component {
                                       id="reportingProtocolId"
                                       required
                                       value={this.state.reportingProtocolId}
-                                      onChange={this.onChange.bind(this, 'reportingProtocolId')}>
-                                  {this.state.reportingProtocols.map(rprot => <option value={rprot.id}
-                                                                                      key={"typeSelector" + rprot.id}>{rprot.name}</option>)}
+                                      onChange={this.onChange.bind(this, 'reportingProtocolId')}
+                              >
+                                  {this.state.reportingProtocols.map(rprot =>
+                                    <option value={rprot.id} key={"typeSelector" + rprot.id}>{rprot.name}</option>
+                                  )}
                               </select>
                               <p className="help-block">
                                   Specifies the Network Protocol that this application will use

@@ -52,7 +52,7 @@ class DeviceForm extends Component {
   onChange(field, e) {
     let device = this.state.device;
 
-    if ( (e.target.type === "number") || (e.target.type === "select-one") ) {
+    if ( e.target.type === "number") {
       device[field] = parseInt(e.target.value, 10);
     } else if (e.target.type === "checkbox") {
       device[field] = e.target.checked;

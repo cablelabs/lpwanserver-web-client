@@ -3,7 +3,6 @@ import React, {Component} from "react";
 
 //import deviceStore from "../../stores/DeviceStore";
 import applicationStore from "../../stores/ApplicationStore";
-import companyStore from "../../stores/CompanyStore";
 import networkTypeStore from "../../stores/NetworkTypeStore";
 import PropTypes from 'prop-types';
 import identity from 'ramda/src/identity'
@@ -125,7 +124,7 @@ class NetworkSpecificUI extends Component {
   // - Sets up name to UI code map for networkTypes and data.  (Uses default
   //   if no networkType-specific code.)
   // - Sets up the list of known networks
-  populateNetworkTypes = async function( nts ) {
+  async populateNetworkTypes ( nts ) {
       var ntn = [];
       var nameToUIMap = {};
       var nameToNetIdMap = {};
@@ -143,35 +142,34 @@ class NetworkSpecificUI extends Component {
       }
 
       // For each valid networkType...
-      var me = this;
       let tracker = {};
-      await nts.forEach( async function( nt ) {
-          // Don't double-load a network type
-          if ( !tracker[ nt.name ] ) {
-              tracker[ nt.name ] = true;
-              // cache the networkType record for the subcomponents
-              networkTypeRecords[ nt.name ] = nt;
-              // Map name to the networkTypeIdprops.dataName
-              nameToNetIdMap[ nt.name ] = nt.id;
-              // Map names to the UI code to use.  Map unknown names to
-              // the default UI.
-              try {
-                  var module = await import(`../NetworkCustomizations/${nt.name}/${me.props.dataName}` );
-                  nameToUIMap[ nt.name ] = module.default;
-              }
-              catch( err ) {
-                  console.log( "Error loading NetworkType-specific code for " + nt.name + ":" + err );
-                  console.log( "Using default UI" );
-                  // No file?  Use default.
-                  nameToUIMap[ nt.name ] = def.default;
-              }
-              // Keep track of known networks.
-              ntn.push( nt.name );
-              me.setState( { networkTypeRecords: networkTypeRecords,
-                             networkTypeNames: ntn,
-                             nameToUIMap: nameToUIMap,
-                             nameToNetIdMap: nameToNetIdMap } );
-          }
+      nts.forEach(async nt => {
+        // Don't double-load a network type
+        if ( !tracker[ nt.name ] ) {
+            tracker[ nt.name ] = true;
+            // cache the networkType record for the subcomponents
+            networkTypeRecords[ nt.name ] = nt;
+            // Map name to the networkTypeIdprops.dataName
+            nameToNetIdMap[ nt.name ] = nt.id;
+            // Map names to the UI code to use.  Map unknown names to
+            // the default UI.
+            try {
+                var module = await import(`../NetworkCustomizations/${nt.name}/${this.props.dataName}` );
+                nameToUIMap[ nt.name ] = module.default;
+            }
+            catch( err ) {
+                console.log( "Error loading NetworkType-specific code for " + nt.name + ":" + err );
+                console.log( "Using default UI" );
+                // No file?  Use default.
+                nameToUIMap[ nt.name ] = def.default;
+            }
+            // Keep track of known networks.
+            ntn.push( nt.name );
+            this.setState( { networkTypeRecords: networkTypeRecords,
+                            networkTypeNames: ntn,
+                            nameToUIMap: nameToUIMap,
+                            nameToNetIdMap: nameToNetIdMap } );
+        }
       });
   }
 
@@ -184,7 +182,8 @@ class NetworkSpecificUI extends Component {
         case "Application":
         case "DeviceProfile":
             // Companies show all networkTypes possible
-            nts = await networkTypeStore.getNetworkTypes(); this.populateNetworkTypes( nts );
+            nts = await networkTypeStore.getNetworkTypes();
+            this.populateNetworkTypes( nts );
             break;
         case "Device":
             // Devices show all networkTypes enabled to their application

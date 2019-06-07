@@ -18,8 +18,8 @@ class LoRaDeviceNetworkSettings extends Component {
         this.state = {
             enabled: false,
             wasEnabled: false,
-            deviceProfileId: 0,
-            deviceProfileIdOrig: 0,
+            deviceProfileId: '',
+            deviceProfileIdOrig: '',
             value: initValue,
             original: initValue,
             rec: null,
@@ -70,14 +70,14 @@ class LoRaDeviceNetworkSettings extends Component {
     }
 
     async getLinkRecordState(props, deviceProfileList) {
-        const deviceProfileId = pathOr(0, [0, 'id'], deviceProfileList)
+        const deviceProfileId = pathOr('', [0, 'id'], deviceProfileList)
         // Skip trying to load new records
         if (!props.parentRec || (!props.parentRec.id || 0 === props.parentRec.id)) {
             // alert(JSON.stringify(props.parentRec))
             return { deviceProfileId }
         }
         try {
-            const rec = await deviceStore.getDeviceNetworkType(props.parentRec.id, props.netRec.id)
+            const rec = await deviceStore.getDeviceNetworkTypeLink(props.parentRec.id, props.netRec.id)
             if (!rec) throw new Error('No device network type')
             // Javascript libraries can get whiny with null.
             if ( !rec.networkSettings ) rec.networkSettings = {};
@@ -174,7 +174,7 @@ class LoRaDeviceNetworkSettings extends Component {
     }
 
     onSelectionChange(field, e) {
-        this.setState({ [field]: parseInt(e.target.value, 10) })
+        this.setState({ [field]: e.target.value })
     }
 
     // Not an onSubmit for the framework, but called from the parent component
@@ -311,7 +311,7 @@ class LoRaDeviceNetworkSettings extends Component {
                             onChange={this.onActivationChange.bind(this, 'deviceActivation.nwkSKey')} />
                     </div>
                     }
-                    { mac >= '1.1.0' && mac <= '1.2.0' && 
+                    { mac >= '1.1.0' && mac <= '1.2.0' &&
                     <div>
                         <div className="form-group">
                             <label className="control-label" htmlFor="nwkSEncKey">
@@ -370,7 +370,7 @@ class LoRaDeviceNetworkSettings extends Component {
                                type="text" placeholder="00000000000000000000000000000000"
                                pattern="[A-Fa-f0-9]{32}"
                                required={isABP}
-                               value={state.value.deviceActivation.appSKey || ''} 
+                               value={state.value.deviceActivation.appSKey || ''}
                                onChange={this.onActivationChange.bind(this, 'deviceActivation.appSKey')} />
                     </div>
                     <div className="form-group">
@@ -438,7 +438,7 @@ class LoRaDeviceNetworkSettings extends Component {
                             A 32-hex-digit string used to identify the device on LoRa networks.
                         </p>
                     </div>
-                    { mac >= '1.1.0' && mac <= '1.2.0' && 
+                    { mac >= '1.1.0' && mac <= '1.2.0' &&
                     <div className="form-group">
                         <label className="control-label" htmlFor="nwkKey">
                         Network session key

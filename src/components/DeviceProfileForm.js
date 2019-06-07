@@ -55,7 +55,7 @@ class DeviceProfileForm extends Component {
   onChange(field, e) {
     let deviceProfile = this.state.deviceProfile;
 
-    if ( (e.target.type === "number") || (e.target.type === "select-one") ) {
+    if ( e.target.type === "number") {
       deviceProfile[field] = parseInt(e.target.value, 10);
     } else if (e.target.type === "checkbox") {
       deviceProfile[field] = e.target.checked;

@@ -17,7 +17,8 @@ class NetworkTypeStore extends EventEmitter {
      * @return {Object[]} list of network types
      */
     async getNetworkTypes () {
-        return (await this.fetch()) || []
+        const { records } = await this.fetch()
+        return records
     }
     /**
      * Create a network type
@@ -31,14 +32,14 @@ class NetworkTypeStore extends EventEmitter {
     /**
      * Get a network type
      * @param {string} id
-     * @return {Object} network type 
+     * @return {Object} network type
      */
     getNetworkType (id) {
         return this.fetch(id)
     }
     /**
      * Update a network type
-     * @param {Object} body 
+     * @param {Object} body
      * @return {Object} network type
      */
     updateNetworkType (body) {
@@ -46,7 +47,7 @@ class NetworkTypeStore extends EventEmitter {
     }
     /**
      * Delete a network type
-     * @param {string} id 
+     * @param {string} id
      */
     async deleteNetworkType (id) {
         await this.fetch(id, { method: 'delete' })

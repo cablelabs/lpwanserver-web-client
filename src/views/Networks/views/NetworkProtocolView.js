@@ -25,8 +25,8 @@ NetworkProtocolView.defaultProps = {
 function NetworkProtocolView (props) {
   const { first, networkProtocol, networks } = props;
   const { name, networkTypeId } = networkProtocol;
-  const masterProtocol = propOr('', 'masterProtocol', networkProtocol);
-  const createQueryParams = `?networkTypeId=${networkTypeId}&masterProtocol=${masterProtocol}`;
+  const masterProtocolId = propOr('', 'masterProtocolId', networkProtocol);
+  const createQueryParams = `?networkTypeId=${networkTypeId}&masterProtocolId=${masterProtocolId}`;
   const brdTop = first ? 'brd-top':'';
 
   return (
@@ -52,7 +52,7 @@ export default connect({
   state: {
     networks: {
       stream: () => networkStore.networksByMasterProtocol,
-      map: (fn, props) => fn && fn(props.networkProtocol.masterProtocol)
+      map: (fn, props) => fn && fn(props.networkProtocol.masterProtocolId)
     }
   }
 })(NetworkProtocolView)

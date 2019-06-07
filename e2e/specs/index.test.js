@@ -26,7 +26,7 @@ describe('LPWAN Server Web Client Integration Tests', () => {
     ctx.driver = await setupDriver(config)
     loraCtx.driver = lora1Ctx.driver = ctx.driver
   })
-  
+
   afterAll(() => ctx.driver.quit())
 
   describe('As system administrator', () => {
@@ -34,7 +34,7 @@ describe('LPWAN Server Web Client Integration Tests', () => {
       await Lora.login(loraCtx)
       await Lora.login(lora1Ctx)
     })
-    
+
     test('Log in', () => User.login(ctx))
 
     function setupNetwork(network) {
@@ -43,14 +43,14 @@ describe('LPWAN Server Web Client Integration Tests', () => {
         test('View the Local Network', () => network.verify(ctx))
         test('Verify the application was pulled', () => App.goToApp(network.app)(ctx))
         test('Verify device was pulled', () => App.clickDevice(network.device.name)(ctx))
-        test('Verify device profile was pulled', () => App.findDeviceProfile(network.deviceProfile.name)(ctx))
         test('Verify device is enabled', () => S.getElement('[data-enabled="true"]')(ctx))
+        test('Verify device profile was pulled', () => App.goToDeviceProfile(network.deviceProfile)(ctx))
       }
     }
 
     describe('Setup LoRa 1.0 Network', setupNetwork(Network.lora1))
     describe('Setup LoRa 2.0 Network', setupNetwork(Network.lora2))
-    
+
     describeTtn('Setup TTN Network', () => {
       test('Create the Local Network', () => Network.ttn.create(ctx))
       test('View the Local Network', () => Network.ttn.verify(ctx))
