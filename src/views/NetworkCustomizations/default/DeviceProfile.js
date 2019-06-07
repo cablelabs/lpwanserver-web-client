@@ -84,6 +84,7 @@ class DefaultDeviceProfileNetworkSettings extends Component {
                 if ( !this.state.wasEnabled ) {
                     ret = await deviceStore.createDeviceProfile({
                         name: this.props.parentRec.name,
+                        description: this.props.parentRec.description,
                         companyId: this.props.parentRec.companyId,
                         networkTypeId: this.props.netRec.id,
                         networkSettings: this.state.value
@@ -95,6 +96,7 @@ class DefaultDeviceProfileNetworkSettings extends Component {
                     var updRec = {
                         id: this.props.parentRec.id,
                         name: this.props.parentRec.name,
+                        description: this.props.parentRec.description,
                         companyId: this.props.parentRec.companyId,
                         networkTypeId: this.props.netRec.id,
                         networkSettings: JSON.parse( this.state.value )

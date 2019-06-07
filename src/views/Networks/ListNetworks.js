@@ -21,7 +21,7 @@ export default class ListNetworks extends React.Component {
           render={ networkTypes =>
             isNotArray(networkTypes) ?
             <div></div> :
-            networkTypes.map((x, i) =>
+            networkTypes.filter(x => x.name !== 'IP').map((x, i) =>
               <NetworkType networkType={x} key={x.id} first={i===0} />
             )
           }

@@ -67,7 +67,7 @@ class OAuthNetwork extends Component {
         props.history.push(`${networkPath}&oauthStatus=fail&oauthError=${encodeURIComponent(errMsg)}`);
         return
       }
-  
+
       // Oauth succeeded, send oauth info to server
       try {
         await updateNetworkWithOauthInfo(network, networkProtocol, queryParams)

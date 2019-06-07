@@ -79,7 +79,7 @@ const lora2App1Device2Updated = R.merge(lora2App1Device2, {
 const app1 = {
   name: 'CATA',
   description: 'CATA Description',
-  reportingProtocolId: 1,
+  reportingProtocolId: 'POST',
   baseUrl: 'http://localhost:5086',
   LoRa: true
 }

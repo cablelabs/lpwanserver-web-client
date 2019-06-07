@@ -39,16 +39,15 @@ class NetworkProtocolStore extends EventEmitter {
    * @return {Object[]} list of network protocols
    */
   async getNetworkProtocols () {
-    const response = await this.fetch()
-    if (!response || !response.records) return []
-    this.protocols.insert(response.records)
-    return response
+    const { records } = await this.fetch()
+    this.protocols.insert(records)
+    return records
   }
   /**
    * Create a network protocol
-   * @param {string} name 
-   * @param {Object} protocolHandler 
-   * @param {string} networkTypeId 
+   * @param {string} name
+   * @param {Object} protocolHandler
+   * @param {string} networkTypeId
    * @return {string} network protocol ID
    */
   async createNetworkProtocol (name, protocolHandler, networkTypeId) {
@@ -61,7 +60,7 @@ class NetworkProtocolStore extends EventEmitter {
   }
   /**
    * Get a network protocol
-   * @param {string} id 
+   * @param {string} id
    * @return {Object} a network protocol
    */
   async getNetworkProtocol (id) {
@@ -71,7 +70,7 @@ class NetworkProtocolStore extends EventEmitter {
   }
   /**
    * Update a network protocol
-   * @param {Object} body 
+   * @param {Object} body
    * @return {Object} a network protocol
    */
   async updateNetworkProtocol (body) {
@@ -81,7 +80,7 @@ class NetworkProtocolStore extends EventEmitter {
   }
   /**
    * Delete a network protocol
-   * @param {string} id 
+   * @param {string} id
    */
   async deleteNetworkProtocol (id) {
     await this.fetch(id, { method: 'delete' })
@@ -89,7 +88,7 @@ class NetworkProtocolStore extends EventEmitter {
   }
   /**
    * Handle actions from dispatcher
-   * @param {Object} param0 action 
+   * @param {Object} param0 action
    */
   handleActions ({ type }) {
     switch (type) {

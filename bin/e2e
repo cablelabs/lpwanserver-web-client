@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # Start the demo in LPWAN Server repo
-cd ../lpwanserver
-./bin/demo
-cd ../lpwanserver-web-client
+# cd ../lpwanserver
+# ./bin/demo
+# cd ../lpwanserver-web-client
 
 # Run docker-compose for the e2e test
 docker-compose \
-  -f ./docker/docker-compose.e2e.yml up \
+  -f ./docker/docker-compose.e2e.yml up --build \
   --abort-on-container-exit \
   --exit-code-from browser_test
 
@@ -17,9 +17,9 @@ echo "$?"
 TEST_EXIT_CODE=$?
 
 # Stop Demo
-cd ../lpwanserver
-./bin/demo stop
-cd ../lpwanserver-web-client
+# cd ../lpwanserver
+# ./bin/demo stop
+# cd ../lpwanserver-web-client
 
 # Exit script with the code from the test
 exit $TEST_EXIT_CODE

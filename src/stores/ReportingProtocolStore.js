@@ -31,13 +31,14 @@ class ReportingProtocolStore extends EventEmitter {
      * @return {Object[]} list of reporting protocols
      */
     async getReportingProtocols () {
-        return (await this.fetch()) || []
+        const { records } = await this.fetch()
+        return records
     }
     /**
      * Create a reporting protocol
-     * @param {string} name 
+     * @param {string} name
      * @param {Object} protocolHandler
-     * @return {string} reporting protocol ID 
+     * @return {string} reporting protocol ID
      */
     async createReportingProtocol (name, protocolHandler) {
         const body = { name, protocolHandler }
@@ -46,7 +47,7 @@ class ReportingProtocolStore extends EventEmitter {
     }
     /**
      * Get a reporting protocol
-     * @param {string} id 
+     * @param {string} id
      * @return {Object} reporting protocol
      */
     getReportingProtocol (id) {
@@ -54,14 +55,14 @@ class ReportingProtocolStore extends EventEmitter {
     }
     /**
      * Update a reporting protocol
-     * @param {Object} body 
+     * @param {Object} body
      */
     updateReportingProtocol (body) {
         return this.fetch(body.id, { method: 'put', body })
     }
     /**
      * Delete a reporting protocol
-     * @param {string} id 
+     * @param {string} id
      */
     async deleteReportingProtocol (id) {
         await this.fetch(id, { method: 'delete' })

@@ -12,13 +12,12 @@ class DefaultDeviceNetworkSettings extends Component {
         this.state = {
             enabled: false,
             wasEnabled: false,
-            deviceProfileId: 0,
-            deviceProfileIdOrig: 0,
+            deviceProfileId: '',
+            deviceProfileIdOrig: '',
             value: "{ }",
             original: "",
             rec: null,
-            deviceProfileList: this.getMyDeviceProfiles(
-                                props.referenceDataId, props.netRec.id ),
+            deviceProfileList: [],
         };
 
         this.select = this.select.bind(this);
@@ -29,24 +28,26 @@ class DefaultDeviceNetworkSettings extends Component {
         this.isChanged = this.isChanged.bind( this );
         this.isEnabled = this.isEnabled.bind( this );
         this.getMyLinkRecord = this.getMyLinkRecord.bind( this );
-        this.getMyDeviceProfiles = this.getMyDeviceProfiles.bind( this );
+
+        this.getMyDeviceProfiles(props.referenceDataId, props.netRec.id)
     }
 
-    getMyDeviceProfiles( appId, netId ) {
-        deviceStore.getAllDeviceProfilesForAppAndNetType( appId, netId )
-        .then( ( recs ) => {
-            if ( 0 === recs.records.length ) {
-                this.setState( { deviceProfileList: [ { id: 0, name: "(None Available)" } ] } );
+    async getMyDeviceProfiles( appId, netId ) {
+        const noneAvailable = () => this.setState( { deviceProfileList: [ { id: 0, name: "(None Available)" } ] } );
+        try {
+            const { records: recs } = await deviceStore.getAllDeviceProfilesForAppAndNetType( appId, netId )
+            if (!recs.length) return noneAvailable()
+            const updates = { deviceProfileList: recs }
+            if (!this.state.deviceProfileId) {
+                updates.deviceProfileId = recs[0].id
+                updates.deviceProfileIdOrig = recs[0].id
             }
-            else {
-                this.setState( { deviceProfileList: recs.records } );
-            }
-        })
-        .catch( ( err ) => {
+            return this.setState(updates)
+        }
+        catch (err) {
             console.log( "Error getting device's possible deviceProfiles: " + err );
-
-                this.setState( { deviceProfileList: [ { id: 0, name: "(None Available)" } ] } );
-        });
+            noneAvailable()
+        }
     }
 
     componentDidMount() {
@@ -62,7 +63,7 @@ class DefaultDeviceNetworkSettings extends Component {
             return;
         }
 
-        deviceStore.getDeviceNetworkType( props.parentRec.id,
+        deviceStore.getDeviceNetworkTypeLink( props.parentRec.id,
                                           props.netRec.id )
         .then( (rec) => {
             if ( rec ) {
@@ -111,7 +112,7 @@ class DefaultDeviceNetworkSettings extends Component {
     }
 
     onSelectionChange( event ) {
-        this.setState({deviceProfileId: parseInt(event.target.value, 10)});
+        this.setState({deviceProfileId: event.target.value });
     }
 
     // Not an onSubmit for the framework, but called from the parent component

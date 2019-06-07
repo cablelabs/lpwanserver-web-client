@@ -24,8 +24,9 @@ const createApp = app => S.seq(
 const verifyAppDetails = app => S.seq(
   S.click('[href="#application"]'),
   S.getFormValues(forms.app),
+  S.getText(ctx => `option[value="${ctx.values.reportingProtocolId}"]`),
   ctx => ({ values: R.merge(ctx.values, {
-    reportingProtocolId: parseInt(ctx.values.reportingProtocolId, 10)
+    reportingProtocolId: ctx.text
   }) }),
   S.tap(ctx => expect(ctx.values).toEqual(app))
 )

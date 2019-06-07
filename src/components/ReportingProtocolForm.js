@@ -50,7 +50,7 @@ class ReportingProtocolForm extends Component {
     if (field === 'protocolHandler') {
       reportingProtocol[field] = e.target.value;
     }
-    else if ( (e.target.type === "number") || (e.target.type === "select-one") ) {
+    else if ( e.target.type === "number") {
       reportingProtocol[field] = parseInt(e.target.value, 10);
     } else if (e.target.type === "checkbox") {
       reportingProtocol[field] = e.target.checked;

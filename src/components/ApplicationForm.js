@@ -75,7 +75,7 @@ class ApplicationForm extends Component {
   onChange(field, e) {
     let application = this.state.application;
 
-    if ( (e.target.type === "number") || (e.target.type === "select-one") ) {
+    if (e.target.type === "number") {
       application[field] = parseInt(e.target.value, 10);
     } else if (e.target.type === "checkbox") {
       application[field] = e.target.checked;

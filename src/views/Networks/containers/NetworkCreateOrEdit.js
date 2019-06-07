@@ -98,7 +98,7 @@ class NetworkCreateOrEdit extends Component {
     if (oauthStatus) this.onMountOauth({ oauthStatus, queryParams, networkProtocol, networkData })
 
     const authNeeded = isNew || !pathEq([ 'securityData', 'authorized' ], true, networkData);
-    const networkId = isNew ? -1 : propOr(-1, 'id', network);
+    const networkId = isNew ? -1 : propOr('', 'id', network);
     this.setState({ networkId, authNeeded, networkProtocol, networkProtocolVersion, networkProtocolSet, ...networkData });
   }
 
@@ -114,11 +114,11 @@ class NetworkCreateOrEdit extends Component {
   }
 
   onMountCreate ({ queryParams, networkProtocols }) {
-    const typeId = Number(propOr(-1, 'networkTypeId', queryParams))
-    const masterProtocol = Number(propOr(-1, 'masterProtocol', queryParams))
+    const typeId = propOr('', 'networkTypeId', queryParams)
+    const masterProtocolId = propOr('', 'masterProtocolId', queryParams)
     const networkProtocolSet = networkProtocols.filter(x =>
       x.networkTypeId === typeId &&
-      x.masterProtocol === masterProtocol
+      x.masterProtocolId === masterProtocolId
     )
     return {
       typeId,
@@ -128,8 +128,8 @@ class NetworkCreateOrEdit extends Component {
   }
 
   onMountEdit ({ network, networkProtocols }) {
-    const typeId = propOr(-1, 'networkTypeId', network)
-    const networkProtocolId = propOr(-1, 'networkProtocolId', network)
+    const typeId = propOr('', 'networkTypeId', network)
+    const networkProtocolId = propOr('', 'networkProtocolId', network)
     const networkProtocol = find(x => x.id === networkProtocolId, networkProtocols)
     return {
       typeId,
@@ -139,7 +139,7 @@ class NetworkCreateOrEdit extends Component {
   }
 
   onMountOauth ({ oauthStatus, queryParams, networkData, networkProtocol }) {
-    const oauthMode = propOr('unkown', 'oauthMode', queryParams);
+    const oauthMode = propOr('unknown', 'oauthMode', queryParams);
     const authorized = pathOr(false, ['securityData', 'authorized'], networkData);
     const serverAuthMessage = pathOr('', ['securityData', 'message'], networkData);
     const oauthErrorMessage = propOr('', 'oauthError', queryParams);
@@ -230,7 +230,7 @@ class NetworkCreateOrEdit extends Component {
 
     .then( updatedNetwork => {
 
-      const networkId = propOr(-1, 'id', updatedNetwork);
+      const networkId = propOr('', 'id', updatedNetwork);
       const oauthUrl = pathOr('', ['metaData', 'oauthUrl'], networkProtocol);
       const authorized = pathOr(false, ['securityData', 'authorized'], updatedNetwork);
       const serverAuthMessage = pathOr('', ['securityData', 'message'], updatedNetwork);

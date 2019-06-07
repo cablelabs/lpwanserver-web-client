@@ -75,7 +75,8 @@
       } catch (err) {
         element = await element.findElement(By.xpath(`//option[contains(text(), "${value}")]`))
       }
-      return element.click()
+      await element.click()
+      return
     }
     let type = await element.getAttribute('type')
     if (type === 'checkbox') {
@@ -91,7 +92,7 @@
       return
     }
     await element.clear()
-    return element.sendKeys(value)
+    await element.sendKeys(value)
   }
 
   const fillForm = (fields, data) => async function fillForm (ctx) {

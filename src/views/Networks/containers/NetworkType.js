@@ -28,7 +28,7 @@ export function NetworkType (props) {
         {props.networkType.name || '?'} Networks
       </div>
       {props.groups.map((x, i) => (
-        <NetworkProtocolView networkProtocol={x} key={x.masterProtocol} first={i === 0} />
+        <NetworkProtocolView networkProtocol={x} key={x.masterProtocolId} first={i === 0} />
       ))}
     </div>
   );
