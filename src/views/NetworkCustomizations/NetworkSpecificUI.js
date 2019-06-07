@@ -3,7 +3,6 @@ import React, {Component} from "react";
 
 //import deviceStore from "../../stores/DeviceStore";
 import applicationStore from "../../stores/ApplicationStore";
-import companyStore from "../../stores/CompanyStore";
 import networkTypeStore from "../../stores/NetworkTypeStore";
 import PropTypes from 'prop-types';
 import identity from 'ramda/src/identity'

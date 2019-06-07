@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import deviceStore from "../../../stores/DeviceStore";
-import { assocPath, find, equals, mergeDeepRight, pathOr } from 'ramda'
+import { assocPath, find, equals, pathOr } from 'ramda'
 
 // The LoRa device network settings data entry.
 //
@@ -177,8 +177,6 @@ class IpDeviceNetworkSettings extends Component {
 
     render() {
         const { state } = this
-        const deviceProfile = this.deviceProfile() || {}
-
         if (this.state.loading) return false
 
         return !!state.enabled && (

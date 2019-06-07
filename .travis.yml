@@ -1,14 +1,16 @@
 language: node_js
-
 sudo: required
-
 node_js:
-  - "node"
-
+  - "10.15.3"
 services:
   - docker
-
+env:
+  - DOCKER_COMPOSE_VERSION=1.23.2
 before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
   - cd .. && git clone --depth 1 https://github.com/cablelabs/lpwanserver.git && cd lpwanserver && npm ci
   - cd ../lpwanserver-web-client
 
