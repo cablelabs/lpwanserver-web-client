@@ -9,7 +9,7 @@ services:
   - docker
 
 before_install:
-  - cd .. && git clone --depth 1 https://github.com/cablelabs/lpwanserver.git
+  - cd .. && git clone --depth 1 https://github.com/cablelabs/lpwanserver.git && cd lpwanserver-web-client
 
 install: npm ci
 
