@@ -13,3 +13,7 @@ export function parseQueryString(str) {
     return params
   }, {})
 }
+
+export function plural (word, pluralWord) {
+  return n => n === 1 ? word : pluralWord
+}

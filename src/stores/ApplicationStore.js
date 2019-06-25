@@ -25,7 +25,7 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Create an application
-     * @param {Application} body 
+     * @param {Application} body
      * @return {Object} An application
      */
     createApplication (body) {
@@ -33,7 +33,7 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Get an application
-     * @param {string} id 
+     * @param {string} id
      * @return {Object} An application
      */
     async getApplication (id) {
@@ -43,7 +43,7 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Update an application
-     * @param {Application} body 
+     * @param {Application} body
      * @return {Object} An application
      */
     updateApplication (body) {
@@ -51,14 +51,14 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Delete an application
-     * @param {string} id 
+     * @param {string} id
      */
     deleteApplication (id) {
         return this.fetch(id, { method: 'delete' })
     }
     /**
      * Get a paginated list of applications
-     * @param {number} pageSize 
+     * @param {number} pageSize
      * @param {number} offset
      * @return {Object[]} list of applications
      */
@@ -68,7 +68,7 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Start an application.
-     * @param {string} id 
+     * @param {string} id
      */
     async startApplication (id) {
         const response = await this.fetch(`${id}/start`, { method: 'post' })
@@ -76,7 +76,7 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Stop an application
-     * @param {string} id 
+     * @param {string} id
      */
     async stopApplication (id) {
         const response = await this.fetch(`${id}/stop`, { method: 'post' })
@@ -84,8 +84,8 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Create an application network type
-     * @param {string} applicationId 
-     * @param {string} networkTypeId 
+     * @param {string} applicationId
+     * @param {string} networkTypeId
      * @param {NetworkSettings} networkSettings
      * @return {string} application id
      */
@@ -122,7 +122,7 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Delete application network type
-     * @param {string} id 
+     * @param {string} id
      */
     async deleteApplicationNetworkType (id) {
         const response = await this.fetchNtwkTypeLinks(id, { method: 'delete' })
@@ -130,15 +130,18 @@ class ApplicationStore extends EventEmitter {
     }
     /**
      * Get all application network types
-     * @param {string} appId 
+     * @param {string} appId
      */
     async getAllApplicationNetworkTypes (appId) {
         const response = await this.fetchNtwkTypeLinks(`?applicationId=${appId}`)
         return response.records
     }
+    async importDevices ({ applicationId, ...body }) {
+        return this.fetch(`${applicationId}/import-devices`, { method: 'POST', body })
+    }
     /**
      * Handle actions from dispatcher
-     * @param {Object} param0 action 
+     * @param {Object} param0 action
      */
     handleActions ({ type }) {
         switch (type) {

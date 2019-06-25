@@ -33,6 +33,7 @@ import CreateDeviceProfile from "./views/DeviceProfiles/CreateDeviceProfile";
 import DeviceProfileLayout from "./views/DeviceProfiles/DeviceProfileLayout";
 import ErrorStore from "./stores/ErrorStore";
 import PullNetworks from "./views/ImportExport/PullNetworks";
+import ImportDevices from './views/Applications/ImportDevices';
 
 // styling
 import 'codemirror/lib/codemirror.css';
@@ -79,6 +80,7 @@ class Layout extends Component {
             <Route exact path="/remount" component={ReMount}/>
             <Route exact path="/applications" component={ListApplications}/>
             <Route exact path="/applications/:applicationID" component={ApplicationLayout}/>
+            <Route exact path="/applications/:applicationID/import" component={ImportDevices}/>
             <Route exact path="/users" component={ListApplications}/>
             <Route exact path="/users/:userID" component={UpdateUser}/>
             <Route exact path="/create/application" component={CreateApplication}/>
