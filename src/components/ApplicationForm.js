@@ -58,14 +58,8 @@ class ApplicationForm extends Component {
   }
 
   componentDidMount() {
-    this.setState({
-      application: this.props.application,
-    });
-
-    SessionStore.on("change", this.sessionChange );
-
+    SessionStore.on("change", this.sessionChange);
     this.updatePage(this.props);
-
   }
 
   componentWillUnmount() {
@@ -145,7 +139,7 @@ class ApplicationForm extends Component {
 
 
   render() {
-    const { state } = this
+    const { state, props } = this
     let { id: appId } = state.application || {}
     if (!appId) return <div></div>
     let message = {}
@@ -165,18 +159,23 @@ class ApplicationForm extends Component {
     return (
       <div>
         <div className="btn-group pull-right">
-          <div className={(state.activeTab === "application" ? '' : 'hidden')}>
-            <div className="btn-group" role="group" aria-label="...">
-              <button type="button" className="btn btn-danger btn-sm" onClick={this.onDelete}>Delete Application
-              </button>
-            </div>
-          </div>
+          {state.activeTab === "application" &&
+            <button type="button" className="btn btn-danger btn-sm" onClick={this.onDelete}>
+              Delete Application
+            </button>
+          }
 
-          <div className={(state.activeTab === "devices" ? '' : 'hidden')}>
-            <Link to={`/create/application/${state.application.id}/device`}>
-              <button type="button" className="btn btn-default btn-sm">Create Device</button>
+          {state.activeTab === "devices" &&
+            <Link to={`/create/application/${state.application.id}/device`} className="btn btn-default btn-sm">
+                Create Device
             </Link>
-          </div>
+          }
+
+          {state.activeTab === "devices" &&
+            <Link to={`/applications/${state.application.id}/import`} className="btn btn-default btn-sm">
+                Import Devices
+            </Link>
+          }
         </div>
 
         <ul className="nav nav-tabs">
