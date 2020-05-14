@@ -94,7 +94,7 @@ class UserForm extends Component {
       user[field] = e.target.value;
     }
     this.setState({
-      user: user,
+      user: { ...user },
     });
   }
 
@@ -140,7 +140,7 @@ class UserForm extends Component {
                  value={this.state.user.password || ''} onChange={this.onChange.bind(this, 'password')}/>
         </div>
 
-        <div className={"form-group" + (sessionStore.getUser().isAdmin ? "" : " hidden" ) }>
+        <div className={"form-group" + (sessionStore.isAdmin() ? "" : " hidden" ) }>
           <label className="checkbox-inline">
             <input type="checkbox" name="isAdmin" id="isAdmin" checked={this.state.user.isAdmin}
                    onChange={this.onChange.bind(this, 'isAdmin')}/> Is admin &nbsp;

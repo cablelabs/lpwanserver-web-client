@@ -67,7 +67,7 @@ class SessionStore extends EventEmitter {
      * @return {Boolean}
      */
     isAdmin() {
-        return (this.getUser().role === "ADMIN") || this.isGlobalAdmin();
+        return this.getUser().role === "ADMIN" || this.isGlobalAdmin();
     }
     /**
      * Get a boolean indicating if the session user's company is of type 'admin'
