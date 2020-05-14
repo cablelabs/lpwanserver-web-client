@@ -49,7 +49,8 @@ class UserStore extends EventEmitter {
     if (!user.companyId) {
         user.companyId = sessionStore.getUser().companyId
     }
-    console.log("Create User", user)
+    user.role = user.isAdmin ? 'ADMIN' : 'USER'
+    delete user.isAdmin
     return this.fetch('', { method: 'post', body: user })
     }
     /**

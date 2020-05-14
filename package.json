@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "bootstrap": "^3.3.6",
+    "bootstrap": "^3.4.1",
     "bootswatch": "^3.3.7",
     "codemirror": "^5.33.0",
     "env-cmd": "^8.0.2",
@@ -39,7 +39,7 @@
     "documentation": "documentation build src/** -f html -o code-documentation"
   },
   "devDependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "documentation": "^8.1.2",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
