@@ -39,7 +39,7 @@
     "documentation": "documentation build src/** -f html -o code-documentation"
   },
   "devDependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "documentation": "^8.1.2",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
